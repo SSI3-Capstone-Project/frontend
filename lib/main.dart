@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:mbea_ssi3_front/views/authen/pages/register_page.dart';
+import 'package:mbea_ssi3_front/views/createForm/controllers/create_post_controller.dart';
 import 'package:mbea_ssi3_front/views/onboardingScreen/onboarding_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/post_update_controller.dart';
+import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  Get.lazyPut(() => CreatePostController());
+  Get.lazyPut(
+      () => UpdatePostController()); // เพิ่ม UpdatePostController ที่นี่
+  await dotenv.load(fileName: "./.env");
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,12 +36,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'My Title',
       theme: ThemeData(
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity),
-      home: OnboardingScreen(),
+      home: RegisterPage(),
       debugShowCheckedModeBanner: false,
     );
   }

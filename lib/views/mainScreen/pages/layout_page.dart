@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
 import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
-import 'package:mbea_ssi3_front/views/home/home_page.dart';
-import 'package:mbea_ssi3_front/views/mainScreen/create_post_offer.dart';
-import 'package:mbea_ssi3_front/views/profile/profile_page.dart';
+import 'package:mbea_ssi3_front/views/home/pages/home_page.dart';
+import 'package:mbea_ssi3_front/views/createForm/pages/create_page.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/profile_page.dart';
 import 'package:page_transition/page_transition.dart';
 
 class RootPage extends StatefulWidget {
@@ -40,6 +40,7 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       // appBar: AppBar(
       //   title: Row(
       //     mainAxisAlignment: MainAxisAlignment.spaceBetween,

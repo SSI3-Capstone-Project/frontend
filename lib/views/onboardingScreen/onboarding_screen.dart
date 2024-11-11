@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
-import 'package:mbea_ssi3_front/views/mainScreen/root_page.dart';
+import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
