@@ -1,13 +1,10 @@
-import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
-import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
 
-class OfferDetailController extends GetxController {
+class OfferDeleteController extends GetxController {
   final tokenController = Get.find<TokenController>();
-  var offerDetail = Rxn<OfferDetail>();
   var isLoading = false.obs;
 
   // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
@@ -20,31 +17,29 @@ class OfferDetailController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<void> fetchOfferDetail(String offerId) async {
+  Future<void> deleteOffer(String offerId) async {
+    isLoading.value = true;
+    if (accessToken == null) {
+      Get.snackbar('Error', 'No access token found.');
+      return;
+    }
     try {
-      isLoading(true);
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
-        return;
-      }
-      final response = await http.get(
+      final response = await http.delete(
         Uri.parse('${dotenv.env['API_URL']}/offer/$offerId'),
         headers: {
           'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
         },
       );
+
       if (response.statusCode == 200) {
-        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-        var offerData = jsonData['data'];
-        offerDetail.value = OfferDetail.fromJson(offerData);
+        Get.snackbar('Success', 'Offer deleted successfully');
       } else {
-        Get.snackbar(
-            'Error', 'Failed to load offer detail: ${response.reasonPhrase}');
+        Get.snackbar('Error', 'Failed to delete offer');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar('Error', 'An error occurred: $e');
     } finally {
-      isLoading(false);
+      isLoading.value = false;
     }
   }
 }

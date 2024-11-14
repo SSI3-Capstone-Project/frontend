@@ -6,7 +6,7 @@ import 'package:mbea_ssi3_front/views/authen/pages/register_page.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_post_controller.dart';
 import 'package:mbea_ssi3_front/views/onboardingScreen/onboarding_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/post_update_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 void main() async {

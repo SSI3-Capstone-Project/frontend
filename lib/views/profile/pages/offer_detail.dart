@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart'; // Import the controller
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/offer_delete_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/delete_offer_controller.dart';
 import 'package:video_player/video_player.dart';
 
 class OfferDetailPage extends StatefulWidget {

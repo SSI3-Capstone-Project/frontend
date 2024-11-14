@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/model/brand_model.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/post_update_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/models/post_update_model.dart';
 
 class EditPostForm extends StatefulWidget {
