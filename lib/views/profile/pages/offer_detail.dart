@@ -4,6 +4,7 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart'; // Import the controller
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/delete_offer_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/offer_edit.dart';
 import 'package:video_player/video_player.dart';
 
 class OfferDetailPage extends StatefulWidget {
@@ -174,7 +175,14 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
           children: [
             GestureDetector(
               onTap: () {
-                print("Edit button tapped");
+                // Navigate to EditPostForm and pass the post details
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        EditOfferForm(offerDetail: offerDetail),
+                  ),
+                );
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -364,7 +372,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
 
-  VideoPlayerWidget({required this.videoUrl});
+  const VideoPlayerWidget({Key? key, required this.videoUrl}) : super(key: key);
 
   @override
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
@@ -377,14 +385,19 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
+    _initializeVideoPlayer();
+  }
+
+  // Initialize the video player
+  void _initializeVideoPlayer() {
+    _controller = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((_) {
-        setState(() {}); // Refresh state after initialization
+        setState(() {}); // Refresh UI after video initialization
       }).catchError((error) {
         setState(() {
-          _isError = true;
+          _isError = true; // Update UI to show error state
         });
-        print("Error loading video: $error");
+        debugPrint("Error loading video: $error");
       });
   }
 
@@ -396,80 +409,75 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isError) {
-      return Center(child: Text("ไม่สามารถโหลดวิดีโอได้"));
-    }
+    return _isError ? _buildErrorWidget() : _buildVideoPlayer();
+  }
 
+  // Widget displayed when there's an error loading the video
+  Widget _buildErrorWidget() {
+    return Center(
+        child:
+            Text("Unable to load video", style: TextStyle(color: Colors.red)));
+  }
+
+  // Widget for the video player
+  Widget _buildVideoPlayer() {
     return _controller.value.isInitialized
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (_controller.value.isPlaying) {
-                          _controller.pause();
-                        } else {
-                          _controller.play();
-                        }
-                      });
-                    },
-                    child: Icon(
-                      _controller.value.isPlaying
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      size: 50,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              VideoProgressIndicator(
-                _controller,
-                allowScrubbing: true,
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                colors: VideoProgressColors(
-                  playedColor: Theme.of(context).primaryColor,
-                  bufferedColor: Colors.grey,
-                  backgroundColor: Colors.black,
+        ? Container(
+            color: Colors.black,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: VideoPlayer(_controller),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      formatDuration(_controller.value.position),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Text(
-                      formatDuration(_controller.value.duration),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: _buildPlayPauseButton(),
+                  ),
                 ),
-              ),
-            ],
+                Positioned(
+                  bottom: 0,
+                  left: 10,
+                  right: 10,
+                  child: _buildProgressIndicator(),
+                ),
+              ],
+            ),
           )
         : Center(child: CircularProgressIndicator());
   }
 
-  String formatDuration(Duration position) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = position.inHours;
-    final minutes = position.inMinutes.remainder(60);
-    final seconds = position.inSeconds.remainder(60);
-    return hours > 0
-        ? '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}'
-        : '${twoDigits(minutes)}:${twoDigits(seconds)}';
+  // Play/Pause button
+  Widget _buildPlayPauseButton() {
+    return IconButton(
+      iconSize: 50,
+      color: Colors.white,
+      icon: Icon(
+        _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+      ),
+      onPressed: () {
+        setState(() {
+          _controller.value.isPlaying
+              ? _controller.pause()
+              : _controller.play();
+        });
+      },
+    );
+  }
+
+  // Progress indicator for the video
+  Widget _buildProgressIndicator() {
+    return VideoProgressIndicator(
+      _controller,
+      allowScrubbing: true,
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      colors: VideoProgressColors(
+        playedColor: Theme.of(context).primaryColor,
+        bufferedColor: Colors.grey,
+        backgroundColor: Colors.black,
+      ),
+    );
   }
 }

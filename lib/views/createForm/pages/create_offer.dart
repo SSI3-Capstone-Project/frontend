@@ -19,7 +19,8 @@ class CreateOfferForm extends StatefulWidget {
 class _CreateOfferFormState extends State<CreateOfferForm> {
   List<File> mediaFiles = [];
 
-  final OfferController offerController = Get.put(OfferController());
+  final CreateOfferController createOfferController =
+      Get.put(CreateOfferController());
   final BrandController brandController = Get.put(BrandController());
 
   final _formKey = GlobalKey<FormState>();
@@ -347,25 +348,52 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         width: 150,
         child: ElevatedButton(
           onPressed: () {
-            if (_formKey.currentState!.validate() && mediaFiles.isNotEmpty) {
-              Offer offer = Offer(
+            if (_formKey.currentState!.validate() &&
+                mediaFiles.isNotEmpty &&
+                mediaFiles.any((file) {
+                  // ตรวจสอบว่าเป็นไฟล์รูปภาพหรือไม่
+                  return file.path.endsWith('.jpg') ||
+                      file.path.endsWith('.jpeg') ||
+                      file.path.endsWith('.png');
+                })) {
+              String? subCollectionId;
+
+              if (selectedSubCategory != null) {
+                subCollectionId = brandController.brands
+                    .firstWhere((b) => b.name == selectedBrand)
+                    .collections
+                    ?.firstWhere((c) => c.name == selectedMainCategory)
+                    .subCollections
+                    ?.firstWhere((sc) => sc.name == selectedSubCategory)
+                    .id;
+              }
+
+              if (subCollectionId == null) {
+                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                return;
+              }
+
+              // สร้าง Post object พร้อมข้อมูลทั้งหมด
+              Offer post = Offer(
                 title: _productNameController.text,
                 description: _descriptionController.text,
                 flaw: _flawController.text,
-                // desiredItem: _desiredController.text,
-                subCollectionId: '2fa2b00f-ef3d-496e-bb3b-2ed86d873d02',
-
-                // brand: selectedBrand,
-                // mainCategory: selectedMainCategory,
-                // subCategory: selectedSubCategory,
+                subCollectionId: subCollectionId,
                 mediaFiles: mediaFiles,
               );
 
-              Get.find<OfferController>().createOffer(offer);
+              // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
+              Get.find<CreateOfferController>().createOffer(post);
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('กรุณากรอกข้อมูลให้ครบถ้วน')),
-              );
+              // แสดงข้อความแจ้งเตือนเมื่อไม่มีรูปภาพใน mediaFiles
+              String errorMessage = mediaFiles.any((file) {
+                return file.path.endsWith('.jpg') ||
+                    file.path.endsWith('.jpeg') ||
+                    file.path.endsWith('.png');
+              })
+                  ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
+                  : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รูป';
+              Get.snackbar('แจ้งเตือน', errorMessage);
             }
           },
           style: ElevatedButton.styleFrom(

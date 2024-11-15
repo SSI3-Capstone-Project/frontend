@@ -5,7 +5,7 @@ import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_offer_model.dart';
 import 'package:http_parser/http_parser.dart';
 
-class OfferController extends GetxController {
+class CreateOfferController extends GetxController {
   final tokenController = Get.find<TokenController>();
   var isLoading = false.obs;
 

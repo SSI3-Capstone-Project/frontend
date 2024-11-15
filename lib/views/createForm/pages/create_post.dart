@@ -355,7 +355,14 @@ class _CreatePostFormState extends State<CreatePostForm> {
         width: 150,
         child: ElevatedButton(
           onPressed: () {
-            if (_formKey.currentState!.validate() && mediaFiles.isNotEmpty) {
+            if (_formKey.currentState!.validate() &&
+                mediaFiles.isNotEmpty &&
+                mediaFiles.any((file) {
+                  // ตรวจสอบว่าเป็นไฟล์รูปภาพหรือไม่
+                  return file.path.endsWith('.jpg') ||
+                      file.path.endsWith('.jpeg') ||
+                      file.path.endsWith('.png');
+                })) {
               String? subCollectionId;
 
               if (selectedSubCategory != null) {
@@ -369,26 +376,32 @@ class _CreatePostFormState extends State<CreatePostForm> {
               }
 
               if (subCollectionId == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('กรุณาเลือกคอลเลคชั่นย่อย')),
-                );
+                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
                 return;
               }
 
+              // สร้าง Post object พร้อมข้อมูลทั้งหมด
               Post post = Post(
                 title: _productNameController.text,
                 description: _descriptionController.text,
                 flaw: _flawController.text,
                 desiredItem: _desiredController.text,
-                subCollectionId: subCollectionId, // ส่ง subCollectionId ไป
+                subCollectionId: subCollectionId,
                 mediaFiles: mediaFiles,
               );
 
+              // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
               Get.find<CreatePostController>().createPost(post);
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('กรุณากรอกข้อมูลให้ครบถ้วน')),
-              );
+              // แสดงข้อความแจ้งเตือนเมื่อไม่มีรูปภาพใน mediaFiles
+              String errorMessage = mediaFiles.any((file) {
+                return file.path.endsWith('.jpg') ||
+                    file.path.endsWith('.jpeg') ||
+                    file.path.endsWith('.png');
+              })
+                  ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
+                  : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รูป';
+              Get.snackbar('แจ้งเตือน', errorMessage);
             }
           },
           style: ElevatedButton.styleFrom(
