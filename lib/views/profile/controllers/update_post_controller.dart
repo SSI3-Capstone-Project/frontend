@@ -44,12 +44,10 @@ class UpdatePostController extends GetxController {
     print('Desired Item: ${postToUpdate.desiredItem}');
     print('Post Images: ${jsonEncode(postToUpdate.postImages)}');
     print('Post Videos: ${jsonEncode(postToUpdate.postVideos)}');
-
     print('Image Files:');
     for (var file in postToUpdate.imageFiles) {
       print(' - Path: ${file.path}');
     }
-
     print('Video Files:');
     for (var file in postToUpdate.videoFiles) {
       print(' - Path: ${file.path}');
