@@ -27,10 +27,9 @@ class LoginController extends GetxController {
         final data = jsonDecode(response.body);
         final tokenData = data['data'];
         final accessToken = tokenData['access_token'];
-        final refreshToken = tokenData['refresh_token'];
 
         // บันทึก token ลงใน TokenController
-        tokenController.saveTokens(accessToken, refreshToken);
+        tokenController.saveTokens(accessToken);
 
         Get.snackbar('Success', 'Login successful.');
       } else {
