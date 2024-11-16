@@ -1,6 +1,8 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
 import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
 import 'package:mbea_ssi3_front/views/home/pages/home_page.dart';
@@ -16,6 +18,7 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  final BrandController brandController = Get.put(BrandController());
   int _bottomNavIndex = 0;
 
   //List of the pages
@@ -68,6 +71,7 @@ class _RootPageState extends State<RootPage> {
         shape: const CircleBorder(),
         backgroundColor: Constants.primaryColor,
         onPressed: () {
+          brandController.fetchBrands();
           Navigator.push(
               context,
               PageTransition(

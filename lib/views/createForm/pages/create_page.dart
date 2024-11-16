@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_post.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_offer.dart'; // Import CreateOfferForm
 
@@ -13,6 +15,7 @@ class CreatePostOffer extends StatefulWidget {
 }
 
 class _CreatePostOfferState extends State<CreatePostOffer> {
+  final BrandController brandController = Get.put(BrandController());
   List<File> mediaFiles = [];
   bool isCreatingPost = true; // Track selected tab
 
@@ -87,11 +90,13 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildTabItem('สร้างโพสต์', isCreatingPost, () {
+            brandController.fetchBrands();
             setState(() {
               isCreatingPost = true;
             });
           }),
           _buildTabItem('สร้างข้อเสนอ', !isCreatingPost, () {
+            brandController.fetchBrands();
             setState(() {
               isCreatingPost = false;
             });
