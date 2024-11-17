@@ -25,6 +25,7 @@ class UpdateOfferController extends GetxController {
     id: '',
     title: '',
     subCollectionId: '',
+    subDistrictId: '',
     description: '',
     flaw: null,
     offerImages: [],
@@ -64,6 +65,7 @@ class UpdateOfferController extends GetxController {
     // ตั้งค่า fields โดยไม่ต้องใช้ ?? ''
     request.fields['title'] = offerToUpdate.title;
     request.fields['sub_collection_id'] = offerToUpdate.subCollectionId;
+    request.fields['sub_district_id'] = offerToUpdate.subDistrictId;
     request.fields['description'] = offerToUpdate.description;
 
     if (offerToUpdate.flaw != null) {

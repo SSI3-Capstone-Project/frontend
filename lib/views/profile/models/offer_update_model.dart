@@ -4,6 +4,7 @@ class UpdateOffer {
   String id;
   String title;
   String subCollectionId;
+  String subDistrictId;
   String description;
   String? flaw;
   List<OfferMedia> offerImages;
@@ -15,6 +16,7 @@ class UpdateOffer {
     required this.id,
     required this.title,
     required this.subCollectionId,
+    required this.subDistrictId,
     required this.description,
     this.flaw,
     required this.offerImages,
@@ -28,6 +30,7 @@ class UpdateOffer {
       id: json['id'],
       title: json['title'],
       subCollectionId: json['sub_collection_id'],
+      subDistrictId: json['sub_district_id'],
       description: json['description'],
       flaw: json['flaw'],
       offerImages: (json['offer_images'] as List)
@@ -46,6 +49,7 @@ class UpdateOffer {
       'id': id,
       'title': title,
       'sub_collection_id': subCollectionId,
+      'sub_district_id': subDistrictId,
       'description': description,
       'flaw': flaw,
       'offer_images': offerImages.map((item) => item.toJson()).toList(),

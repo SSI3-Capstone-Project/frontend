@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/controller/province_controller.dart';
+import 'package:mbea_ssi3_front/model/province_model.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_post_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_post_model.dart';
 // import 'package:mbea_ssi3_front/common/constants.dart';
@@ -21,6 +23,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
 
   final CreatePostController postController = Get.put(CreatePostController());
   final BrandController brandController = Get.put(BrandController());
+  final ProvinceController provinceController = Get.put(ProvinceController());
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _productNameController = TextEditingController();
@@ -32,20 +35,26 @@ class _CreatePostFormState extends State<CreatePostForm> {
   String? selectedMainCategory;
   String? selectedSubCategory;
 
+  String? selectedProvince;
+  String? selectedMainDistrict;
+  String? selectedSubDistrict;
+
   bool _mediaError = false;
 
   Future<void> _pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
-      });
+      if (mounted) {
+        setState(() {
+          List<File> videos =
+              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+          mediaFiles =
+              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          mediaFiles.add(File(pickedFile.path));
+          mediaFiles.addAll(videos);
+        });
+      }
     }
   }
 
@@ -53,14 +62,16 @@ class _CreatePostFormState extends State<CreatePostForm> {
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
-      });
+      if (mounted) {
+        setState(() {
+          List<File> videos =
+              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+          mediaFiles =
+              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          mediaFiles.add(File(pickedFile.path));
+          mediaFiles.addAll(videos);
+        });
+      }
     }
   }
 
@@ -78,6 +89,8 @@ class _CreatePostFormState extends State<CreatePostForm> {
           ),
           SizedBox(height: 16),
           Obx(() {
+            if (!mounted) return const SizedBox();
+
             if (brandController.isLoading.value) {
               return Center(child: CircularProgressIndicator());
             }
@@ -172,7 +185,84 @@ class _CreatePostFormState extends State<CreatePostForm> {
                 ? 'โปรดระบุสิ่งที่อยากแลก'
                 : null,
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 16),
+          Obx(() {
+            if (!mounted) return const SizedBox();
+
+            if (provinceController.isLoading.value) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            return Container(
+              constraints:
+                  BoxConstraints(maxHeight: 300), // Set a maximum height
+              child: ListView(
+                shrinkWrap:
+                    true, // This allows the ListView to take only as much height as it needs
+                physics:
+                    NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                children: [
+                  _buildDropdownField(
+                    label: 'เลือกจังหวัด',
+                    items: provinceController.provinces
+                        .map((b) => b.name)
+                        .toList(),
+                    value: selectedProvince,
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedProvince = newValue;
+                        selectedMainDistrict = null;
+                        selectedSubDistrict = null;
+                      });
+                    },
+                    validator: (value) =>
+                        value == null ? 'โปรดเลือกจังหวัด' : null,
+                  ),
+                  if (selectedProvince != null)
+                    _buildDropdownField(
+                      label: 'เลือกเขต / อำเภอ',
+                      items: provinceController.provinces
+                              .firstWhere((b) => b.name == selectedProvince)
+                              .districts
+                              ?.map((c) => c.name)
+                              .toList() ??
+                          [],
+                      value: selectedMainDistrict,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedMainDistrict = newValue;
+                          selectedSubDistrict = null;
+                        });
+                      },
+                      validator: (value) =>
+                          value == null ? 'โปรดเลือกเขต / อำเภอ' : null,
+                    ),
+                  if (selectedMainDistrict != null)
+                    _buildDropdownField(
+                      label: 'เลือกตำบล',
+                      items: provinceController.provinces
+                              .firstWhere((b) => b.name == selectedProvince)
+                              .districts
+                              ?.firstWhere(
+                                  (c) => c.name == selectedMainDistrict)
+                              .subDistricts
+                              ?.map((sc) => sc.name)
+                              .toList() ??
+                          [],
+                      value: selectedSubDistrict,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedSubDistrict = newValue;
+                        });
+                      },
+                      validator: (value) =>
+                          value == null ? 'โปรดเลือกตำบล' : null,
+                    ),
+                ],
+              ),
+            );
+          }),
+          // SizedBox(height: 30),
           _buildMediaPreview(),
           SizedBox(height: 30),
           _buildMediaButtons(),
@@ -380,6 +470,23 @@ class _CreatePostFormState extends State<CreatePostForm> {
                 return;
               }
 
+              int? subDistrictId = 0;
+
+              if (selectedSubDistrict != null) {
+                subDistrictId = provinceController.provinces
+                    .firstWhere((b) => b.name == selectedProvince)
+                    .districts
+                    ?.firstWhere((c) => c.name == selectedMainDistrict)
+                    .subDistricts
+                    ?.firstWhere((sc) => sc.name == selectedSubDistrict)
+                    .id;
+              }
+
+              if (subCollectionId == 0) {
+                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                return;
+              }
+
               // สร้าง Post object พร้อมข้อมูลทั้งหมด
               Post post = Post(
                 title: _productNameController.text,
@@ -387,6 +494,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                 flaw: _flawController.text,
                 desiredItem: _desiredController.text,
                 subCollectionId: subCollectionId,
+                subDistrictId: subDistrictId ?? 0,
                 mediaFiles: mediaFiles,
               );
 

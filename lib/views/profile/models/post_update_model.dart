@@ -4,6 +4,7 @@ class UpdatePost {
   String id;
   String title;
   String subCollectionId;
+  String subDistrictId;
   String description;
   String? flaw;
   String desiredItem;
@@ -16,6 +17,7 @@ class UpdatePost {
     required this.id,
     required this.title,
     required this.subCollectionId,
+    required this.subDistrictId,
     required this.description,
     this.flaw,
     required this.desiredItem,
@@ -30,6 +32,7 @@ class UpdatePost {
       id: json['id'],
       title: json['title'],
       subCollectionId: json['sub_collection_id'],
+      subDistrictId: json['sub_district_id'],
       description: json['description'],
       flaw: json['flaw'],
       desiredItem: json['desired_item'],
@@ -49,6 +52,7 @@ class UpdatePost {
       'id': id,
       'title': title,
       'sub_collection_id': subCollectionId,
+      'sub_district_id': subDistrictId,
       'description': description,
       'flaw': flaw,
       'desired_item': desiredItem,

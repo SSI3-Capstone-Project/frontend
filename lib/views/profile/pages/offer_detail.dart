@@ -345,14 +345,14 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.location_on,
                       color: Colors.black54,
                     ),
                     SizedBox(width: 4),
                     Text(
-                      'ปากเกร็ด, นนทบุรี',
+                      offerDetail.location,
                       style: TextStyle(
                         color: Colors.black87,
                         fontSize: 16,

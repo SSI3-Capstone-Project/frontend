@@ -389,14 +389,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.location_on,
                       color: Colors.black54,
                     ),
                     SizedBox(width: 4),
                     Text(
-                      'ปากเกร็ด, นนทบุรี',
+                      postDetail.location,
                       style: TextStyle(
                         color: Colors.black87,
                         fontSize: 16,

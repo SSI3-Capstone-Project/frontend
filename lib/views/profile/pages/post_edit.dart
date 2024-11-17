@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/model/brand_model.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
@@ -20,6 +21,7 @@ class EditPostForm extends StatefulWidget {
 class _EditPostFormState extends State<EditPostForm> {
   List<dynamic> mediaFiles = [];
   final BrandController brandController = Get.put(BrandController());
+  final ProvinceController provinceController = Get.put(ProvinceController());
   UpdatePostController updatePostController = Get.find<UpdatePostController>();
 
   final _formKey = GlobalKey<FormState>();
@@ -31,6 +33,10 @@ class _EditPostFormState extends State<EditPostForm> {
   String? selectedBrand;
   String? selectedMainCategory;
   String? selectedSubCategory;
+
+  String? selectedProvince;
+  String? selectedMainDistrict;
+  String? selectedSubDistrict;
 
   bool _mediaError = false;
 
@@ -74,11 +80,13 @@ class _EditPostFormState extends State<EditPostForm> {
                 SubCollection(id: '', name: '')); // ใช้ default value แทน null
 
         if (subCollection != null && subCollection.id.isNotEmpty) {
-          setState(() {
-            selectedBrand = brand.name;
-            selectedMainCategory = collection.name;
-            selectedSubCategory = subCollection.name;
-          });
+          if (mounted) {
+            setState(() {
+              selectedBrand = brand.name;
+              selectedMainCategory = collection.name;
+              selectedSubCategory = subCollection.name;
+            });
+          }
           return;
         }
       }
@@ -89,9 +97,11 @@ class _EditPostFormState extends State<EditPostForm> {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        mediaFiles.add(File(pickedFile.path));
-      });
+      if (mounted) {
+        setState(() {
+          mediaFiles.add(File(pickedFile.path));
+        });
+      }
     }
   }
 
@@ -99,9 +109,11 @@ class _EditPostFormState extends State<EditPostForm> {
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        mediaFiles.add(File(pickedFile.path));
-      });
+      if (mounted) {
+        setState(() {
+          mediaFiles.add(File(pickedFile.path));
+        });
+      }
     }
   }
 
@@ -127,6 +139,8 @@ class _EditPostFormState extends State<EditPostForm> {
               ),
               SizedBox(height: 16),
               Obx(() {
+                if (!mounted) return const SizedBox();
+
                 if (brandController.isLoading.value) {
                   return Center(child: CircularProgressIndicator());
                 }
@@ -143,11 +157,13 @@ class _EditPostFormState extends State<EditPostForm> {
                             brandController.brands.map((b) => b.name).toList(),
                         value: selectedBrand,
                         onChanged: (newValue) {
-                          setState(() {
-                            selectedBrand = newValue;
-                            selectedMainCategory = null;
-                            selectedSubCategory = null;
-                          });
+                          if (mounted) {
+                            setState(() {
+                              selectedBrand = newValue;
+                              selectedMainCategory = null;
+                              selectedSubCategory = null;
+                            });
+                          }
                         },
                         validator: (value) =>
                             value == null ? 'โปรดเลือกแบรนด์' : null,
@@ -163,10 +179,12 @@ class _EditPostFormState extends State<EditPostForm> {
                               [],
                           value: selectedMainCategory,
                           onChanged: (newValue) {
-                            setState(() {
-                              selectedMainCategory = newValue;
-                              selectedSubCategory = null;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                selectedMainCategory = newValue;
+                                selectedSubCategory = null;
+                              });
+                            }
                           },
                           validator: (value) =>
                               value == null ? 'โปรดเลือกคอลเลคชั่น' : null,
@@ -185,9 +203,11 @@ class _EditPostFormState extends State<EditPostForm> {
                               [],
                           value: selectedSubCategory,
                           onChanged: (newValue) {
-                            setState(() {
-                              selectedSubCategory = newValue;
-                            });
+                            if (mounted) {
+                              setState(() {
+                                selectedSubCategory = newValue;
+                              });
+                            }
                           },
                           validator: (value) =>
                               value == null ? 'โปรดเลือกคอลเลคชั่นย่อย' : null,
@@ -218,7 +238,90 @@ class _EditPostFormState extends State<EditPostForm> {
                     ? 'โปรดระบุสิ่งที่อยากแลก'
                     : null,
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 16),
+              Obx(() {
+                if (!mounted) return const SizedBox();
+
+                if (provinceController.isLoading.value) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                return Container(
+                  constraints:
+                      BoxConstraints(maxHeight: 300), // Set a maximum height
+                  child: ListView(
+                    shrinkWrap:
+                        true, // This allows the ListView to take only as much height as it needs
+                    physics:
+                        NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                    children: [
+                      _buildDropdownField(
+                        label: 'เลือกจังหวัด',
+                        items: provinceController.provinces
+                            .map((b) => b.name)
+                            .toList(),
+                        value: selectedProvince,
+                        onChanged: (newValue) {
+                          if (mounted) {
+                            setState(() {
+                              selectedProvince = newValue;
+                              selectedMainDistrict = null;
+                              selectedSubDistrict = null;
+                            });
+                          }
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกจังหวัด' : null,
+                      ),
+                      if (selectedProvince != null)
+                        _buildDropdownField(
+                          label: 'เลือกเขต / อำเภอ',
+                          items: provinceController.provinces
+                                  .firstWhere((b) => b.name == selectedProvince)
+                                  .districts
+                                  ?.map((c) => c.name)
+                                  .toList() ??
+                              [],
+                          value: selectedMainDistrict,
+                          onChanged: (newValue) {
+                            if (mounted) {
+                              setState(() {
+                                selectedMainDistrict = newValue;
+                                selectedSubDistrict = null;
+                              });
+                            }
+                          },
+                          validator: (value) =>
+                              value == null ? 'โปรดเลือกเขต / อำเภอ' : null,
+                        ),
+                      if (selectedMainDistrict != null)
+                        _buildDropdownField(
+                          label: 'เลือกตำบล',
+                          items: provinceController.provinces
+                                  .firstWhere((b) => b.name == selectedProvince)
+                                  .districts
+                                  ?.firstWhere(
+                                      (c) => c.name == selectedMainDistrict)
+                                  .subDistricts
+                                  ?.map((sc) => sc.name)
+                                  .toList() ??
+                              [],
+                          value: selectedSubDistrict,
+                          onChanged: (newValue) {
+                            if (mounted) {
+                              setState(() {
+                                selectedSubDistrict = newValue;
+                              });
+                            }
+                          },
+                          validator: (value) =>
+                              value == null ? 'โปรดเลือกตำบล' : null,
+                        ),
+                    ],
+                  ),
+                );
+              }),
+              // SizedBox(height: 30),
               _buildMediaPreview(),
               SizedBox(height: 30),
               _buildMediaButtons(),
@@ -337,7 +440,9 @@ class _EditPostFormState extends State<EditPostForm> {
               right: 0,
               top: 0,
               child: GestureDetector(
-                onTap: () => setState(() => mediaFiles.remove(file)),
+                onTap: () => {
+                  if (mounted) {setState(() => mediaFiles.remove(file))}
+                },
                 child: Icon(Icons.close, color: Colors.red),
               ),
             ),
@@ -444,6 +549,23 @@ class _EditPostFormState extends State<EditPostForm> {
                 return;
               }
 
+              int? subDistrictId = 0;
+
+              if (selectedSubDistrict != null) {
+                subDistrictId = provinceController.provinces
+                    .firstWhere((b) => b.name == selectedProvince)
+                    .districts
+                    ?.firstWhere((c) => c.name == selectedMainDistrict)
+                    .subDistricts
+                    ?.firstWhere((sc) => sc.name == selectedSubDistrict)
+                    .id;
+              }
+
+              if (subCollectionId == 0) {
+                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                return;
+              }
+
               // ดำเนินการสร้าง UpdatePost ตามที่กำหนดไว้
               List<PostMedia> postImages =
                   widget.postDetail.postImages.map((image) {
@@ -519,6 +641,7 @@ class _EditPostFormState extends State<EditPostForm> {
                 id: widget.postDetail.id,
                 title: _productNameController.text,
                 subCollectionId: subCollectionId,
+                subDistrictId: subDistrictId.toString(),
                 description: _descriptionController.text,
                 flaw: _flawController.text.isNotEmpty
                     ? _flawController.text

@@ -25,6 +25,7 @@ class UpdatePostController extends GetxController {
     id: '',
     title: '',
     subCollectionId: '',
+    subDistrictId: '',
     description: '',
     flaw: null,
     desiredItem: '',
@@ -66,6 +67,7 @@ class UpdatePostController extends GetxController {
     // ตั้งค่า fields โดยไม่ต้องใช้ ?? ''
     request.fields['title'] = postToUpdate.title;
     request.fields['sub_collection_id'] = postToUpdate.subCollectionId;
+    request.fields['sub_district_id'] = postToUpdate.subDistrictId;
     request.fields['description'] = postToUpdate.description;
 
     if (postToUpdate.flaw != null) {

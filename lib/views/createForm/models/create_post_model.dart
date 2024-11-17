@@ -6,6 +6,7 @@ class Post {
   String flaw;
   String desiredItem;
   String subCollectionId;
+  int subDistrictId;
   // String? brand;
   // String? mainCategory;
   // String? subCategory;
@@ -17,6 +18,7 @@ class Post {
     required this.flaw,
     required this.desiredItem,
     required this.subCollectionId,
+    required this.subDistrictId,
     // this.brand,
     // this.mainCategory,
     // this.subCategory,
@@ -30,6 +32,7 @@ class Post {
       'flaw': flaw,
       'desired_item': desiredItem,
       'sub_collection_id': subCollectionId,
+      'sub_district_id': subDistrictId,
       // 'brand': brand,
       // 'main_category': mainCategory,
       // 'sub_category': subCategory,

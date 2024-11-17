@@ -4,6 +4,7 @@ class OfferDetail {
   String description;
   String? flaw;
   String subCollectionName;
+  String location;
   String coverImage;
   String createdAt;
   List<OfferImage> offerImages;
@@ -15,6 +16,7 @@ class OfferDetail {
     required this.description,
     this.flaw,
     required this.subCollectionName,
+    required this.location,
     required this.coverImage,
     required this.createdAt,
     required this.offerImages,
@@ -38,6 +40,7 @@ class OfferDetail {
       description: json['description'],
       flaw: json['flaw'],
       subCollectionName: json['sub_collection_name'],
+      location: json['location'],
       coverImage: json['cover_image'],
       createdAt: json['created_at'],
       offerImages: offerImagesList,
