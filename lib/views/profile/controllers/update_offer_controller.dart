@@ -6,9 +6,9 @@ import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'dart:convert';
 // import 'dart:io';
 
-import 'package:mbea_ssi3_front/views/profile/models/post_update_model.dart';
+import 'package:mbea_ssi3_front/views/profile/models/offer_update_model.dart';
 
-class UpdatePostController extends GetxController {
+class UpdateOfferController extends GetxController {
   final tokenController = Get.find<TokenController>();
 
   // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
@@ -21,36 +21,34 @@ class UpdatePostController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  var updatedPost = UpdatePost(
+  var updatedOffer = UpdateOffer(
     id: '',
     title: '',
     subCollectionId: '',
     subDistrictId: '',
     description: '',
     flaw: null,
-    desiredItem: '',
-    postImages: [],
-    postVideos: [],
+    offerImages: [],
+    offerVideos: [],
     imageFiles: [],
     videoFiles: [],
   ).obs;
 
-  Future<void> updatePostDetails(UpdatePost postToUpdate) async {
-    print('--- Post Data to be Updated ---');
-    print('ID: ${postToUpdate.id}');
-    print('Title: ${postToUpdate.title}');
-    print('Sub Collection ID: ${postToUpdate.subCollectionId}');
-    print('Description: ${postToUpdate.description}');
-    print('Flaw: ${postToUpdate.flaw}');
-    print('Desired Item: ${postToUpdate.desiredItem}');
-    print('Post Images: ${jsonEncode(postToUpdate.postImages)}');
-    print('Post Videos: ${jsonEncode(postToUpdate.postVideos)}');
+  Future<void> updateOfferDetails(UpdateOffer offerToUpdate) async {
+    print('--- Offer Data to be Updated ---');
+    print('ID: ${offerToUpdate.id}');
+    print('Title: ${offerToUpdate.title}');
+    print('Sub Collection ID: ${offerToUpdate.subCollectionId}');
+    print('Description: ${offerToUpdate.description}');
+    print('Flaw: ${offerToUpdate.flaw}');
+    print('offer Images: ${jsonEncode(offerToUpdate.offerImages)}');
+    print('offer Videos: ${jsonEncode(offerToUpdate.offerVideos)}');
     print('Image Files:');
-    for (var file in postToUpdate.imageFiles) {
+    for (var file in offerToUpdate.imageFiles) {
       print(' - Path: ${file.path}');
     }
     print('Video Files:');
-    for (var file in postToUpdate.videoFiles) {
+    for (var file in offerToUpdate.videoFiles) {
       print(' - Path: ${file.path}');
     }
     print('-----------------------------');
@@ -59,26 +57,25 @@ class UpdatePostController extends GetxController {
       return;
     }
     final request = http.MultipartRequest(
-        'PUT', Uri.parse('${dotenv.env['API_URL']}/post/${postToUpdate.id}'));
+        'PUT', Uri.parse('${dotenv.env['API_URL']}/offer/${offerToUpdate.id}'));
 
     // แนบ accessToken ลงบน header ของ MultipartRequest
     request.headers['Authorization'] = 'Bearer $accessToken';
 
     // ตั้งค่า fields โดยไม่ต้องใช้ ?? ''
-    request.fields['title'] = postToUpdate.title;
-    request.fields['sub_collection_id'] = postToUpdate.subCollectionId;
-    request.fields['sub_district_id'] = postToUpdate.subDistrictId;
-    request.fields['description'] = postToUpdate.description;
+    request.fields['title'] = offerToUpdate.title;
+    request.fields['sub_collection_id'] = offerToUpdate.subCollectionId;
+    request.fields['sub_district_id'] = offerToUpdate.subDistrictId;
+    request.fields['description'] = offerToUpdate.description;
 
-    if (postToUpdate.flaw != null) {
-      request.fields['flaw'] = postToUpdate.flaw!;
+    if (offerToUpdate.flaw != null) {
+      request.fields['flaw'] = offerToUpdate.flaw!;
     }
 
-    request.fields['desired_item'] = postToUpdate.desiredItem;
-    request.fields['post_images'] = jsonEncode(postToUpdate.postImages);
-    request.fields['post_videos'] = jsonEncode(postToUpdate.postVideos);
+    request.fields['offer_images'] = jsonEncode(offerToUpdate.offerImages);
+    request.fields['offer_videos'] = jsonEncode(offerToUpdate.offerVideos);
 
-    for (var file in postToUpdate.imageFiles) {
+    for (var file in offerToUpdate.imageFiles) {
       if (file.path.isNotEmpty) {
         String mimeType = file.path.endsWith('.png') ? 'png' : 'jpeg';
         request.files.add(
@@ -91,7 +88,7 @@ class UpdatePostController extends GetxController {
       }
     }
 
-    for (var file in postToUpdate.videoFiles) {
+    for (var file in offerToUpdate.videoFiles) {
       if (file.path.isNotEmpty) {
         request.files.add(
           await http.MultipartFile.fromPath(
@@ -112,13 +109,13 @@ class UpdatePostController extends GetxController {
 
         // ตรวจสอบว่ามีฟิลด์ 'data' อยู่ใน jsonResponse และไม่ใช่ null
         if (jsonResponse != null && jsonResponse['data'] != null) {
-          updatedPost.value = UpdatePost.fromJson(jsonResponse['data']);
-          print('Post updated successfully.');
+          updatedOffer.value = UpdateOffer.fromJson(jsonResponse['data']);
+          print('Offer updated successfully.');
         } else {
           print('Response data is missing or null.');
         }
       } else {
-        print('Failed to update post. Status code: ${response.statusCode}');
+        print('Failed to update offer. Status code: ${response.statusCode}');
         print('Response: $responseData');
       }
     } catch (e) {

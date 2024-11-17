@@ -5,6 +5,7 @@ class PostDetail {
   String? flaw;
   String desiredItem;
   String subCollectionName;
+  String location;
   String coverImage;
   String createdAt;
   List<PostImage> postImages;
@@ -17,6 +18,7 @@ class PostDetail {
     this.flaw,
     required this.desiredItem,
     required this.subCollectionName,
+    required this.location,
     required this.coverImage,
     required this.createdAt,
     required this.postImages,
@@ -41,6 +43,7 @@ class PostDetail {
       flaw: json['flaw'],
       desiredItem: json['desired_item'],
       subCollectionName: json['sub_collection_name'],
+      location: json['location'],
       coverImage: json['cover_image'],
       createdAt: json['created_at'],
       postImages: postImagesList,

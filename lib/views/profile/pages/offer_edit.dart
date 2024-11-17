@@ -5,30 +5,30 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/model/brand_model.dart';
-import 'package:mbea_ssi3_front/model/post_detail_model.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
-import 'package:mbea_ssi3_front/views/profile/models/post_update_model.dart';
+import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/update_offer_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/models/offer_update_model.dart';
 
-class EditPostForm extends StatefulWidget {
-  final PostDetail postDetail;
+class EditOfferForm extends StatefulWidget {
+  final OfferDetail offerDetail;
 
-  const EditPostForm({super.key, required this.postDetail});
+  const EditOfferForm({super.key, required this.offerDetail});
 
   @override
-  _EditPostFormState createState() => _EditPostFormState();
+  _EditOfferFormState createState() => _EditOfferFormState();
 }
 
-class _EditPostFormState extends State<EditPostForm> {
+class _EditOfferFormState extends State<EditOfferForm> {
   List<dynamic> mediaFiles = [];
   final BrandController brandController = Get.put(BrandController());
   final ProvinceController provinceController = Get.put(ProvinceController());
-  UpdatePostController updatePostController = Get.find<UpdatePostController>();
+  UpdateOfferController updateOfferController =
+      Get.find<UpdateOfferController>();
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _flawController = TextEditingController();
-  final TextEditingController _desiredController = TextEditingController();
 
   String? selectedBrand;
   String? selectedMainCategory;
@@ -61,21 +61,20 @@ class _EditPostFormState extends State<EditPostForm> {
   void _initializeForm() {
     if (brandController.brands.isEmpty) return; // ตรวจสอบว่ามีข้อมูลหรือไม่
 
-    _productNameController.text = widget.postDetail.title;
-    _descriptionController.text = widget.postDetail.description;
-    _flawController.text = widget.postDetail.flaw ?? '';
-    _desiredController.text = widget.postDetail.desiredItem;
+    _productNameController.text = widget.offerDetail.title;
+    _descriptionController.text = widget.offerDetail.description;
+    _flawController.text = widget.offerDetail.flaw ?? '';
 
     mediaFiles = [
-      ...widget.postDetail.postImages.map((image) => image.imageUrl),
-      ...widget.postDetail.postVideos.map((video) => video.videoUrl),
+      ...widget.offerDetail.offerImages.map((image) => image.imageUrl),
+      ...widget.offerDetail.offerVideos.map((video) => video.videoUrl),
     ];
 
     // ค้นหาชื่อแบรนด์และคอลเลคชั่นหลักจาก subCollectionName
     for (var brand in brandController.brands) {
       for (var collection in brand.collections ?? []) {
         SubCollection? subCollection = collection.subCollections?.firstWhere(
-            (sub) => sub.name == widget.postDetail.subCollectionName,
+            (sub) => sub.name == widget.offerDetail.subCollectionName,
             orElse: () =>
                 SubCollection(id: '', name: '')); // ใช้ default value แทน null
 
@@ -231,14 +230,6 @@ class _EditPostFormState extends State<EditPostForm> {
                 label: 'ตำหนิ',
               ),
               SizedBox(height: 16),
-              _buildTextFormField(
-                controller: _desiredController,
-                label: 'ระบุสิ่งที่อยากแลก',
-                validator: (value) => value == null || value.isEmpty
-                    ? 'โปรดระบุสิ่งที่อยากแลก'
-                    : null,
-              ),
-              SizedBox(height: 16),
               Obx(() {
                 if (!mounted) return const SizedBox();
 
@@ -321,7 +312,7 @@ class _EditPostFormState extends State<EditPostForm> {
                   ),
                 );
               }),
-              // SizedBox(height: 30),
+              SizedBox(height: 30),
               _buildMediaPreview(),
               SizedBox(height: 30),
               _buildMediaButtons(),
@@ -542,13 +533,6 @@ class _EditPostFormState extends State<EditPostForm> {
                     .id;
               }
 
-              if (subCollectionId == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('กรุณาเลือกคอลเลคชั่นย่อย')),
-                );
-                return;
-              }
-
               int? subDistrictId = 0;
 
               if (selectedSubDistrict != null) {
@@ -566,11 +550,18 @@ class _EditPostFormState extends State<EditPostForm> {
                 return;
               }
 
-              // ดำเนินการสร้าง UpdatePost ตามที่กำหนดไว้
-              List<PostMedia> postImages =
-                  widget.postDetail.postImages.map((image) {
+              if (subCollectionId == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('กรุณาเลือกคอลเลคชั่นย่อย')),
+                );
+                return;
+              }
+
+              // ดำเนินการสร้าง UpdateOffer ตามที่กำหนดไว้
+              List<OfferMedia> offerImages =
+                  widget.offerDetail.offerImages.map((image) {
                 bool isDeleted = !mediaFiles.contains(image.imageUrl);
-                return PostMedia(
+                return OfferMedia(
                   id: image.id,
                   hierarchy: image.hierarchy,
                   status: isDeleted ? "delete" : "update",
@@ -584,17 +575,17 @@ class _EditPostFormState extends State<EditPostForm> {
                           file.path.endsWith('.jpeg') ||
                           file.path.endsWith('.png')))
                   .forEach((file) {
-                postImages.add(PostMedia(
+                offerImages.add(OfferMedia(
                   id: null,
                   hierarchy: 0,
                   status: "add",
                 ));
               });
 
-              List<PostMedia> postVideos =
-                  widget.postDetail.postVideos.map((video) {
+              List<OfferMedia> offerVideos =
+                  widget.offerDetail.offerVideos.map((video) {
                 bool isDeleted = !mediaFiles.contains(video.videoUrl);
-                return PostMedia(
+                return OfferMedia(
                   id: video.id,
                   hierarchy: video.hierarchy,
                   status: isDeleted ? "delete" : "update",
@@ -604,7 +595,7 @@ class _EditPostFormState extends State<EditPostForm> {
               mediaFiles
                   .where((file) => file is File && file.path.endsWith('.mp4'))
                   .forEach((file) {
-                postVideos.add(PostMedia(
+                offerVideos.add(OfferMedia(
                   id: null,
                   hierarchy: 0,
                   status: "add",
@@ -612,11 +603,11 @@ class _EditPostFormState extends State<EditPostForm> {
               });
 
               int imageHierarchy = 1;
-              postImages = postImages.map((media) {
+              offerImages = offerImages.map((media) {
                 if (media.status == "delete") {
                   return media;
                 } else {
-                  return PostMedia(
+                  return OfferMedia(
                     id: media.id,
                     hierarchy: imageHierarchy++,
                     status: media.status,
@@ -625,11 +616,11 @@ class _EditPostFormState extends State<EditPostForm> {
               }).toList();
 
               int videoHierarchy = 1;
-              postVideos = postVideos.map((media) {
+              offerVideos = offerVideos.map((media) {
                 if (media.status == "delete") {
                   return media;
                 } else {
-                  return PostMedia(
+                  return OfferMedia(
                     id: media.id,
                     hierarchy: videoHierarchy++,
                     status: media.status,
@@ -637,8 +628,8 @@ class _EditPostFormState extends State<EditPostForm> {
                 }
               }).toList();
 
-              UpdatePost postToUpdate = UpdatePost(
-                id: widget.postDetail.id,
+              UpdateOffer offerToUpdate = UpdateOffer(
+                id: widget.offerDetail.id,
                 title: _productNameController.text,
                 subCollectionId: subCollectionId,
                 subDistrictId: subDistrictId.toString(),
@@ -646,9 +637,8 @@ class _EditPostFormState extends State<EditPostForm> {
                 flaw: _flawController.text.isNotEmpty
                     ? _flawController.text
                     : null,
-                desiredItem: _desiredController.text,
-                postImages: postImages,
-                postVideos: postVideos,
+                offerImages: offerImages,
+                offerVideos: offerVideos,
                 imageFiles: mediaFiles
                     .where((file) =>
                         file is File &&
@@ -663,7 +653,7 @@ class _EditPostFormState extends State<EditPostForm> {
                     .toList(),
               );
 
-              updatePostController.updatePostDetails(postToUpdate);
+              updateOfferController.updateOfferDetails(offerToUpdate);
             } else {
               String errorMessage = mediaFiles.any((file) {
                 String filePath = file is File ? file.path : file as String;

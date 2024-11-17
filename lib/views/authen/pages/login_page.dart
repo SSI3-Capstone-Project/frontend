@@ -33,13 +33,16 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       // เรียกใช้เมธอด login ของ LoginController
-      await _loginController.login(
+      var result = await _loginController.login(
         _usernameController.text,
         _passwordController.text,
       );
 
       if (!_loginController.isLoading.value) {
         Navigator.of(context).pop();
+      }
+
+      if (result) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (_) => const RootPage()));
       }

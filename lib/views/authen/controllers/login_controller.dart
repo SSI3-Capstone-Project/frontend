@@ -11,7 +11,7 @@ class LoginController extends GetxController {
   var isLoading = false.obs;
   var loginToken = Rx<LoginToken?>(null);
 
-  Future<void> login(String username, String password) async {
+  Future<bool> login(String username, String password) async {
     isLoading.value = true;
     try {
       final response = await http.post(
@@ -27,17 +27,19 @@ class LoginController extends GetxController {
         final data = jsonDecode(response.body);
         final tokenData = data['data'];
         final accessToken = tokenData['access_token'];
-        final refreshToken = tokenData['refresh_token'];
 
         // บันทึก token ลงใน TokenController
-        tokenController.saveTokens(accessToken, refreshToken);
+        tokenController.saveTokens(accessToken);
 
         Get.snackbar('Success', 'Login successful.');
+        return true;
       } else {
         Get.snackbar('Error', 'Login failed. Please check your credentials.');
+        return false;
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred. Please try again.');
+      return false;
     } finally {
       isLoading.value = false;
     }

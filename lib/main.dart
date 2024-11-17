@@ -6,6 +6,7 @@ import 'package:mbea_ssi3_front/views/authen/pages/register_page.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_post_controller.dart';
 import 'package:mbea_ssi3_front/views/onboardingScreen/onboarding_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/update_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
@@ -13,6 +14,7 @@ void main() async {
   Get.lazyPut(() => CreatePostController());
   Get.lazyPut(
       () => UpdatePostController()); // เพิ่ม UpdatePostController ที่นี่
+  Get.lazyPut(() => UpdateOfferController());
   await dotenv.load(fileName: "./.env");
   runApp(MyApp());
 }
