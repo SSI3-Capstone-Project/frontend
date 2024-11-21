@@ -5,6 +5,7 @@ import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/offer_detail.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/post_detail.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/profile_detail.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
@@ -264,6 +265,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildProfileContainer() {
     return GestureDetector(
         onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileDetail()),
+            );
           // เพิ่มการทำงานเมื่อกดปุ่ม เช่น นำทางไปยังหน้า Profile
           print("Profile button tapped!");
         },
@@ -287,7 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 radius: 41,
                 backgroundImage: AssetImage('assets/images/dimoo.png'),
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start, // จัดแนวชิดซ้าย
                 children: [
@@ -357,8 +362,8 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("Box 1", Icons.location_on, Colors.blue),
-            _buildBox("Box 2", Icons.favorite, Colors.green),
+            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี"),
+            _buildBox("รายการโปรด", Icons.favorite, ""),
           ],
         ),
         SizedBox(height: 10), // เว้นระยะห่างระหว่างแถว
@@ -366,53 +371,64 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("Box 3", Icons.star, Colors.red),
-            _buildBox("Box 4", Icons.post_add, Colors.orange),
+            _buildBox("คะแนน", Icons.star, "4.5/5"),
+            _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, ""),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildBox(String label, IconData icon, Color color) {
+  Widget _buildBox(String label, IconData icon, String description) {
     return GestureDetector(
-      onTap: () {
-        print("$label tapped!");
-      },
-      child: Container(
-        width: 182,
-        height: 70,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 5,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon, // ไอคอนที่ต้องการ
-              color: Colors.white, // สีของไอคอน
-              size: 24, // ขนาดไอคอน
-            ),
-            SizedBox(width: 8), // ระยะห่างระหว่างไอคอนและข้อความ
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+        onTap: () {
+          print("$label tapped!");
+        },
+        child: Container(
+          width: 182,
+          height: 70,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: .5,
+                blurRadius: 6,
+                offset: const Offset(0, 0),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    icon,
+                    size: 20, // ไอคอนที่ต้องการ
+                  ),
+                  SizedBox(width: 8), // ระยะห่างระหว่างไอคอนและข้อความ
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              description.isNotEmpty
+                  ? Text(
+                      description,
+                      style:
+                          TextStyle(fontSize: 14),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ));
   }
 }
