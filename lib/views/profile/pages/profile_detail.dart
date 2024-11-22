@@ -38,7 +38,9 @@ class _ProfileDetailState extends State<ProfileDetail> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 30),
                 child: Column(children: [_buildProfileInfo()]),
-              )
+              ),
+              SizedBox(height: 35),
+              _buildMenuTab()
             ])));
   }
 
@@ -111,16 +113,57 @@ class _ProfileDetailState extends State<ProfileDetail> {
   Widget _buildProfileDetailRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 22,
-        ),
+        Icon(icon, size: 22, color: Colors.grey[600]),
         SizedBox(width: 5),
         Text(
           text,
-          style: TextStyle(fontSize: 15),
+          style: TextStyle(fontSize: 17, color: Colors.grey[600]),
         ),
       ],
+    );
+  }
+
+  Widget _buildMenuTab() {
+    // รายการเมนูตัวอย่าง
+    List<IconData> iconList = [
+      Icons.location_on,
+      Icons.credit_card_outlined,
+      Icons.history_outlined,
+      Icons.report_problem
+    ];
+    List<String> menuItems = [
+      "ที่อยู๋ของคุณ",
+      "ช่องทางชำระเงิน",
+      "ประวัติการแลก",
+      "รายงานปัญหา"
+    ];
+
+    return Column(
+      children: List.generate(menuItems.length, (index) {
+        // สลับสีพื้นหลัง: ขาวและเทา
+        Color backgroundColor =
+            index % 2 == 0 ? Colors.grey[200]! : Colors.white;
+        return Container(
+          color: backgroundColor,
+          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 30),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(iconList[index]),
+                  SizedBox(width: 10),
+                  Text(
+                    menuItems[index],
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+              Icon(Icons.arrow_forward_ios, size: 16),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

@@ -23,39 +23,42 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        color: Colors.white,
-        child: Column(
-          children: [
-            _buildProfileContainer(),
-            SizedBox(height: 20),
-            _buildMenuBox(),
-            SizedBox(height: 20),
-            _buildTabContainer(),
-            SizedBox(height: 20),
-            Expanded(child: Obx(() {
-              if (isActivePost) {
-                if (postController.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                return _buildStaggeredGrid(
-                  postController.postList,
-                  (post) => PostDetailPage(postId: post.id),
-                );
-              } else {
-                if (offerController.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                return _buildStaggeredGrid(
-                  offerController.offerList,
-                  (offer) => OfferDetailPage(
-                      offerId: offer.id), // Assuming an OfferDetailPage exists
-                );
-              }
-            })),
-          ],
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          color: Colors.white,
+          child: Column(
+            children: [
+              _buildProfileContainer(),
+              SizedBox(height: 20),
+              _buildMenuBox(),
+              SizedBox(height: 20),
+              _buildTabContainer(),
+              SizedBox(height: 20),
+              Expanded(
+                child: Obx(() {
+                  if (isActivePost) {
+                    if (postController.isLoading.value) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    return _buildStaggeredGrid(
+                      postController.postList,
+                      (post) => PostDetailPage(postId: post.id),
+                    );
+                  } else {
+                    if (offerController.isLoading.value) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    return _buildStaggeredGrid(
+                      offerController.offerList,
+                      (offer) => OfferDetailPage(offerId: offer.id),
+                    );
+                  }
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -266,11 +269,11 @@ class _ProfilePageState extends State<ProfilePage> {
     return GestureDetector(
         onTap: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfileDetail()),
-            );
-          // เพิ่มการทำงานเมื่อกดปุ่ม เช่น นำทางไปยังหน้า Profile
-          print("Profile button tapped!");
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileDetail(),
+            ),
+          );
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 17, vertical: 13),
@@ -423,8 +426,7 @@ class _ProfilePageState extends State<ProfilePage> {
               description.isNotEmpty
                   ? Text(
                       description,
-                      style:
-                          TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 14),
                     )
                   : SizedBox.shrink(),
             ],
