@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:mbea_ssi3_front/controller/token_controller.dart';
+import 'package:mbea_ssi3_front/views/address/controllers/address_controller.dart';
+import 'package:mbea_ssi3_front/views/address/pages/address_page.dart';
+import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_page.dart';
+import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
 
 class ProfileDetail extends StatefulWidget {
   const ProfileDetail({super.key});
@@ -14,6 +19,8 @@ class ProfileDetail extends StatefulWidget {
 }
 
 class _ProfileDetailState extends State<ProfileDetail> {
+  final TokenController tokenController = Get.put(TokenController());
+  final AddressController addressController = Get.put(AddressController());
   final UserProfileController userProfileController =
       Get.put(UserProfileController());
 
@@ -188,9 +195,14 @@ class _ProfileDetailState extends State<ProfileDetail> {
             index % 2 == 0 ? Colors.grey[200]! : Colors.white;
 
         return InkWell(
-          onTap: () {
+          onTap: () async {
             switch (menuItems[index]) {
               case "ที่อยู๋ของคุณ":
+                await addressController.fetchAddresses();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddressPage()),
+                );
                 break;
               case "ช่องทางชำระเงิน":
                 break;
@@ -199,8 +211,18 @@ class _ProfileDetailState extends State<ProfileDetail> {
               case "รายงานปัญหา":
                 break;
               case "เปลี่ยนรหัสผ่าน":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ChangePasswordPage()),
+                );
                 break;
               case "ออกจากระบบ":
+                Get.snackbar('ออกจากระบบ', 'คุณได้ออกจากระบบแล้ว');
+                await tokenController.deleteTokens();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => LoginPage()),
+                );
                 break;
               // default:
             }
