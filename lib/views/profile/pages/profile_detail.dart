@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_page.dart';
 
@@ -10,53 +14,81 @@ class ProfileDetail extends StatefulWidget {
 }
 
 class _ProfileDetailState extends State<ProfileDetail> {
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: Container(
-            margin: EdgeInsets.symmetric(vertical: 20.0),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Obx(() {
+          // ตรวจสอบว่า isLoading เป็น true หรือไม่
+          if (userProfileController.isLoading.value) {
+            // หากกำลังโหลดข้อมูลให้แสดง CircularProgressIndicator
+            return Center(child: CircularProgressIndicator());
+          }
+
+          // ดึงข้อมูล userProfile
+          final userProfile = userProfileController.userProfile.value;
+
+          // หากไม่มีข้อมูล userProfile ให้แสดงข้อความ error
+          if (userProfile == null) {
+            return Center(child: Text("Failed to load user profile"));
+          }
+
+          // หากได้ข้อมูล userProfile มาแล้ว
+          return Container(
+            // margin: EdgeInsets.symmetric(vertical: 10.0),
             color: Colors.white,
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 25,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(
-                        Icons.arrow_back_ios,
-                        size: 25,
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Icon(
+                          Icons.arrow_back_ios,
+                          size: 25,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
-                child: Column(children: [_buildProfileInfo()]),
-              ),
-              SizedBox(height: 40),
-              _buildMenuTab()
-            ])));
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  child: Column(
+                    children: [
+                      _buildProfileInfo(userProfile), // ส่ง userProfile ไป
+                    ],
+                  ),
+                ),
+                SizedBox(height: 40),
+                _buildMenuTab()
+              ],
+            ),
+          );
+        }),
+      ),
+    );
   }
 
-  Widget _buildProfileInfo() {
+  Widget _buildProfileInfo(UserProfile user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildProfileHeader(),
+        _buildProfileHeader(user),
         SizedBox(height: 30),
-        _buildProfileDetails(),
+        _buildProfileDetails(user),
       ],
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(UserProfile user) {
     return Row(
       children: [
         CircleAvatar(
@@ -70,7 +102,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
             Row(
               children: [
                 Text(
-                  "John Doe",
+                  user.username,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -94,7 +126,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               ],
             ),
             Text(
-              "Female",
+              user.gender,
               style: TextStyle(color: Colors.grey[600], fontSize: 15),
             ),
           ],
@@ -103,15 +135,16 @@ class _ProfileDetailState extends State<ProfileDetail> {
     );
   }
 
-  Widget _buildProfileDetails() {
+  Widget _buildProfileDetails(UserProfile user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildProfileDetailRow(Icons.person_2_outlined, "John Doe"),
+        _buildProfileDetailRow(
+            Icons.person_2_outlined, "${user.firstname} ${user.lastname}"),
         SizedBox(height: 10),
-        _buildProfileDetailRow(Icons.phone_outlined, "083789603"),
+        _buildProfileDetailRow(Icons.phone_outlined, user.phone),
         SizedBox(height: 10),
-        _buildProfileDetailRow(Icons.email_outlined, "example@gmail.com"),
+        _buildProfileDetailRow(Icons.email_outlined, user.email),
       ],
     );
   }
@@ -123,7 +156,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
         SizedBox(width: 5),
         Text(
           text,
-          style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 15, color: Colors.grey[600]),
         ),
       ],
     );
@@ -171,7 +204,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                       Text(
                         menuItems[index],
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Colors.red,
                         ),
@@ -182,7 +215,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                       Text(
                         menuItems[index],
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -191,7 +224,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 ),
                 if (index != 4)
                   Icon(Icons.arrow_forward_ios,
-                      size: 16), // ลูกศรย้อนกลับเมื่อ index = 4
+                      size: 16), // ลูกศรย้อนกลับเมื่อ index != 4
               ],
             ),
           ),
