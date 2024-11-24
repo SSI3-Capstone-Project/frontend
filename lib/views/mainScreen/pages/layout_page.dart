@@ -9,6 +9,7 @@ import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
 import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
 import 'package:mbea_ssi3_front/views/home/pages/home_page.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_page.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_page.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -20,6 +21,8 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController());
   final PostsController postController = Get.put(PostsController());
   final OffersController offerController = Get.put(OffersController());
   final BrandController brandController = Get.put(BrandController());
@@ -103,6 +106,7 @@ class _RootPageState extends State<RootPage> {
           });
           if (index == 3) {
             await postController.fetchPosts();
+            await userProfileController.fetchUserProfile();
           }
         },
       ),

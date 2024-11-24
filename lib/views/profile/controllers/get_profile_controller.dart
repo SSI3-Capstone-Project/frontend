@@ -30,7 +30,7 @@ class UserProfileController extends GetxController {
         return;
       }
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/user/profile'),
+        Uri.parse('${dotenv.env['API_URL']}/users/profile'),
         headers: {
           'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
