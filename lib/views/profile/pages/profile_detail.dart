@@ -169,7 +169,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       Icons.credit_card_outlined,
       Icons.history_outlined,
       Icons.report_problem,
-      Icons.key_off_outlined,
+      Icons.lock_outline,
       Icons.logout_outlined
     ];
     List<String> menuItems = [
