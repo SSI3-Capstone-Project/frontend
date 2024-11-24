@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_page.dart';
 
 class ProfileDetail extends StatefulWidget {
@@ -28,8 +29,8 @@ class _ProfileDetailState extends State<ProfileDetail> {
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: const Icon(
-                        Icons.arrow_back,
-                        size: 30,
+                        Icons.arrow_back_ios,
+                        size: 25,
                       ),
                     ),
                   ],
@@ -39,7 +40,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 padding: EdgeInsets.symmetric(horizontal: 30),
                 child: Column(children: [_buildProfileInfo()]),
               ),
-              SizedBox(height: 35),
+              SizedBox(height: 40),
               _buildMenuTab()
             ])));
   }
@@ -49,7 +50,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildProfileHeader(),
-        SizedBox(height: 25),
+        SizedBox(height: 30),
         _buildProfileDetails(),
       ],
     );
@@ -78,7 +79,12 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 SizedBox(width: 7),
                 GestureDetector(
                   onTap: () {
-                    print("Profile Edit button pressed");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileEditPage(),
+                      ),
+                    );
                   },
                   child: Icon(
                     Icons.edit,
@@ -129,13 +135,15 @@ class _ProfileDetailState extends State<ProfileDetail> {
       Icons.location_on,
       Icons.credit_card_outlined,
       Icons.history_outlined,
-      Icons.report_problem
+      Icons.report_problem,
+      Icons.logout_outlined
     ];
     List<String> menuItems = [
       "ที่อยู๋ของคุณ",
       "ช่องทางชำระเงิน",
       "ประวัติการแลก",
-      "รายงานปัญหา"
+      "รายงานปัญหา",
+      "ออกจากระบบ"
     ];
 
     return Column(
@@ -143,24 +151,49 @@ class _ProfileDetailState extends State<ProfileDetail> {
         // สลับสีพื้นหลัง: ขาวและเทา
         Color backgroundColor =
             index % 2 == 0 ? Colors.grey[200]! : Colors.white;
-        return Container(
-          color: backgroundColor,
-          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 30),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(iconList[index]),
-                  SizedBox(width: 10),
-                  Text(
-                    menuItems[index],
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-              Icon(Icons.arrow_forward_ios, size: 16),
-            ],
+
+        return InkWell(
+          onTap: () {
+            // กำหนดการทำงานเมื่อกดปุ่มแต่ละอัน
+            print("คุณกด: ${menuItems[index]}");
+          },
+          child: Container(
+            color: backgroundColor,
+            padding: EdgeInsets.symmetric(vertical: 25, horizontal: 30),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    if (index == 4) ...[
+                      Icon(iconList[index], color: Colors.red),
+                      SizedBox(width: 10),
+                      Text(
+                        menuItems[index],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ] else ...[
+                      Icon(iconList[index]),
+                      SizedBox(width: 10),
+                      Text(
+                        menuItems[index],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                if (index != 4)
+                  Icon(Icons.arrow_forward_ios,
+                      size: 16), // ลูกศรย้อนกลับเมื่อ index = 4
+              ],
+            ),
           ),
         );
       }),

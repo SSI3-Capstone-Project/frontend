@@ -3,9 +3,12 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/offer_detail.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/post_detail.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_detail.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
@@ -19,47 +22,60 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final PostsController postController = Get.put(PostsController());
   final OffersController offerController = Get.put(OffersController());
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController());
   bool isActivePost = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          color: Colors.white,
-          child: Column(
-            children: [
-              _buildProfileContainer(),
-              SizedBox(height: 20),
-              _buildMenuBox(),
-              SizedBox(height: 20),
-              _buildTabContainer(),
-              SizedBox(height: 20),
-              Expanded(
-                child: Obx(() {
-                  if (isActivePost) {
-                    if (postController.isLoading.value) {
-                      return Center(child: CircularProgressIndicator());
+        child: Obx(() {
+          if (userProfileController.isLoading.value) {
+            // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+            return Center(child: CircularProgressIndicator());
+          }
+          final userProfile = userProfileController.userProfile.value;
+          if (userProfile == null) {
+            // กรณีข้อมูลเป็น null หรือไม่ได้รับข้อมูลจาก API
+            return Center(child: Text("Failed to load user profile"));
+          }
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            color: Colors.white,
+            child: Column(
+              children: [
+                _buildProfileContainer(userProfile), // ส่งข้อมูล UserProfile ไป
+                SizedBox(height: 20),
+                _buildMenuBox(userProfile), // ส่งข้อมูล UserProfile ไป
+                SizedBox(height: 20),
+                _buildTabContainer(),
+                SizedBox(height: 20),
+                Expanded(
+                  child: Obx(() {
+                    if (isActivePost) {
+                      if (postController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      return _buildStaggeredGrid(
+                        postController.postList,
+                        (post) => PostDetailPage(postId: post.id),
+                      );
+                    } else {
+                      if (offerController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      return _buildStaggeredGrid(
+                        offerController.offerList,
+                        (offer) => OfferDetailPage(offerId: offer.id),
+                      );
                     }
-                    return _buildStaggeredGrid(
-                      postController.postList,
-                      (post) => PostDetailPage(postId: post.id),
-                    );
-                  } else {
-                    if (offerController.isLoading.value) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                    return _buildStaggeredGrid(
-                      offerController.offerList,
-                      (offer) => OfferDetailPage(offerId: offer.id),
-                    );
-                  }
-                }),
-              ),
-            ],
-          ),
-        ),
+                  }),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
@@ -265,7 +281,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildProfileContainer() {
+  Widget _buildProfileContainer(UserProfile user) {
     return GestureDetector(
         onTap: () {
           Navigator.push(
@@ -293,7 +309,9 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CircleAvatar(
                 radius: 41,
-                backgroundImage: AssetImage('assets/images/dimoo.png'),
+                backgroundImage: user.imageUrl != null
+                    ? NetworkImage(user.imageUrl!)
+                    : AssetImage('assets/images/dimoo.png') as ImageProvider,
               ),
               SizedBox(width: 20),
               Column(
@@ -308,7 +326,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Row(
                     children: [
                       Text(
-                        "John Doe", // ชื่อ User
+                        user.username, // ชื่อ User
                         style: TextStyle(
                           color: Colors.white, // สีขาวอ่อน
                           fontSize: 21, // ขนาดตัวอักษรเล็กกว่า Welcome
@@ -318,8 +336,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(width: 7), // เว้นระยะห่างระหว่างชื่อและไอคอน
                       GestureDetector(
                           onTap: () {
-                            // กำหนดฟังก์ชันที่จะทำงานเมื่อกดปุ่ม
-                            print("Profile Edit button pressed");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileEditPage()),
+                            );
                           },
                           child: Icon(
                             Icons.edit, // ไอคอนแก้ไข
@@ -357,7 +378,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ));
   }
 
-  Widget _buildMenuBox() {
+  Widget _buildMenuBox(UserProfile user) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -374,7 +395,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("คะแนน", Icons.star, "4.5/5"),
+            _buildBox("คะแนน", Icons.star, "${user.rating}/5"),
             _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, ""),
           ],
         ),
