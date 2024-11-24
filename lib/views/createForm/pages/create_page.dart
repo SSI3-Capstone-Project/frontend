@@ -95,15 +95,29 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildTabItem('สร้างโพสต์', isCreatingPost, () {
-            brandController.fetchBrands();
-            provinceController.fetchProvince();
-            if (mounted) {
-              setState(() {
-                isCreatingPost = true;
-              });
-            }
-          }),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 25,
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              _buildTabItem('สร้างโพสต์', isCreatingPost, () {
+                brandController.fetchBrands();
+                provinceController.fetchProvince();
+                if (mounted) {
+                  setState(() {
+                    isCreatingPost = true;
+                  });
+                }
+              }),
+            ],
+          ),
           _buildTabItem('สร้างข้อเสนอ', !isCreatingPost, () {
             brandController.fetchBrands();
             provinceController.fetchProvince();

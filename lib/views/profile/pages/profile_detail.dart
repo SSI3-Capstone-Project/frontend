@@ -189,7 +189,21 @@ class _ProfileDetailState extends State<ProfileDetail> {
 
         return InkWell(
           onTap: () {
-            // กำหนดการทำงานเมื่อกดปุ่มแต่ละอัน
+            switch (menuItems[index]) {
+              case "ที่อยู๋ของคุณ":
+                break;
+              case "ช่องทางชำระเงิน":
+                break;
+              case "ประวัติการแลก":
+                break;
+              case "รายงานปัญหา":
+                break;
+              case "เปลี่ยนรหัสผ่าน":
+                break;
+              case "ออกจากระบบ":
+                break;
+              // default:
+            }
             print("คุณกด: ${menuItems[index]}");
           },
           child: Container(

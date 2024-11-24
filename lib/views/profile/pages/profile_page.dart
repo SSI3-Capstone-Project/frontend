@@ -11,14 +11,14 @@ import 'package:mbea_ssi3_front/views/profile/pages/profile_detail.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/views/address/controllers/address_controller.dart';
-import 'package:mbea_ssi3_front/views/address/pages/address_page.dart';
-import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
-import 'package:mbea_ssi3_front/views/profile/pages/offer_detail.dart';
-import 'package:mbea_ssi3_front/views/profile/pages/post_detail.dart';
-import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
+// import 'package:mbea_ssi3_front/views/address/pages/address_page.dart';
+// import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
+// import 'package:mbea_ssi3_front/views/profile/pages/offer_detail.dart';
+// import 'package:mbea_ssi3_front/views/profile/pages/post_detail.dart';
+// import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
+// import 'package:dropdown_button2/dropdown_button2.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -67,18 +67,32 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (postController.isLoading.value) {
                         return Center(child: CircularProgressIndicator());
                       }
-                      return _buildStaggeredGrid(
-                        postController.postList,
-                        (post) => PostDetailPage(postId: post.id),
-                      );
+                      if (!postController.postList.isEmpty) {
+                        return _buildStaggeredGrid(
+                          postController.postList,
+                          (post) => PostDetailPage(postId: post.id),
+                        );
+                      } else {
+                        return const Align(
+                          alignment: Alignment.center,
+                          child: Text('ยังไม่มีโพสต์'),
+                        );
+                      }
                     } else {
                       if (offerController.isLoading.value) {
                         return Center(child: CircularProgressIndicator());
                       }
-                      return _buildStaggeredGrid(
-                        offerController.offerList,
-                        (offer) => OfferDetailPage(offerId: offer.id),
-                      );
+                      if (!offerController.offerList.isEmpty) {
+                        return _buildStaggeredGrid(
+                          offerController.offerList,
+                          (offer) => OfferDetailPage(offerId: offer.id),
+                        );
+                      } else {
+                        return const Align(
+                          alignment: Alignment.center,
+                          child: Text('ยังไม่มีข้อเสนอ'),
+                        );
+                      }
                     }
                   }),
                 ),
