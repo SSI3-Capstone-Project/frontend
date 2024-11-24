@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:mbea_ssi3_front/views/authen/pages/register_page.dart';
+import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
+// import 'package:mbea_ssi3_front/views/authen/pages/register_page.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_post_controller.dart';
-import 'package:mbea_ssi3_front/views/onboardingScreen/onboarding_screen.dart';
+// import 'package:mbea_ssi3_front/views/onboardingScreen/onboarding_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/update_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
-import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
+// import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 void main() async {
   Get.lazyPut(() => CreatePostController());
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity),
-      home: RegisterPage(),
+      home: LoginPage(),
       debugShowCheckedModeBanner: false,
     );
   }

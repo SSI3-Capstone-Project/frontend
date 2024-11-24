@@ -29,10 +29,11 @@ class BrandController extends GetxController {
       return;
     }
     try {
+      final token = tokenController.accessToken.value;
       final response = await http.get(
         Uri.parse('${dotenv.env['API_URL']}/brands'),
         headers: {
-          'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
       if (response.statusCode == 200) {

@@ -23,7 +23,7 @@ class UserCreationController extends GetxController {
   Future<void> registerUser(String imagePath) async {
     isLoading.value = true;
 
-    var uri = Uri.parse('${dotenv.env['API_URL']}/user/registration');
+    var uri = Uri.parse('${dotenv.env['API_URL']}/users/registration');
     var request = http.MultipartRequest('POST', uri)
       ..fields['username'] = userRequest.value.username
       ..fields['password'] = userRequest.value.password ?? ''
@@ -51,17 +51,19 @@ class UserCreationController extends GetxController {
         userRequest.value = CreateUserRequest.fromJson(jsonResponse['data']);
         isLoading.value = false;
         Get.snackbar('สำเร็จ', 'ลงทะเบียนผู้ใช้เรียบร้อยแล้ว');
+        isLoading.value = false;
       } else if (response.statusCode == 500) {
-        Get.snackbar('ข้อผิดพลาด', 'ชื่อผู้ใช้นี้ถูกลงทะเบียนไปแล้ว');
+        Get.snackbar('แจ้งเตือน', 'ชื่อผู้ใช้นี้ถูกลงทะเบียนไปแล้ว');
+        isLoading.value = false;
       } else {
         var errorData = await response.stream.bytesToString();
         print(
             'Failed to create post: ${response.statusCode}, Error: $errorData');
-        Get.snackbar('Error', 'Failed to register user');
+        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการสมัครสมาชิค');
+        isLoading.value = false;
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred');
-    } finally {
       isLoading.value = false;
     }
   }

@@ -23,6 +23,7 @@ class OffersController extends GetxController {
 
   Future<void> fetchOffers() async {
     try {
+      final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {
         Get.snackbar('Error', 'No access token found.');
@@ -31,7 +32,7 @@ class OffersController extends GetxController {
       final response = await http.get(
         Uri.parse('${dotenv.env['API_URL']}/offers'),
         headers: {
-          'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
       if (response.statusCode == 200) {
@@ -43,7 +44,8 @@ class OffersController extends GetxController {
               offerData.map((item) => Offers.fromJson(item)).toList();
         } else {
           offerList.clear(); // Clear the list if no data is present
-          Get.snackbar('Notice', 'No offers available.');
+          Get.snackbar(
+              'แจ้งเตือน', 'สร้างข้อเสนอของคุณ เพื่อยืนให้กับโพสต์ที่สนใจ');
         }
       } else {
         Get.snackbar(

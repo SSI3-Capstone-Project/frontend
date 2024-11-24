@@ -17,29 +17,35 @@ class OfferDeleteController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<void> deleteOffer(String offerId) async {
+  Future<bool> deleteOffer(String offerId) async {
     isLoading.value = true;
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');
-      return;
+      isLoading.value = false;
+      return false;
     }
     try {
+      final token = tokenController.accessToken.value;
       final response = await http.delete(
-        Uri.parse('${dotenv.env['API_URL']}/offer/$offerId'),
+        Uri.parse('${dotenv.env['API_URL']}/offers/$offerId'),
         headers: {
-          'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar('Success', 'Offer deleted successfully');
+        Get.snackbar('สำเร็จ', 'ข้อเสนอได้ถูกลบออกไปแล้ว');
+        isLoading.value = false;
+        return true;
       } else {
-        Get.snackbar('Error', 'Failed to delete offer');
+        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการลบข้อเสนอ');
+        isLoading.value = false;
+        return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
-    } finally {
+      Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาด: $e');
       isLoading.value = false;
+      return false;
     }
   }
 }

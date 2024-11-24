@@ -19,19 +19,21 @@ class CreateOfferController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<void> createOffer(Offer offer) async {
+  Future<bool> createOffer(Offer offer) async {
+    final token = tokenController.accessToken.value;
     isLoading.value = true;
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');
-      return;
+      isLoading.value = false;
+      return false;
     }
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('${dotenv.env['API_URL']}/offer'), // เปลี่ยน URL ตามจริง
+      Uri.parse('${dotenv.env['API_URL']}/offers'), // เปลี่ยน URL ตามจริง
     );
 
     // แนบ accessToken ลงบน header ของ MultipartRequest
-    request.headers['Authorization'] = 'Bearer $accessToken';
+    request.headers['Authorization'] = 'Bearer $token';
 
     // เพิ่มข้อมูลฟอร์มที่ไม่ใช่ไฟล์
     request.fields.addAll(
@@ -58,17 +60,22 @@ class CreateOfferController extends GetxController {
         var responseData = await response.stream.bytesToString();
         // Handle success
         print('Offer created successfully: $responseData');
+        isLoading.value = false;
+        return true;
       } else {
         // อ่านและแสดงรายละเอียดข้อผิดพลาด
         var errorData = await response.stream.bytesToString();
         print(
             'Failed to create offer: ${response.statusCode}, Error: $errorData');
+        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดไม่สามารถสร้างข้อเสนอได้');
+        isLoading.value = false;
+        return false;
       }
     } catch (e) {
       // Handle exception
       print('Error: $e');
-    } finally {
       isLoading.value = false;
+      return false;
     }
   }
 }

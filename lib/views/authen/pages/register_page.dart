@@ -102,7 +102,9 @@ class _RegisterPageState extends State<RegisterPage> {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (_) => const RootPage()));
+              context,
+              MaterialPageRoute(builder: (_) => RootPage()),
+            );
           },
         ),
         backgroundColor: Colors.white,

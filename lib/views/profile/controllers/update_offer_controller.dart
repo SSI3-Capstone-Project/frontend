@@ -34,7 +34,8 @@ class UpdateOfferController extends GetxController {
     videoFiles: [],
   ).obs;
 
-  Future<void> updateOfferDetails(UpdateOffer offerToUpdate) async {
+  Future<bool> updateOfferDetails(UpdateOffer offerToUpdate) async {
+    final token = tokenController.accessToken.value;
     print('--- Offer Data to be Updated ---');
     print('ID: ${offerToUpdate.id}');
     print('Title: ${offerToUpdate.title}');
@@ -54,13 +55,13 @@ class UpdateOfferController extends GetxController {
     print('-----------------------------');
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');
-      return;
+      return false;
     }
-    final request = http.MultipartRequest(
-        'PUT', Uri.parse('${dotenv.env['API_URL']}/offer/${offerToUpdate.id}'));
+    final request = http.MultipartRequest('PUT',
+        Uri.parse('${dotenv.env['API_URL']}/offers/${offerToUpdate.id}'));
 
     // แนบ accessToken ลงบน header ของ MultipartRequest
-    request.headers['Authorization'] = 'Bearer $accessToken';
+    request.headers['Authorization'] = 'Bearer $token';
 
     // ตั้งค่า fields โดยไม่ต้องใช้ ?? ''
     request.fields['title'] = offerToUpdate.title;
@@ -114,12 +115,15 @@ class UpdateOfferController extends GetxController {
         } else {
           print('Response data is missing or null.');
         }
+        return true;
       } else {
         print('Failed to update offer. Status code: ${response.statusCode}');
         print('Response: $responseData');
+        return false;
       }
     } catch (e) {
       print('Error occurred: $e');
+      return true;
     }
   }
 }

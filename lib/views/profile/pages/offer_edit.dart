@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +7,7 @@ import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/model/brand_model.dart';
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
+import 'package:mbea_ssi3_front/model/province_model.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/update_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/models/offer_update_model.dart';
 
@@ -43,12 +45,16 @@ class _EditOfferFormState extends State<EditOfferForm> {
   @override
   void initState() {
     super.initState();
+    brandController.fetchBrands();
+    provinceController.fetchProvince();
 
     // เรียก _initializeForm เมื่อ isLoading เปลี่ยนเป็น false และข้อมูลถูกโหลดเสร็จ
     ever(brandController.isLoading, (loading) {
-      if (!loading) {
-        _initializeForm();
-      }
+      ever(provinceController.isLoading, (loading) {
+        if (!loading) {
+          _initializeForm();
+        }
+      });
     });
   }
 
@@ -59,7 +65,8 @@ class _EditOfferFormState extends State<EditOfferForm> {
   }
 
   void _initializeForm() {
-    if (brandController.brands.isEmpty) return; // ตรวจสอบว่ามีข้อมูลหรือไม่
+    if (brandController.brands.isEmpty || provinceController.provinces.isEmpty)
+      return; // ตรวจสอบว่ามีข้อมูลหรือไม่
 
     _productNameController.text = widget.offerDetail.title;
     _descriptionController.text = widget.offerDetail.description;
@@ -86,13 +93,46 @@ class _EditOfferFormState extends State<EditOfferForm> {
               selectedSubCategory = subCollection.name;
             });
           }
-          return;
         }
       }
     }
+
+    List<String> parts =
+        widget.offerDetail.location.split(',').map((e) => e.trim()).toList();
+
+    String oldSubDistrict = parts.length > 0 ? parts[0] : '';
+    String oldProvince = parts.length > 1 ? parts[1] : '';
+    print(
+        '-----------------------------------------------------------------------------------');
+    print(oldProvince);
+    print(oldSubDistrict);
+
+    for (var province in provinceController.provinces) {
+      for (var district in province.districts ?? []) {
+        SubDistrict? subDistrict = district.subDistricts?.firstWhere(
+            (sub) => sub.name == oldSubDistrict,
+            orElse: () => SubDistrict(id: 0, name: ''));
+
+        if (subDistrict != null && subDistrict.id != 0) {
+          if (mounted) {
+            setState(() {
+              selectedProvince = province.name;
+              selectedMainDistrict = district.name;
+              selectedSubDistrict = subDistrict.name;
+            });
+          }
+        }
+      }
+    }
+    return;
   }
 
   Future<void> _pickImage() async {
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = true; // เริ่มเลือกสื่อ
+      });
+    }
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
@@ -102,9 +142,19 @@ class _EditOfferFormState extends State<EditOfferForm> {
         });
       }
     }
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = false; // จบการเลือกสื่อ
+      });
+    }
   }
 
   Future<void> _pickVideo() async {
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = true; // เริ่มเลือกสื่อ
+      });
+    }
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
@@ -113,6 +163,11 @@ class _EditOfferFormState extends State<EditOfferForm> {
           mediaFiles.add(File(pickedFile.path));
         });
       }
+    }
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = false; // จบการเลือกสื่อ
+      });
     }
   }
 
@@ -355,12 +410,12 @@ class _EditOfferFormState extends State<EditOfferForm> {
     required List<String> items,
     String? value,
     required ValueChanged<String?> onChanged,
-    String? Function(String?)? validator,
+    String? Function(String?)? validator, // Added validator parameter
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 30),
+      margin: EdgeInsets.only(bottom: 30), // Added margin at the bottom
       child: DropdownButtonHideUnderline(
-        child: DropdownButtonFormField<String>(
+        child: DropdownButtonFormField2<String>(
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
@@ -382,7 +437,14 @@ class _EditOfferFormState extends State<EditOfferForm> {
               .toList(),
           value: value,
           onChanged: onChanged,
-          validator: validator ??
+          dropdownStyleData: DropdownStyleData(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: Colors.white,
+            ),
+            maxHeight: 200,
+          ),
+          validator: validator ?? // Use the provided validator or default
               (value) =>
                   value == null ? 'โปรดเลือก${label.toLowerCase()}' : null,
         ),
@@ -443,6 +505,8 @@ class _EditOfferFormState extends State<EditOfferForm> {
     );
   }
 
+  bool _isPickingMedia = false;
+
   Widget _buildMediaButtons() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -459,13 +523,17 @@ class _EditOfferFormState extends State<EditOfferForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildCustomButton(
-              onPressed: mediaFiles.length < 5 ? _pickImage : null,
+              onPressed: (!_isPickingMedia && mediaFiles.length < 5)
+                  ? _pickImage
+                  : null,
               icon: Icons.photo_library,
               label: 'เลือกรูปภาพ',
             ),
             SizedBox(width: 16),
             _buildCustomButton(
-              onPressed: mediaFiles.length < 5 ? _pickVideo : null,
+              onPressed: (!_isPickingMedia && mediaFiles.length < 5)
+                  ? _pickVideo
+                  : null,
               icon: Icons.video_library,
               label: 'เลือกวีดีโอ',
             ),
@@ -511,7 +579,7 @@ class _EditOfferFormState extends State<EditOfferForm> {
       child: SizedBox(
         width: 150,
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate() &&
                 mediaFiles.isNotEmpty &&
                 mediaFiles.any((file) {
@@ -653,7 +721,12 @@ class _EditOfferFormState extends State<EditOfferForm> {
                     .toList(),
               );
 
-              updateOfferController.updateOfferDetails(offerToUpdate);
+              var result =
+                  await updateOfferController.updateOfferDetails(offerToUpdate);
+              if (result) {
+                bool isUpdated = true;
+                Navigator.pop(context, isUpdated);
+              }
             } else {
               String errorMessage = mediaFiles.any((file) {
                 String filePath = file is File ? file.path : file as String;

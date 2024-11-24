@@ -20,17 +20,19 @@ class PostDetailController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<void> fetchPostDetail(String postId) async {
+  Future<bool> fetchPostDetail(String postId) async {
     try {
+      final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {
         Get.snackbar('Error', 'No access token found.');
-        return;
+        isLoading(false);
+        return false;
       }
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/post/$postId'),
+        Uri.parse('${dotenv.env['API_URL']}/posts/$postId'),
         headers: {
-          'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
       if (response.statusCode == 200) {
@@ -38,14 +40,18 @@ class PostDetailController extends GetxController {
         print('Fetched JSON data: $jsonData');
         var postData = jsonData['data'];
         postDetail.value = PostDetail.fromJson(postData);
+        isLoading(false);
+        return true;
       } else {
         Get.snackbar(
             'Error', 'Failed to load post detail: ${response.reasonPhrase}');
+        isLoading(false);
+        return false;
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: ${e.toString()}');
-    } finally {
       isLoading(false);
+      return false;
     }
   }
 }

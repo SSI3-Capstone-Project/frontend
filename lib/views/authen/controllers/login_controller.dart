@@ -15,7 +15,7 @@ class LoginController extends GetxController {
     isLoading.value = true;
     try {
       final response = await http.post(
-        Uri.parse('${dotenv.env['API_URL']}/user/login'),
+        Uri.parse('${dotenv.env['API_URL']}/users/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "username": username,
@@ -31,17 +31,18 @@ class LoginController extends GetxController {
         // บันทึก token ลงใน TokenController
         tokenController.saveTokens(accessToken);
 
-        Get.snackbar('Success', 'Login successful.');
+        Get.snackbar('สำเร็จ', 'เข้าสู่ระบบสำเร็จ');
+        isLoading.value = false;
         return true;
       } else {
-        Get.snackbar('Error', 'Login failed. Please check your credentials.');
+        Get.snackbar('แจ้งเตือน', 'ชื่อผู้ใช้งาน หรือ รหัสผ่าน ไม่ถูกต้อง');
+        isLoading.value = false;
         return false;
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred. Please try again.');
-      return false;
-    } finally {
       isLoading.value = false;
+      return false;
     }
   }
 }
