@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/controller/offers_controller.dart';
+import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
 import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
 import 'package:mbea_ssi3_front/views/home/pages/home_page.dart';
@@ -18,6 +20,8 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  final PostsController postController = Get.put(PostsController());
+  final OffersController offerController = Get.put(OffersController());
   final BrandController brandController = Get.put(BrandController());
   int _bottomNavIndex = 0;
 
@@ -93,10 +97,13 @@ class _RootPageState extends State<RootPage> {
         activeIndex: _bottomNavIndex,
         gapLocation: GapLocation.center,
         notchSmoothness: NotchSmoothness.softEdge,
-        onTap: (index) {
+        onTap: (index) async {
           setState(() {
             _bottomNavIndex = index;
           });
+          if (index == 3) {
+            await postController.fetchPosts();
+          }
         },
       ),
     );

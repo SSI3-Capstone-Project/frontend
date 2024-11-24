@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_offer_model.dart';
@@ -26,6 +27,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   final ProvinceController provinceController = Get.put(ProvinceController());
 
   final _formKey = GlobalKey<FormState>();
+  final OffersController offerController = Get.put(OffersController());
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _flawController = TextEditingController();
@@ -42,6 +44,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   bool _mediaError = false;
 
   Future<void> _pickImage() async {
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = true; // เริ่มเลือกสื่อ
+      });
+    }
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
@@ -56,9 +63,19 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         });
       }
     }
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = false; // จบการเลือกสื่อ
+      });
+    }
   }
 
   Future<void> _pickVideo() async {
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = true; // เริ่มเลือกสื่อ
+      });
+    }
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
@@ -72,6 +89,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           mediaFiles.addAll(videos);
         });
       }
+    }
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = false; // จบการเลือกสื่อ
+      });
     }
   }
 
@@ -369,6 +391,8 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     );
   }
 
+  bool _isPickingMedia = false;
+
   Widget _buildMediaButtons() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -385,13 +409,17 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildCustomButton(
-              onPressed: mediaFiles.length < 5 ? _pickImage : null,
+              onPressed: (!_isPickingMedia && mediaFiles.length < 5)
+                  ? _pickImage
+                  : null,
               icon: Icons.photo_library,
               label: 'เลือกรูปภาพ',
             ),
             SizedBox(width: 16),
             _buildCustomButton(
-              onPressed: mediaFiles.length < 5 ? _pickVideo : null,
+              onPressed: (!_isPickingMedia && mediaFiles.length < 5)
+                  ? _pickVideo
+                  : null,
               icon: Icons.video_library,
               label: 'เลือกวีดีโอ',
             ),
@@ -437,7 +465,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       child: SizedBox(
         width: 150,
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate() &&
                 mediaFiles.isNotEmpty &&
                 mediaFiles.any((file) {
@@ -491,7 +519,14 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               );
 
               // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
-              Get.find<CreateOfferController>().createOffer(post);
+              var result = await createOfferController.createOffer(post);
+              if (mounted) {
+                if (result) {
+                  Get.snackbar('สำเร็จ', 'ข้อเสนอใหม่ของคุณถูกสร้างขึ้นแล้ว');
+                  await offerController.fetchOffers();
+                  Navigator.pop(context);
+                }
+              }
             } else {
               // แสดงข้อความแจ้งเตือนเมื่อไม่มีรูปภาพใน mediaFiles
               String errorMessage = mediaFiles.any((file) {

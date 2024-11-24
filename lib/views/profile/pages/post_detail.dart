@@ -54,7 +54,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () => Navigator.pop(context),
+                            onTap: () => {Navigator.pop(context, true)},
                             child: const Icon(Icons.arrow_back, size: 30),
                           ),
                         ],
@@ -174,14 +174,20 @@ class _PostDetailPageState extends State<PostDetailPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: () {
-                // Navigate to EditPostForm and pass the post details
-                Navigator.push(
+              onTap: () async {
+                // Navigate to EditPostForm และรอผลลัพธ์
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => EditPostForm(postDetail: postDetail),
                   ),
                 );
+
+                // ตรวจสอบว่าโพสต์มีการอัปเดตหรือไม่
+                if (result == true) {
+                  // ดึงข้อมูลใหม่
+                  postDetailController.fetchPostDetail(widget.postId);
+                }
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -212,8 +218,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
             ),
             SizedBox(width: 30),
             GestureDetector(
-              onTap: () {
-                postDeleteController.deletePost(widget.postId);
+              onTap: () async {
+                deletePost(widget.postId);
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -409,6 +415,111 @@ class _PostDetailPageState extends State<PostDetailPage> {
           ],
         ),
       ],
+    );
+  }
+
+  void deletePost(String id) {
+    // การทำงานเมื่อกดปุ่มลบ
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Form(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 30),
+                            child: Text(
+                              'ยืนยันการลบ',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                          Text(
+                            'คุณต้องการลบโพสต์นี้ใช่หรือไม่?',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.normal),
+                          ),
+                          const SizedBox(height: 30),
+                          _buildSubmitDeleteButton(id),
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // ปุ่ม X ที่มุมขวาบน
+                  Positioned(
+                    right: 15,
+                    top: 15,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context); // ปิด Dialog
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Constants.secondaryColor),
+                        child: Icon(
+                          Icons.close,
+                          size: 21,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSubmitDeleteButton(
+    String id,
+  ) {
+    return Align(
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: 100,
+        child: ElevatedButton(
+          onPressed: () async {
+            // await postDeleteController.deletePost(widget.postId);
+            // bool isReload = true;
+            // Navigator.pop(context, isReload);
+            var result = await postDeleteController.deletePost(id);
+            if (mounted) {
+              if (result) {
+                Navigator.pop(context);
+                Navigator.pop(context, true);
+              }
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Constants.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 10),
+          ),
+          child: Text(
+            'ยื่นยัน',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
     );
   }
 }

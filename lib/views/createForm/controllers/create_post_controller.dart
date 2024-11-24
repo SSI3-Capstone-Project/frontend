@@ -19,19 +19,21 @@ class CreatePostController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<void> createPost(Post post) async {
+  Future<bool> createPost(Post post) async {
+    final token = tokenController.accessToken.value;
     isLoading.value = true;
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');
-      return;
+      isLoading.value = false;
+      return false;
     }
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('${dotenv.env['API_URL']}/post'), // เปลี่ยน URL ตามจริง
+      Uri.parse('${dotenv.env['API_URL']}/posts'), // เปลี่ยน URL ตามจริง
     );
 
     // แนบ accessToken ลงบน header ของ MultipartRequest
-    request.headers['Authorization'] = 'Bearer $accessToken';
+    request.headers['Authorization'] = 'Bearer $token';
 
     // เพิ่มข้อมูลฟอร์มที่ไม่ใช่ไฟล์
     request.fields.addAll(
@@ -58,17 +60,22 @@ class CreatePostController extends GetxController {
         var responseData = await response.stream.bytesToString();
         // Handle success
         print('Post created successfully: $responseData');
+        isLoading.value = false;
+        return true;
       } else {
         // อ่านและแสดงรายละเอียดข้อผิดพลาด
         var errorData = await response.stream.bytesToString();
         print(
             'Failed to create post: ${response.statusCode}, Error: $errorData');
+        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดไม่สามารถสร้างโพสต์ได้');
+        isLoading.value = false;
+        return false;
       }
     } catch (e) {
       // Handle exception
       print('Error: $e');
-    } finally {
       isLoading.value = false;
+      return false;
     }
   }
 }

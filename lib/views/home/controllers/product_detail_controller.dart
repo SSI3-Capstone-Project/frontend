@@ -3,54 +3,50 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
-import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
+import 'package:mbea_ssi3_front/views/home/models/product_detail_model.dart';
 
-class OfferDetailController extends GetxController {
+class ProductDetailController extends GetxController {
   final tokenController = Get.find<TokenController>();
-  var offerDetail = Rxn<OfferDetail>();
+  var productDetail = Rxn<ProductDetail>();
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
+  // Access token received from login or other authentication processes
   String? accessToken;
 
   @override
   void onInit() {
     super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
+    // Initialize accessToken in onInit
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<bool> fetchOfferDetail(String offerId) async {
+  Future<void> fetchProductDetail(String productId) async {
     try {
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {
         Get.snackbar('Error', 'No access token found.');
-        isLoading(false);
-        return false;
+        return;
       }
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/offers/$offerId'),
+        Uri.parse('${dotenv.env['API_URL']}/posts/$productId'),
         headers: {
-          'Authorization': 'Bearer $token', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // Attach Bearer Token
         },
       );
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-        var offerData = jsonData['data'];
-        offerDetail.value = OfferDetail.fromJson(offerData);
-        isLoading(false);
-        return true;
+        print('Fetched JSON data: $jsonData');
+        var productData = jsonData['data'];
+        productDetail.value = ProductDetail.fromJson(productData);
       } else {
         Get.snackbar(
-            'Error', 'Failed to load offer detail: ${response.reasonPhrase}');
-        isLoading(false);
-        return false;
+            'Error', 'Failed to load product detail: ${response.reasonPhrase}');
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+    } finally {
       isLoading(false);
-      return false;
     }
   }
 }

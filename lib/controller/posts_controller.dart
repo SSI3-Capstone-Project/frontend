@@ -23,15 +23,16 @@ class PostsController extends GetxController {
 
   Future<void> fetchPosts() async {
     try {
+      final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {
         Get.snackbar('Error', 'No access token found.');
         return;
       }
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/posts'),
+        Uri.parse('${dotenv.env['API_URL']}/owner/posts'),
         headers: {
-          'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
       if (response.statusCode == 200) {
@@ -42,7 +43,7 @@ class PostsController extends GetxController {
               postData.map((item) => Posts.fromJson(item)).toList();
         } else {
           postList.clear(); // Clear the list if no data is present
-          Get.snackbar('Notice', 'No posts available.');
+          Get.snackbar('แจ้งเตือน', 'สร้างโพสต์ของคุณ เพื่อเริ่มการแลกเปลี่ยน');
         }
       } else {
         Get.snackbar('Error', 'Failed to load posts: ${response.reasonPhrase}');

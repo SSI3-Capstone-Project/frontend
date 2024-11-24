@@ -3,10 +3,16 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
+import 'package:mbea_ssi3_front/controller/token_controller.dart';
+import 'package:mbea_ssi3_front/views/address/controllers/address_controller.dart';
+import 'package:mbea_ssi3_front/views/address/pages/address_page.dart';
+import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/offer_detail.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/post_detail.dart';
+import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,6 +22,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final AddressController addressController = Get.put(AddressController());
+  final TokenController tokenController = Get.put(TokenController());
   final PostsController postController = Get.put(PostsController());
   final OffersController offerController = Get.put(OffersController());
   bool isActivePost = true;
@@ -28,7 +36,16 @@ class _ProfilePageState extends State<ProfilePage> {
         color: Colors.white,
         child: Column(
           children: [
-            _buildTabContainer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: _buildTabContainer(),
+                ),
+                _buildMoreActionsDropdown(), // แทน GestureDetector ด้วย Dropdown
+                const SizedBox(width: 15),
+              ],
+            ),
             SizedBox(height: 30),
             Expanded(child: Obx(() {
               if (isActivePost) {
@@ -77,13 +94,19 @@ class _ProfilePageState extends State<ProfilePage> {
         itemBuilder: (context, index) {
           final item = items[index];
           return GestureDetector(
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => detailPageBuilder(item),
                 ),
               );
+
+              if (result == true) {
+                // ดึงข้อมูลใหม่
+                await postController.fetchPosts();
+                await offerController.fetchOffers();
+              }
             },
             child: _buildGridItem(item),
           );
@@ -254,6 +277,117 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
+    );
+  }
+
+  bool isDropdownOpen = false;
+
+  Widget _buildMoreActionsDropdown() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton2(
+        customButton: Icon(Icons.more_vert, color: Colors.black54),
+        items: const [
+          DropdownMenuItem(
+            value: 'change_password',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.lock_open,
+                  color: Colors.black54,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text('เปลี่ยนรหัส', style: TextStyle(fontSize: 14))
+              ],
+            ),
+          ),
+          DropdownMenuItem(
+            value: 'manage_address',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.location_on,
+                  color: Colors.black54,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text('จัดการที่อยู่', style: TextStyle(fontSize: 14))
+              ],
+            ),
+          ),
+          DropdownMenuItem(
+            value: 'logout',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.logout,
+                  color: Colors.black54,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text('ออกจากระบบ', style: TextStyle(fontSize: 14))
+              ],
+            ),
+          ),
+        ],
+        onChanged: (value) {
+          if (isDropdownOpen) return; // ไม่ทำงานซ้ำหากเมนูเปิดอยู่
+          isDropdownOpen = true; // ตั้งสถานะเมื่อเปิดเมนู
+
+          if (value == 'manage_address') {
+            _navigateToManageAddress();
+          } else if (value == 'change_password') {
+            _navigateToChangePassword();
+          } else if (value == 'logout') {
+            _logout();
+          }
+
+          isDropdownOpen = false; // รีเซ็ตสถานะหลังทำงานเสร็จ
+        },
+        dropdownStyleData: DropdownStyleData(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: Colors.white,
+          ),
+          offset: const Offset(-125, -30),
+          width: 160,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _navigateToManageAddress() async {
+    await addressController.fetchAddresses();
+    // ไปยังหน้าจัดการที่อยู่
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddressPage()),
+    );
+  }
+
+  Future<void> _navigateToChangePassword() async {
+    // ไปยังหน้าจัดการที่อยู่
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChangePasswordPage()),
+    );
+  }
+
+  Future<void> _logout() async {
+    // ทำงาน Logout
+    Get.snackbar('ออกจากระบบ', 'คุณได้ออกจากระบบแล้ว');
+    await tokenController.deleteTokens();
+
+    // ไปยังหน้า Login หรืออื่นๆ
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => LoginPage()),
     );
   }
 }

@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ProductDetailPage(
-                                        product: product,
+                                        postId: product.id,
                                       )));
                         },
                         child: Container(
@@ -129,14 +129,14 @@ class _HomePageState extends State<HomePage> {
                                             child: CircleAvatar(
                                                 radius: 18,
                                                 backgroundImage: NetworkImage(
-                                                    product.profile))),
+                                                    product.imageUrl))),
                                       ),
                                     ),
                                     const SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      product.name,
+                                      product.username,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -169,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                                       // for image
                                       Center(
                                         child: Image.network(
-                                          product.image,
+                                          product.coverImage,
                                           fit: BoxFit.fill,
                                         ),
                                       )
@@ -196,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                                                 vertical:
                                                     4), // Padding between border and text
                                             child: Text(
-                                              product.type,
+                                              product.subCollectionName,
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.bold,

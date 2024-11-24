@@ -17,29 +17,35 @@ class PostDeleteController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<void> deletePost(String postId) async {
+  Future<bool> deletePost(String postId) async {
     isLoading.value = true;
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');
-      return;
+      isLoading.value = false;
+      return false;
     }
     try {
+      final token = tokenController.accessToken.value;
       final response = await http.delete(
-        Uri.parse('${dotenv.env['API_URL']}/post/$postId'),
+        Uri.parse('${dotenv.env['API_URL']}/posts/$postId'),
         headers: {
-          'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar('Success', 'Post deleted successfully');
+        Get.snackbar('สำเร็จ', 'โพสต์ได้ถูกลบออกไปแล้ว');
+        isLoading.value = false;
+        return true;
       } else {
-        Get.snackbar('Error', 'Failed to delete post');
+        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการลบโพสต์');
+        isLoading.value = false;
+        return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
-    } finally {
+      Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาด: $e');
       isLoading.value = false;
+      return false;
     }
   }
 }
