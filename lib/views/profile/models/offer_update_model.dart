@@ -1,46 +1,43 @@
 import 'dart:io'; // สำหรับ File class
 
-class UpdatePost {
+class UpdateOffer {
   String id;
   String title;
   String subCollectionId;
   String subDistrictId;
   String description;
   String? flaw;
-  String desiredItem;
-  List<PostMedia> postImages;
-  List<PostMedia> postVideos;
+  List<OfferMedia> offerImages;
+  List<OfferMedia> offerVideos;
   List<File> imageFiles; // ไฟล์รูปภาพที่จะอัปโหลด
   List<File> videoFiles; // ไฟล์วิดีโอที่จะอัปโหลด
 
-  UpdatePost({
+  UpdateOffer({
     required this.id,
     required this.title,
     required this.subCollectionId,
     required this.subDistrictId,
     required this.description,
     this.flaw,
-    required this.desiredItem,
-    required this.postImages,
-    required this.postVideos,
+    required this.offerImages,
+    required this.offerVideos,
     required this.imageFiles,
     required this.videoFiles,
   });
 
-  factory UpdatePost.fromJson(Map<String, dynamic> json) {
-    return UpdatePost(
+  factory UpdateOffer.fromJson(Map<String, dynamic> json) {
+    return UpdateOffer(
       id: json['id'],
       title: json['title'],
       subCollectionId: json['sub_collection_id'],
       subDistrictId: json['sub_district_id'],
       description: json['description'],
       flaw: json['flaw'],
-      desiredItem: json['desired_item'],
-      postImages: (json['post_images'] as List)
-          .map((item) => PostMedia.fromJson(item))
+      offerImages: (json['offer_images'] as List)
+          .map((item) => OfferMedia.fromJson(item))
           .toList(),
-      postVideos: (json['post_videos'] as List)
-          .map((item) => PostMedia.fromJson(item))
+      offerVideos: (json['offer_videos'] as List)
+          .map((item) => OfferMedia.fromJson(item))
           .toList(),
       imageFiles: [], // ต้องกำหนดค่าภายหลัง
       videoFiles: [], // ต้องกำหนดค่าภายหลัง
@@ -55,26 +52,25 @@ class UpdatePost {
       'sub_district_id': subDistrictId,
       'description': description,
       'flaw': flaw,
-      'desired_item': desiredItem,
-      'post_images': postImages.map((item) => item.toJson()).toList(),
-      'post_videos': postVideos.map((item) => item.toJson()).toList(),
+      'offer_images': offerImages.map((item) => item.toJson()).toList(),
+      'offer_videos': offerVideos.map((item) => item.toJson()).toList(),
     };
   }
 }
 
-class PostMedia {
+class OfferMedia {
   String? id;
   int hierarchy;
   String status;
 
-  PostMedia({
+  OfferMedia({
     this.id,
     required this.hierarchy,
     required this.status,
   });
 
-  factory PostMedia.fromJson(Map<String, dynamic> json) {
-    return PostMedia(
+  factory OfferMedia.fromJson(Map<String, dynamic> json) {
+    return OfferMedia(
       id: json['id'] as String?,
       hierarchy: json['hierarchy'] as int,
       status: json['status'] as String,

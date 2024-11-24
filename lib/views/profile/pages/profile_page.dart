@@ -3,8 +3,12 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/offer_detail.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/post_detail.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/profile_detail.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
@@ -18,40 +22,60 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final PostsController postController = Get.put(PostsController());
   final OffersController offerController = Get.put(OffersController());
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController());
   bool isActivePost = true;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        color: Colors.white,
-        child: Column(
-          children: [
-            _buildTabContainer(),
-            SizedBox(height: 30),
-            Expanded(child: Obx(() {
-              if (isActivePost) {
-                if (postController.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                return _buildStaggeredGrid(
-                  postController.postList,
-                  (post) => PostDetailPage(postId: post.id),
-                );
-              } else {
-                if (offerController.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                return _buildStaggeredGrid(
-                  offerController.offerList,
-                  (offer) => OfferDetailPage(
-                      offerId: offer.id), // Assuming an OfferDetailPage exists
-                );
-              }
-            })),
-          ],
-        ),
+    return Scaffold(
+      body: SafeArea(
+        child: Obx(() {
+          if (userProfileController.isLoading.value) {
+            // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+            return Center(child: CircularProgressIndicator());
+          }
+          final userProfile = userProfileController.userProfile.value;
+          if (userProfile == null) {
+            // กรณีข้อมูลเป็น null หรือไม่ได้รับข้อมูลจาก API
+            return Center(child: Text("Failed to load user profile"));
+          }
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            color: Colors.white,
+            child: Column(
+              children: [
+                _buildProfileContainer(userProfile), // ส่งข้อมูล UserProfile ไป
+                SizedBox(height: 20),
+                _buildMenuBox(userProfile), // ส่งข้อมูล UserProfile ไป
+                SizedBox(height: 20),
+                _buildTabContainer(),
+                SizedBox(height: 20),
+                Expanded(
+                  child: Obx(() {
+                    if (isActivePost) {
+                      if (postController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      return _buildStaggeredGrid(
+                        postController.postList,
+                        (post) => PostDetailPage(postId: post.id),
+                      );
+                    } else {
+                      if (offerController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      return _buildStaggeredGrid(
+                        offerController.offerList,
+                        (offer) => OfferDetailPage(offerId: offer.id),
+                      );
+                    }
+                  }),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
@@ -203,7 +227,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildTabContainer() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.0),
+      // margin: EdgeInsets.symmetric(horizontal: 20.0),
       padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -255,5 +279,179 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  Widget _buildProfileContainer(UserProfile user) {
+    return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileDetail(),
+            ),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 17, vertical: 13),
+          decoration: BoxDecoration(
+            color: Constants.primaryColor, // สีพื้นหลัง
+            borderRadius: BorderRadius.circular(15), // ทำขอบมน
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26, // สีของเงา (ปรับได้)
+                blurRadius: 10, // ระยะเบลอของเงา
+                offset: Offset(0, 4), // การเลื่อนตำแหน่งของเงา (X, Y)
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 41,
+                backgroundImage: user.imageUrl != null
+                    ? NetworkImage(user.imageUrl!)
+                    : AssetImage('assets/images/dimoo.png') as ImageProvider,
+              ),
+              SizedBox(width: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // จัดแนวชิดซ้าย
+                children: [
+                  Text(
+                    "Welcome,",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        user.username, // ชื่อ User
+                        style: TextStyle(
+                          color: Colors.white, // สีขาวอ่อน
+                          fontSize: 21, // ขนาดตัวอักษรเล็กกว่า Welcome
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 7), // เว้นระยะห่างระหว่างชื่อและไอคอน
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileEditPage()),
+                            );
+                          },
+                          child: Icon(
+                            Icons.edit, // ไอคอนแก้ไข
+                            color: Colors.white, // สีของไอคอน
+                            size: 18,
+                          )),
+                    ],
+                  ),
+                ],
+              ),
+              Spacer(),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    "42", // ตัวเลขที่ต้องการ
+                    style: TextStyle(
+                      color: Colors.white, // สีของตัวเลข
+                      fontSize: 17, // ขนาดตัวอักษร
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    "trades", // ตัวเลขที่ต้องการ
+                    style: TextStyle(
+                        color: Colors.white, // สีของตัวเลข
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500 // ขนาดตัวอักษร
+                        ),
+                  )
+                ],
+              )
+            ],
+          ),
+        ));
+  }
+
+  Widget _buildMenuBox(UserProfile user) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // แถวแรก
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี"),
+            _buildBox("รายการโปรด", Icons.favorite, ""),
+          ],
+        ),
+        SizedBox(height: 10), // เว้นระยะห่างระหว่างแถว
+        // แถวที่สอง
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildBox("คะแนน", Icons.star, "${user.rating}/5"),
+            _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, ""),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBox(String label, IconData icon, String description) {
+    return GestureDetector(
+        onTap: () {
+          print("$label tapped!");
+        },
+        child: Container(
+          width: 182,
+          height: 70,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: .5,
+                blurRadius: 6,
+                offset: const Offset(0, 0),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    icon,
+                    size: 20, // ไอคอนที่ต้องการ
+                  ),
+                  SizedBox(width: 8), // ระยะห่างระหว่างไอคอนและข้อความ
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              description.isNotEmpty
+                  ? Text(
+                      description,
+                      style: TextStyle(fontSize: 14),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ));
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_offer_model.dart';
 // import 'package:mbea_ssi3_front/common/constants.dart';
@@ -19,8 +20,10 @@ class CreateOfferForm extends StatefulWidget {
 class _CreateOfferFormState extends State<CreateOfferForm> {
   List<File> mediaFiles = [];
 
-  final OfferController offerController = Get.put(OfferController());
+  final CreateOfferController createOfferController =
+      Get.put(CreateOfferController());
   final BrandController brandController = Get.put(BrandController());
+  final ProvinceController provinceController = Get.put(ProvinceController());
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _productNameController = TextEditingController();
@@ -32,20 +35,26 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   String? selectedMainCategory;
   String? selectedSubCategory;
 
+  String? selectedProvince;
+  String? selectedMainDistrict;
+  String? selectedSubDistrict;
+
   bool _mediaError = false;
 
   Future<void> _pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
-      });
+      if (mounted) {
+        setState(() {
+          List<File> videos =
+              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+          mediaFiles =
+              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          mediaFiles.add(File(pickedFile.path));
+          mediaFiles.addAll(videos);
+        });
+      }
     }
   }
 
@@ -53,14 +62,16 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
-      });
+      if (mounted) {
+        setState(() {
+          List<File> videos =
+              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+          mediaFiles =
+              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          mediaFiles.add(File(pickedFile.path));
+          mediaFiles.addAll(videos);
+        });
+      }
     }
   }
 
@@ -77,7 +88,10 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                 value == null || value.isEmpty ? 'โปรดระบุชื่อสินค้า' : null,
           ),
           SizedBox(height: 16),
+
           Obx(() {
+            if (!mounted) return const SizedBox();
+
             if (brandController.isLoading.value) {
               return Center(child: CircularProgressIndicator());
             }
@@ -164,7 +178,84 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
             controller: _flawController,
             label: 'ตำหนิ',
           ),
-          SizedBox(height: 30),
+          SizedBox(height: 16),
+          Obx(() {
+            if (!mounted) return const SizedBox();
+
+            if (provinceController.isLoading.value) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            return Container(
+              constraints:
+                  BoxConstraints(maxHeight: 300), // Set a maximum height
+              child: ListView(
+                shrinkWrap:
+                    true, // This allows the ListView to take only as much height as it needs
+                physics:
+                    NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                children: [
+                  _buildDropdownField(
+                    label: 'เลือกจังหวัด',
+                    items: provinceController.provinces
+                        .map((b) => b.name)
+                        .toList(),
+                    value: selectedProvince,
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedProvince = newValue;
+                        selectedMainDistrict = null;
+                        selectedSubDistrict = null;
+                      });
+                    },
+                    validator: (value) =>
+                        value == null ? 'โปรดเลือกจังหวัด' : null,
+                  ),
+                  if (selectedProvince != null)
+                    _buildDropdownField(
+                      label: 'เลือกเขต / อำเภอ',
+                      items: provinceController.provinces
+                              .firstWhere((b) => b.name == selectedProvince)
+                              .districts
+                              ?.map((c) => c.name)
+                              .toList() ??
+                          [],
+                      value: selectedMainDistrict,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedMainDistrict = newValue;
+                          selectedSubDistrict = null;
+                        });
+                      },
+                      validator: (value) =>
+                          value == null ? 'โปรดเลือกเขต / อำเภอ' : null,
+                    ),
+                  if (selectedMainDistrict != null)
+                    _buildDropdownField(
+                      label: 'เลือกตำบล',
+                      items: provinceController.provinces
+                              .firstWhere((b) => b.name == selectedProvince)
+                              .districts
+                              ?.firstWhere(
+                                  (c) => c.name == selectedMainDistrict)
+                              .subDistricts
+                              ?.map((sc) => sc.name)
+                              .toList() ??
+                          [],
+                      value: selectedSubDistrict,
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedSubDistrict = newValue;
+                        });
+                      },
+                      validator: (value) =>
+                          value == null ? 'โปรดเลือกตำบล' : null,
+                    ),
+                ],
+              ),
+            );
+          }),
+          // SizedBox(height: 30),
           _buildMediaPreview(),
           SizedBox(height: 30),
           _buildMediaButtons(),
@@ -347,25 +438,70 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         width: 150,
         child: ElevatedButton(
           onPressed: () {
-            if (_formKey.currentState!.validate() && mediaFiles.isNotEmpty) {
-              Offer offer = Offer(
+            if (_formKey.currentState!.validate() &&
+                mediaFiles.isNotEmpty &&
+                mediaFiles.any((file) {
+                  // ตรวจสอบว่าเป็นไฟล์รูปภาพหรือไม่
+                  return file.path.endsWith('.jpg') ||
+                      file.path.endsWith('.jpeg') ||
+                      file.path.endsWith('.png');
+                })) {
+              String? subCollectionId;
+
+              if (selectedSubCategory != null) {
+                subCollectionId = brandController.brands
+                    .firstWhere((b) => b.name == selectedBrand)
+                    .collections
+                    ?.firstWhere((c) => c.name == selectedMainCategory)
+                    .subCollections
+                    ?.firstWhere((sc) => sc.name == selectedSubCategory)
+                    .id;
+              }
+
+              if (subCollectionId == null) {
+                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                return;
+              }
+
+              int? subDistrictId = 0;
+
+              if (selectedSubDistrict != null) {
+                subDistrictId = provinceController.provinces
+                    .firstWhere((b) => b.name == selectedProvince)
+                    .districts
+                    ?.firstWhere((c) => c.name == selectedMainDistrict)
+                    .subDistricts
+                    ?.firstWhere((sc) => sc.name == selectedSubDistrict)
+                    .id;
+              }
+
+              if (subCollectionId == 0) {
+                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                return;
+              }
+
+              // สร้าง Post object พร้อมข้อมูลทั้งหมด
+              Offer post = Offer(
                 title: _productNameController.text,
                 description: _descriptionController.text,
                 flaw: _flawController.text,
-                // desiredItem: _desiredController.text,
-                subCollectionId: '2fa2b00f-ef3d-496e-bb3b-2ed86d873d02',
-
-                // brand: selectedBrand,
-                // mainCategory: selectedMainCategory,
-                // subCategory: selectedSubCategory,
+                subCollectionId: subCollectionId,
+                subDistrictId: subDistrictId ?? 0,
                 mediaFiles: mediaFiles,
               );
 
-              Get.find<OfferController>().createOffer(offer);
+              // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
+              Get.find<CreateOfferController>().createOffer(post);
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('กรุณากรอกข้อมูลให้ครบถ้วน')),
-              );
+              // แสดงข้อความแจ้งเตือนเมื่อไม่มีรูปภาพใน mediaFiles
+              String errorMessage = mediaFiles.any((file) {
+                return file.path.endsWith('.jpg') ||
+                    file.path.endsWith('.jpeg') ||
+                    file.path.endsWith('.png');
+              })
+                  ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
+                  : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รูป';
+              Get.snackbar('แจ้งเตือน', errorMessage);
             }
           },
           style: ElevatedButton.styleFrom(

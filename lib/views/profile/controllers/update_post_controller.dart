@@ -2,16 +2,30 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'dart:convert';
 // import 'dart:io';
 
 import 'package:mbea_ssi3_front/views/profile/models/post_update_model.dart';
 
 class UpdatePostController extends GetxController {
+  final tokenController = Get.find<TokenController>();
+
+  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
+  String? accessToken;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
+    accessToken = tokenController.accessToken.value;
+  }
+
   var updatedPost = UpdatePost(
     id: '',
     title: '',
     subCollectionId: '',
+    subDistrictId: '',
     description: '',
     flaw: null,
     desiredItem: '',
@@ -31,24 +45,29 @@ class UpdatePostController extends GetxController {
     print('Desired Item: ${postToUpdate.desiredItem}');
     print('Post Images: ${jsonEncode(postToUpdate.postImages)}');
     print('Post Videos: ${jsonEncode(postToUpdate.postVideos)}');
-
     print('Image Files:');
     for (var file in postToUpdate.imageFiles) {
       print(' - Path: ${file.path}');
     }
-
     print('Video Files:');
     for (var file in postToUpdate.videoFiles) {
       print(' - Path: ${file.path}');
     }
     print('-----------------------------');
-
+    if (accessToken == null) {
+      Get.snackbar('Error', 'No access token found.');
+      return;
+    }
     final request = http.MultipartRequest(
         'PUT', Uri.parse('${dotenv.env['API_URL']}/post/${postToUpdate.id}'));
+
+    // แนบ accessToken ลงบน header ของ MultipartRequest
+    request.headers['Authorization'] = 'Bearer $accessToken';
 
     // ตั้งค่า fields โดยไม่ต้องใช้ ?? ''
     request.fields['title'] = postToUpdate.title;
     request.fields['sub_collection_id'] = postToUpdate.subCollectionId;
+    request.fields['sub_district_id'] = postToUpdate.subDistrictId;
     request.fields['description'] = postToUpdate.description;
 
     if (postToUpdate.flaw != null) {

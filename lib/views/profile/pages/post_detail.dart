@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/controller/post_detail_controller.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/post_delete_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/delete_post_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/post_edit.dart';
 import 'package:video_player/video_player.dart';
 
@@ -389,14 +389,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.location_on,
                       color: Colors.black54,
                     ),
                     SizedBox(width: 4),
                     Text(
-                      'ปากเกร็ด, นนทบุรี',
+                      postDetail.location,
                       style: TextStyle(
                         color: Colors.black87,
                         fontSize: 16,
