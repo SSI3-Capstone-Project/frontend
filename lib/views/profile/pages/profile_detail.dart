@@ -93,7 +93,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundImage: AssetImage('assets/images/dimoo.png'),
+          backgroundImage: NetworkImage(user.imageUrl!),
         ),
         SizedBox(width: 20),
         Column(
@@ -169,6 +169,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       Icons.credit_card_outlined,
       Icons.history_outlined,
       Icons.report_problem,
+      Icons.lock_outline,
       Icons.logout_outlined
     ];
     List<String> menuItems = [
@@ -176,6 +177,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       "ช่องทางชำระเงิน",
       "ประวัติการแลก",
       "รายงานปัญหา",
+      "เปลี่ยนรหัสผ่าน",
       "ออกจากระบบ"
     ];
 
@@ -198,7 +200,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               children: [
                 Row(
                   children: [
-                    if (index == 4) ...[
+                    if (index == 5) ...[
                       Icon(iconList[index], color: Colors.red),
                       SizedBox(width: 10),
                       Text(
@@ -222,7 +224,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                     ],
                   ],
                 ),
-                if (index != 4)
+                if (index != 5)
                   Icon(Icons.arrow_forward_ios,
                       size: 16), // ลูกศรย้อนกลับเมื่อ index != 4
               ],
