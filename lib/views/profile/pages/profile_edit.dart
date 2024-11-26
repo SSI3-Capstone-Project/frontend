@@ -21,7 +21,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final lastnameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
-  final genderController = RxString('ชาย');
+  final genderController = RxString('female');
   final updateProfileController = Get.put(UpdateProfileController());
   final userProfileController = Get.put(UserProfileController());
 
