@@ -49,7 +49,7 @@ class UpdateProfileController extends GetxController {
         if (response.statusCode == 200) {
           Get.snackbar('Success', 'Profile updated successfully.');
           print("user image not null");
-          print(userProfileController.fetchUserProfile());
+          print("This is data after updating profile: ${userProfileController.fetchUserProfile()}");
           print("userProfile value: ${profileData}");
         } else {
           Get.snackbar('Error', 'Failed to update profile.');
