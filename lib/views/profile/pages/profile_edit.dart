@@ -164,7 +164,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    items: ['male', 'female', 'อื่นๆ']
+                    items: ['male','female','other','non-identify']
                         .map((gender) => DropdownMenuItem(
                               value: gender,
                               child: Text(gender),
