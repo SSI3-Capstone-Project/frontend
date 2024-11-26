@@ -7,6 +7,7 @@ import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
 import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
+import 'package:mbea_ssi3_front/views/home/controllers/product_controller.dart';
 import 'package:mbea_ssi3_front/views/home/pages/home_page.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
@@ -21,6 +22,7 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  final ProductController productController = Get.put(ProductController());
   final UserProfileController userProfileController =
       Get.put(UserProfileController());
   final PostsController postController = Get.put(PostsController());
@@ -46,6 +48,15 @@ class _RootPageState extends State<RootPage> {
 
   //List of the pages titles
   List<String> titleList = ['Home', 'Chat', 'Alert', 'Profile'];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      await productController.fetchProducts();
+      await userProfileController.fetchUserProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +115,9 @@ class _RootPageState extends State<RootPage> {
           setState(() {
             _bottomNavIndex = index;
           });
+          if (index == 0) {
+            await productController.fetchProducts();
+          }
           if (index == 3) {
             await postController.fetchPosts();
             await userProfileController.fetchUserProfile();

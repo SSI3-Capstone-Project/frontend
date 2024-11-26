@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
-import 'package:mbea_ssi3_front/model/province_model.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_post_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_post_model.dart';
 // import 'package:mbea_ssi3_front/common/constants.dart';
@@ -104,6 +103,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
       key: _formKey,
       child: ListView(
         children: [
+          SizedBox(height: 15),
           _buildTextFormField(
             controller: _productNameController,
             label: 'ชื่อสินค้า',

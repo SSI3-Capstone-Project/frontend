@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -19,13 +21,13 @@ class CreateOfferController extends GetxController {
     accessToken = tokenController.accessToken.value;
   }
 
-  Future<bool> createOffer(Offer offer) async {
+  Future<String?> createOffer(Offer offer) async {
     final token = tokenController.accessToken.value;
     isLoading.value = true;
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');
       isLoading.value = false;
-      return false;
+      return null;
     }
     var request = http.MultipartRequest(
       'POST',
@@ -58,10 +60,20 @@ class CreateOfferController extends GetxController {
       var response = await request.send();
       if (response.statusCode == 200) {
         var responseData = await response.stream.bytesToString();
-        // Handle success
-        print('Offer created successfully: $responseData');
-        isLoading.value = false;
-        return true;
+        var parsedResponse = jsonDecode(responseData);
+
+        if (parsedResponse['data'] != null &&
+            parsedResponse['data']['id'] != null) {
+          String offerId = parsedResponse['data']['id'];
+          print('Offer created successfully with ID: $offerId');
+          isLoading.value = false;
+          return offerId;
+        } else {
+          print('Unexpected response structure: $responseData');
+          Get.snackbar('แจ้งเตือน', 'ไม่พบ ID ของข้อเสนอในข้อมูลที่ตอบกลับ');
+          isLoading.value = false;
+          return null;
+        }
       } else {
         // อ่านและแสดงรายละเอียดข้อผิดพลาด
         var errorData = await response.stream.bytesToString();
@@ -69,13 +81,13 @@ class CreateOfferController extends GetxController {
             'Failed to create offer: ${response.statusCode}, Error: $errorData');
         Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดไม่สามารถสร้างข้อเสนอได้');
         isLoading.value = false;
-        return false;
+        return null;
       }
     } catch (e) {
       // Handle exception
       print('Error: $e');
       isLoading.value = false;
-      return false;
+      return null;
     }
   }
 }

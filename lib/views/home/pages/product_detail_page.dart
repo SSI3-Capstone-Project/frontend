@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/post_detail_controller.dart';
+import 'package:mbea_ssi3_front/views/createForm/pages/create_offer.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_detail_controller.dart';
 import 'package:mbea_ssi3_front/views/home/models/product_detail_model.dart';
 import 'package:mbea_ssi3_front/views/home/models/product_model.dart';
+import 'package:mbea_ssi3_front/views/home/pages/choose_offer_page.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -16,6 +20,9 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final OffersController offerController = Get.put(OffersController());
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController());
   final ProductDetailController productDetailController =
       Get.put(ProductDetailController());
   final PageController _pageController = PageController();
@@ -31,6 +38,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: const Text(
+          'โพสต์',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        ),
+        // const Text(
+        //   'จัดการที่อยู่',
+        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+        // ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         bottom: false,
         child: Obx(() {
@@ -40,115 +63,284 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
           var productDetail = productDetailController.productDetail.value;
           if (productDetail != null) {
-            return Stack(
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 18),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () => {Navigator.pop(context, true)},
-                            child: const Icon(Icons.arrow_back, size: 30),
-                          ),
-                        ],
+            return Stack(children: [
+              ListView(
+                children: [
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 15,
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 45),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              GestureDetector(
-                                onTap: () {},
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: Colors.white,
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: NetworkImage(
-                                          productDetail.userImageUrl),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Align(
+                                    alignment: Alignment.topRight,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(50),
+                                        color: Colors.white,
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: NetworkImage(
+                                            productDetail.userImageUrl),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                productDetail.username,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                const SizedBox(
+                                  width: 5,
                                 ),
-                              )
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              // widget.product.isFavorated =
-                              //     !widget.product.isFavorated;
-                            },
-                            child: Icon(
-                              Icons.more_horiz,
-                              color: Colors.black54,
+                                Text(
+                                  productDetail.username,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    mediaContent(productDetail),
-                    const SizedBox(height: 30),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 45),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                ),
-                DraggableScrollableSheet(
-                  initialChildSize: 0.28,
-                  minChildSize: 0.28,
-                  maxChildSize: 0.9,
-                  builder: (context, scrollController) {
-                    return Container(
-                      padding: const EdgeInsets.only(top: 28),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 0.5,
-                            blurRadius: 6,
-                            offset: const Offset(0, 0),
-                          ),
-                        ],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
+                            GestureDetector(
+                              onTap: () {
+                                // widget.product.isFavorated =
+                                //     !widget.product.isFavorated;
+                              },
+                              child: Icon(
+                                Icons.more_horiz,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
                         ),
-                        color: Colors.white,
                       ),
-                      child: productDetails(scrollController, productDetail),
-                    );
-                  },
+                      const SizedBox(height: 15),
+                      mediaContent(productDetail),
+                      const SizedBox(height: 30),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      productDetail.title,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 21),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(30)),
+                                        color: Constants.primaryColor,
+                                      ),
+                                      child: Text(
+                                        productDetail.subCollectionName,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        spreadRadius: 2,
+                                        blurRadius: 6,
+                                        offset: Offset(0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        size: 25,
+                                        Icons.location_on,
+                                        color: Colors.black54,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        productDetail.location,
+                                        style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'สนใจแลก :',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: () {
+                                    // Add button tap functionality here
+                                    print("Button tapped");
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3, horizontal: 15),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFE875C),
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      productDetail.desiredItem,
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                  child: Text(
+                                    productDetail.description,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                    softWrap:
+                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                    overflow: TextOverflow
+                                        .visible, // แสดงข้อความทั้งหมด
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+                            if (productDetail.flaw != null)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'ตำหนิ : ${productDetail.flaw}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Constants.secondaryColor,
+                                    ),
+                                    softWrap:
+                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ],
+                              ),
+                            const SizedBox(height: 25),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+              if (userProfileController.userProfile.value!.username !=
+                  productDetail.username)
+                Positioned(
+                  right: 15, // ระยะห่างจากขอบขวา
+                  bottom: 30, // ระยะห่างจากขอบล่าง
+                  child: GestureDetector(
+                    onTap: () {
+                      _sendOfferDialog();
+                    },
+                    child: IntrinsicWidth(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10, // ระยะห่างบน-ล่าง
+                          horizontal: 20, // ระยะห่างซ้าย-ขวา
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFE875C), Color(0xFFE4593F)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'ยื่นข้อเสนอ',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ],
-            );
+            ]);
           } else {
             return Center(child: Text('No data available'));
           }
@@ -168,8 +360,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       children: [
         Center(
           child: SizedBox(
-            width: 335,
-            height: 350,
+            width: 420,
+            height: 300,
             child: PageView.builder(
               controller: _pageController,
               itemCount: mediaItems.length,
@@ -183,15 +375,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 if (mediaItem.endsWith('.jpg') || mediaItem.endsWith('.png')) {
                   return Hero(
                     tag: mediaItem,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: Image.network(
-                          mediaItem,
-                          width: 320,
-                          fit: BoxFit.cover,
-                        ),
+                    child: ClipRRect(
+                      child: Image.network(
+                        mediaItem,
+                        width: 320,
+                        fit: BoxFit.cover,
                       ),
                     ),
                   );
@@ -218,72 +406,72 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             );
           }),
         ),
-        const SizedBox(height: 30),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 45),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  // Define button action here
-                  // print("Button tapped");
-                  _sendOfferDialog();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFFFE875C),
-                        Color(0xFFE4593F)
-                      ], // ไล่เฉดสี
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: const Text(
-                    'ยื่นข้อเสนอ',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 30),
-              GestureDetector(
-                onTap: () {
-                  // widget.product.isFavorated =
-                  //     !widget.product.isFavorated;
-                },
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    padding: EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: true ? Colors.pink.shade50 : Colors.grey.shade400,
-                    ),
-                    child: Icon(
-                      Icons.favorite,
-                      color: true ? Colors.pink : Colors.black54,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        )
+        // const SizedBox(height: 30),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 45),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //     children: [
+        //       GestureDetector(
+        //         onTap: () {
+        //           // Define button action here
+        //           // print("Button tapped");
+        //           _sendOfferDialog();
+        //         },
+        //         child: Container(
+        //           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        //           decoration: BoxDecoration(
+        //             gradient: const LinearGradient(
+        //               colors: [
+        //                 Color(0xFFFE875C),
+        //                 Color(0xFFE4593F)
+        //               ], // ไล่เฉดสี
+        //               begin: Alignment.topCenter,
+        //               end: Alignment.bottomCenter,
+        //             ),
+        //             borderRadius: BorderRadius.circular(15),
+        //             boxShadow: [
+        //               BoxShadow(
+        //                 color: Colors.black.withOpacity(0.1),
+        //                 blurRadius: 8,
+        //                 offset: Offset(0, 4),
+        //               ),
+        //             ],
+        //           ),
+        //           child: const Text(
+        //             'ยื่นข้อเสนอ',
+        //             style: TextStyle(
+        //               color: Colors.white,
+        //               fontSize: 14,
+        //               fontWeight: FontWeight.bold,
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //       SizedBox(width: 30),
+        //       GestureDetector(
+        //         onTap: () {
+        //           // widget.product.isFavorated =
+        //           //     !widget.product.isFavorated;
+        //         },
+        //         child: Align(
+        //           alignment: Alignment.topRight,
+        //           child: Container(
+        //             padding: EdgeInsets.all(6),
+        //             decoration: BoxDecoration(
+        //               borderRadius: BorderRadius.circular(50),
+        //               color: true ? Colors.pink.shade50 : Colors.grey.shade400,
+        //             ),
+        //             child: Icon(
+        //               Icons.favorite,
+        //               color: true ? Colors.pink : Colors.black54,
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // )
       ],
     );
   }
@@ -303,25 +491,97 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: const Align(
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 30),
-                            child: Text(
-                              'ยื่นข้อเสนอ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.normal),
-                            ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 30),
+                          child: Text(
+                            'คุณจะเลือกข้อเสนอจากไหน?',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.normal),
                           ),
+                        ),
+                        _buildSubmitButton('สร้างข้อเสนอใหม่'),
+                        const SizedBox(height: 15),
+                        _buildSubmitButton('เลือกจากข้อเสนอที่มีอยู่แล้ว'),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                  ),
+                  // ปุ่ม X ที่มุมขวาบน
+                  Positioned(
+                    right: 15,
+                    top: 15,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context); // ปิด Dialog
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Constants.secondaryColor),
+                        child: Icon(
+                          Icons.close,
+                          size: 21,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
-                          SizedBox(height: 30),
-                          // _buildSubmitDeleteButton(),
-                          SizedBox(height: 30),
-                        ],
+  void _createNewOfferDialog() {
+    // การทำงานเมื่อกดปุ่มลบ
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: SizedBox(
+                      height: 700,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Column(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 30),
+                              child: Text(
+                                'สร้างข้อเสนอใหม่',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: CreateOfferForm(
+                                  isSendOffer: true,
+                                  postId: productDetailController
+                                      .productDetail.value!.id,
+                                ), // Switch to CreateOfferForm
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -354,203 +614,58 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  Widget _buildSubmitDeleteButton(
-      // String id,
-      ) {
+  Widget _buildSubmitButton(
+    String buttonType,
+    // String id,
+  ) {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        width: 100,
-        child: ElevatedButton(
-          onPressed: () async {
-            // var result = await addressController.deleteAddress(id: id);
-            // if (mounted) {
-            //   if (result) {
-            //     Get.snackbar('สำเร็จ', 'ที่อยู่ถูกลบออกไปแล้ว');
-            //   } else {
-            //     Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการลบที่อยู่');
-            //   }
-            // }
-            // Navigator.pop(context);
+        width: 250,
+        height: 50,
+        child: GestureDetector(
+          onTap: () async {
+            if (buttonType == 'สร้างข้อเสนอใหม่') {
+              _createNewOfferDialog();
+            } else {
+              await offerController.fetchOffers();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ChooseOfferPage()));
+            }
           },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Constants.primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+          child: Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.symmetric(
+              vertical: 12,
             ),
-            padding: EdgeInsets.symmetric(vertical: 10),
-          ),
-          child: Text(
-            'ยื่นยัน',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: buttonType == 'สร้างข้อเสนอใหม่'
+                    ? [Color(0xFFFE875C), Color(0xFFE4593F)]
+                    : [Color(0xFF3AB0F8), Color(0xFF3176B1)], // ไล่เฉดสี
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Text(
+              buttonType,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget productDetails(
-      ScrollController scrollController, ProductDetail productDetail) {
-    return ListView(
-      controller: scrollController,
-      physics: const BouncingScrollPhysics(),
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 150,
-              child: Divider(
-                color: Colors.black.withOpacity(0.7),
-                thickness: 3,
-              ),
-            ),
-            SizedBox(width: 10),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              productDetail.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-                color: Constants.primaryColor,
-              ),
-              child: Text(
-                productDetail.subCollectionName,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Padding(
-          padding: const EdgeInsets.only(left: 18),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'สนใจแลก :',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () {
-                  // Add button tap functionality here
-                  print("Button tapped");
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFE875C),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    productDetail.desiredItem,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 25),
-        Padding(
-          padding: const EdgeInsets.only(left: 18),
-          child: Text(
-            productDetail.description,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-          ),
-        ),
-        const SizedBox(height: 25),
-        if (productDetail.flaw != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 18),
-            child: Text(
-              'ตำหนิ : ${productDetail.flaw}',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Constants.secondaryColor,
-              ),
-            ),
-          ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                      offset: Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.black54,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      productDetail.location,
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }
@@ -660,9 +775,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       allowScrubbing: true,
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       colors: VideoProgressColors(
-        playedColor: Theme.of(context).primaryColor,
+        playedColor: Colors.white,
         bufferedColor: Colors.grey,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.grey,
       ),
     );
   }

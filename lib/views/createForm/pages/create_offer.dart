@@ -7,12 +7,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
+import 'package:mbea_ssi3_front/controller/send_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_offer_model.dart';
 // import 'package:mbea_ssi3_front/common/constants.dart';
 
 class CreateOfferForm extends StatefulWidget {
-  const CreateOfferForm({super.key});
+  final bool isSendOffer;
+  final String postId;
+  const CreateOfferForm(
+      {super.key, this.isSendOffer = false, this.postId = ''});
 
   @override
   _CreateOfferFormState createState() => _CreateOfferFormState();
@@ -21,6 +25,8 @@ class CreateOfferForm extends StatefulWidget {
 class _CreateOfferFormState extends State<CreateOfferForm> {
   List<File> mediaFiles = [];
 
+  final SendOfferController sendOfferController =
+      Get.put(SendOfferController());
   final CreateOfferController createOfferController =
       Get.put(CreateOfferController());
   final BrandController brandController = Get.put(BrandController());
@@ -103,6 +109,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       key: _formKey,
       child: ListView(
         children: [
+          SizedBox(height: 16),
           _buildTextFormField(
             controller: _productNameController,
             label: 'ชื่อสินค้า',
@@ -304,10 +311,13 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         labelText: label,
         floatingLabelBehavior: FloatingLabelBehavior.always,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: widget.isSendOffer
+              ? BorderRadius.circular(12)
+              : BorderRadius.circular(20),
         ),
-        contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+        contentPadding: widget.isSendOffer
+            ? EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12)
+            : EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
       ),
       validator: validator,
     );
@@ -327,10 +337,13 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
-            contentPadding:
-                EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+            contentPadding: widget.isSendOffer
+                ? EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12)
+                : EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: widget.isSendOffer
+                  ? BorderRadius.circular(12)
+                  : BorderRadius.circular(20),
               borderSide: BorderSide(color: Colors.grey.shade600),
             ),
           ),
@@ -371,8 +384,8 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         return Stack(
           children: [
             Container(
-              width: 100,
-              height: 100,
+              width: widget.isSendOffer ? 90 : 100,
+              height: widget.isSendOffer ? 90 : 100,
               child: isImage
                   ? Image.file(file, fit: BoxFit.cover)
                   : Icon(Icons.videocam, size: 50),
@@ -437,7 +450,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     return InkWell(
       onTap: onPressed,
       child: Container(
-        width: 160, // ความกว้างของปุ่ม
+        width: widget.isSendOffer ? 135 : 160, // ความกว้างของปุ่ม
         height: 50, // ความสูงของปุ่ม
         decoration: BoxDecoration(
           color: Colors.white,
@@ -521,9 +534,15 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
               var result = await createOfferController.createOffer(post);
               if (mounted) {
-                if (result) {
+                if (result != null) {
                   Get.snackbar('สำเร็จ', 'ข้อเสนอใหม่ของคุณถูกสร้างขึ้นแล้ว');
                   await offerController.fetchOffers();
+                  // send Offer
+                  if (widget.isSendOffer) {
+                    sendOfferController.addOffer(
+                        postId: widget.postId, offerId: result);
+                    Navigator.pop(context);
+                  }
                   Navigator.pop(context);
                 }
               }

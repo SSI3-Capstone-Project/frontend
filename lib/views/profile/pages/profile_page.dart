@@ -241,8 +241,8 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Text(
-              item.description.length > 100
-                  ? '${item.description.substring(0, 45)}...'
+              item.description.length > 40
+                  ? '${item.description.substring(0, 40)}...'
                   : item.description,
               style: const TextStyle(
                 fontWeight: FontWeight.normal,

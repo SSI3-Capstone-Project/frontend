@@ -43,7 +43,7 @@ class ProductController extends GetxController {
               postData.map((item) => Product.fromJson(item)).toList();
         } else {
           productList.clear(); // Clear the list if no data is present
-          Get.snackbar('Notice', 'No products available.');
+          Get.snackbar('แจ้งเตือน', 'ไม่พบโพสต์ในระบบ');
         }
         // productList.value =
         //     jsonData.map((item) => Product.fromJson(item)).toList();
