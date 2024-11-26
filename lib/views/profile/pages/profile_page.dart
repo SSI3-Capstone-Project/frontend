@@ -317,7 +317,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProfileDetail(),
+              builder: (context) => const ProfileDetail(),
             ),
           );
         },
@@ -369,7 +369,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ProfileEditPage()),
+                                  builder: (context) => EditProfilePage()),
                             );
                           },
                           child: Icon(
