@@ -21,12 +21,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final lastnameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
-  final genderController = RxString('female');
+  final genderController = RxString(''); // RxString for reactive gender
   final updateProfileController = Get.put(UpdateProfileController());
   final userProfileController = Get.put(UserProfileController());
 
-  String? profileImageUrl; 
+  String? profileImageUrl;
   File? profileImageFile; // To hold the selected profile image
+  final Map<String, bool> _isFieldModified = {
+    'image': false,
+    'username': false,
+    'firstname': false,
+    'lastname': false,
+    'email': false,
+    'phone': false,
+    'gender': false, // Track gender modification
+  };
+
+  Map<String, String> _initialValues = {
+    'username': '',
+    'firstname': '',
+    'lastname': '',
+    'email': '',
+    'phone': '',
+    'gender': '',
+  };
+
+  String? _usernameError;
+  bool _isUsernameValid = true;
 
   @override
   void initState() {
@@ -41,7 +62,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
           lastnameController.text = userProfile.lastname ?? '';
           emailController.text = userProfile.email ?? '';
           phoneController.text = userProfile.phone ?? '';
-          genderController.value = userProfile.gender ?? 'ชาย';
+          genderController.value = userProfile.gender ?? '';
+          // Store initial values for comparison
+          _initialValues['username'] = userProfile.username ?? '';
+          _initialValues['firstname'] = userProfile.firstname ?? '';
+          _initialValues['lastname'] = userProfile.lastname ?? '';
+          _initialValues['email'] = userProfile.email ?? '';
+          _initialValues['phone'] = userProfile.phone ?? '';
+          _initialValues['gender'] = userProfile.gender ?? '';
         });
       }
     });
@@ -50,9 +78,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("แก้ไขโปรไฟล์"),
         backgroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Obx(() {
         if (userProfileController.isLoading.value) {
@@ -76,6 +113,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         setState(() {
                           profileImageUrl = pickedFile.path;
                           profileImageFile = File(pickedFile.path);
+                          _isFieldModified['image'] =
+                              true; // Force marking a field as modified
                         });
                       }
                     },
@@ -84,8 +123,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundImage: profileImageUrl != null && profileImageUrl!.isNotEmpty
-                              ? (profileImageUrl!.startsWith('http') ? NetworkImage(profileImageUrl!) : FileImage(File(profileImageUrl!))) as ImageProvider
+                          backgroundImage: profileImageUrl != null &&
+                                  profileImageUrl!.isNotEmpty
+                              ? (profileImageUrl!.startsWith('http')
+                                      ? NetworkImage(profileImageUrl!)
+                                      : FileImage(File(profileImageUrl!)))
+                                  as ImageProvider
                               : const AssetImage('assets/images/dimoo.png'),
                         ),
                         const Positioned(
@@ -110,6 +153,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
+                    maxLength: 100,
+                    field: 'username',
+                    onChanged: _onFieldChanged,
+                    errorText: _usernameError,
                   ),
                   const SizedBox(height: 10),
                   _buildTextFormField(
@@ -121,6 +168,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
+                    maxLength: 50,
+                    field: 'firstname',
+                    onChanged: _onFieldChanged,
                   ),
                   const SizedBox(height: 10),
                   _buildTextFormField(
@@ -132,6 +182,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
+                    maxLength: 50,
+                    field: 'lastname',
+                    onChanged: _onFieldChanged,
                   ),
                   const SizedBox(height: 10),
                   _buildTextFormField(
@@ -143,6 +196,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
+                    maxLength: 100,
+                    field: 'email',
+                    onChanged: _onFieldChanged,
                   ),
                   const SizedBox(height: 10),
                   _buildTextFormField(
@@ -154,6 +210,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
+                    maxLength: 15,
+                    field: 'phone',
+                    onChanged: _onFieldChanged,
                   ),
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
@@ -164,7 +223,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    items: ['male','female','other','non-identify']
+                    items: ['male', 'female', 'other', 'non-identify']
                         .map((gender) => DropdownMenuItem(
                               value: gender,
                               child: Text(gender),
@@ -172,6 +231,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         .toList(),
                     onChanged: (value) {
                       genderController.value = value!;
+                      _onFieldChanged(genderController.value);
                     },
                   ),
                   const SizedBox(height: 20),
@@ -184,30 +244,58 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Constants.secondaryColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
                         ),
-                        child: const Text('ยกเลิก', style: TextStyle(color: Colors.white)),
+                        child: const Text('ยกเลิก',
+                            style: TextStyle(color: Colors.white)),
                       ),
                       const SizedBox(width: 20),
                       ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            final profileData = UpdateProfileRequest(
-                              username: usernameController.text,
-                              firstname: firstnameController.text,
-                              lastname: lastnameController.text,
-                              email: emailController.text,
-                              phone: phoneController.text,
-                              gender: genderController.value,
-                              imageUrl: profileImageFile?.path, // Send the file path or null
-                            );
-                            updateProfileController.updateProfile(profileData);
-                          }
-                        },
+                        onPressed: _canSubmit()
+                            ? () async {
+                                if (_formKey.currentState!.validate()) {
+                                  // สร้างข้อมูลโปรไฟล์ที่อัปเดต
+                                  final profileData = UpdateProfileRequest(
+                                    username: usernameController.text,
+                                    firstname: firstnameController.text,
+                                    lastname: lastnameController.text,
+                                    email: emailController.text,
+                                    phone: phoneController.text,
+                                    gender: genderController.value,
+                                    imageUrl: profileImageFile
+                                        ?.path, // ส่ง path ของไฟล์หรือ null
+                                  );
+
+                                  // เรียกใช้งานฟังก์ชัน updateProfile ใน Controller
+                                  await updateProfileController
+                                      .updateProfile(profileData);
+
+                                  // หลังจากอัปเดตสำเร็จกลับไปที่หน้าก่อนหน้า
+                                  Navigator.pop(
+                                      context); // เพิ่มการเรียก pop เพื่อกลับไปหน้าเดิม
+
+                                  // สามารถใช้ Snackbar หรือ Dialog เพื่อแจ้งผลการอัปเดต
+                                  Get.snackbar('สำเร็จ',
+                                      'โปรไฟล์ของคุณได้รับการอัปเดตแล้ว',
+                                      snackPosition: SnackPosition.BOTTOM);
+                                } else if (_isUsernameValid) {
+                                  setState(() {
+                                    _usernameError = 'ชื่อนี้ถูกใช้งานแล้ว';
+                                    _isUsernameValid = false;
+                                  });
+                                }
+                              }
+                            : null,
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                          backgroundColor: _canSubmit()
+                              ? Constants.primaryColor
+                              : Colors.grey,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
                         ),
-                        child: const Text('บันทึกโปรไฟล์'),
+                        child: const Text('แก้ไข',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -224,6 +312,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     required TextEditingController controller,
     required String label,
     required String? Function(String?)? validator,
+    required int maxLength,
+    required String field,
+    required Function(String) onChanged,
+    String? errorText,
   }) {
     return TextFormField(
       controller: controller,
@@ -231,9 +323,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
         labelText: label,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: _isFieldModified[field] == true ? Colors.green : Colors.grey,
+          ),
         ),
+        errorText: errorText,
       ),
+      maxLength: maxLength,
       validator: validator,
+      onChanged: (value) {
+        onChanged(value);
+      },
     );
+  }
+
+  void _onFieldChanged(String value) {
+    setState(() {
+      _isFieldModified['image'] = true;
+      _isFieldModified['username'] =
+          usernameController.text != _initialValues['username'];
+      _isFieldModified['firstname'] =
+          firstnameController.text != _initialValues['firstname'];
+      _isFieldModified['lastname'] =
+          lastnameController.text != _initialValues['lastname'];
+      _isFieldModified['email'] =
+          emailController.text != _initialValues['email'];
+      _isFieldModified['phone'] =
+          phoneController.text != _initialValues['phone'];
+      _isFieldModified['gender'] =
+          genderController.value != _initialValues['gender'];
+    });
+  }
+
+  bool _canSubmit() {
+    return _isFieldModified.values.contains(true);
   }
 }
