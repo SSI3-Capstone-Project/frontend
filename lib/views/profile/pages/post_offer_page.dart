@@ -4,6 +4,7 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart';
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/post_offer_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/post_offer_detail_controller.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:video_player/video_player.dart';
@@ -18,8 +19,8 @@ class PostOfferPage extends StatefulWidget {
 
 class _PostOfferPageState extends State<PostOfferPage> {
   final PostOfferController offerController = Get.put(PostOfferController());
-  final OfferDetailController offerDetailController =
-      Get.put(OfferDetailController());
+  final PostOfferDetailController offerDetailController =
+      Get.put(PostOfferDetailController());
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -91,7 +92,8 @@ class _PostOfferPageState extends State<PostOfferPage> {
               //   // ดึงข้อมูลใหม่
               //   await offerController.fetchOffers();
               // }
-              await offerDetailController.fetchOfferDetail(item.id);
+              await offerDetailController.fetchOfferDetail(
+                  widget.postId, item.id);
               _offerDetailDialog();
             },
             child: _buildGridItem(item),
@@ -449,7 +451,7 @@ class _PostOfferPageState extends State<PostOfferPage> {
                                     );
                                   } else {
                                     return Center(
-                                        child: Text('No data available'));
+                                        child: Text('ยังไม่พอข้อเสนอที่ส่งมา'));
                                   }
                                 }),
                               ),
