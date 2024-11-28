@@ -50,7 +50,7 @@ class SendOfferController extends GetxController {
             json.decode(utf8.decode(response.bodyBytes));
         message.value =
             responseData['message'] ?? 'Offer added to post successfully';
-        Get.snackbar('สำเร็จ', 'ขอเสนอของคุณถูกส่งไปแล้ว');
+        Get.snackbar('สำเร็จ', 'ข้อเสนอของคุณถูกส่งไปแล้ว');
         isLoading.value = false;
         return true;
       } else {
@@ -59,14 +59,13 @@ class SendOfferController extends GetxController {
         message.value =
             responseData['message'] ?? 'Failed to add offer to post';
         print(responseData);
-        Get.snackbar('Error', message.value);
         Get.snackbar('แจ้งเตือน', 'เกินปัญหาระหว่างการส่งข้อเสนอของคุณ');
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       message.value = 'Error occurred: $e';
-      Get.snackbar('Error', message.value);
+      Get.snackbar('แจ้งเตือน', message.value);
       isLoading.value = false;
       return false;
     }

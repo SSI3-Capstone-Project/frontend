@@ -201,7 +201,11 @@ class _HomePageState extends State<HomePage> {
                                                   vertical:
                                                       4), // Padding between border and text
                                               child: Text(
-                                                product.subCollectionName,
+                                                product.subCollectionName
+                                                            .length >
+                                                        10
+                                                    ? '${product.subCollectionName.substring(0, 10)}...'
+                                                    : product.subCollectionName,
                                                 style: const TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,

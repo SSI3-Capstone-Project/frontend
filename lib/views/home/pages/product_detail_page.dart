@@ -629,8 +629,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               _createNewOfferDialog();
             } else {
               await offerController.fetchOffers();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ChooseOfferPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChooseOfferPage(
+                            postId: widget.postId,
+                          )));
             }
           },
           child: Container(

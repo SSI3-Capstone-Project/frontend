@@ -2,25 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart';
-import 'package:mbea_ssi3_front/controller/offers_controller.dart';
-import 'package:mbea_ssi3_front/controller/send_offer_controller.dart';
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/post_offer_controller.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:video_player/video_player.dart';
 
-class ChooseOfferPage extends StatefulWidget {
+class PostOfferPage extends StatefulWidget {
   final String postId;
-  const ChooseOfferPage({super.key, required this.postId});
+  const PostOfferPage({super.key, required this.postId});
 
   @override
-  State<ChooseOfferPage> createState() => _ChooseOfferPageState();
+  State<PostOfferPage> createState() => _PostOfferPageState();
 }
 
-class _ChooseOfferPageState extends State<ChooseOfferPage> {
-  final SendOfferController sendOfferController =
-      Get.put(SendOfferController());
-  final OffersController offerController = Get.put(OffersController());
+class _PostOfferPageState extends State<PostOfferPage> {
+  final PostOfferController offerController = Get.put(PostOfferController());
   final OfferDetailController offerDetailController =
       Get.put(OfferDetailController());
   final PageController _pageController = PageController();
@@ -30,22 +27,6 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        title: const Text(
-          'เลือกจากข้อเสนอของคุณ',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-        ),
-        // const Text(
-        //   'จัดการที่อยู่',
-        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
-        // ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: SafeArea(
         child: Obx(() {
           if (offerController.isLoading.value) {
@@ -53,7 +34,9 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
             return Center(child: CircularProgressIndicator());
           }
           return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            padding: EdgeInsets.symmetric(
+              horizontal: 15,
+            ),
             color: Colors.white,
             child: Column(
               children: [
@@ -83,7 +66,7 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
   Widget _buildStaggeredGrid(List<dynamic> items) {
     return RefreshIndicator(
       onRefresh: () async {
-        await offerController.fetchOffers();
+        await offerController.fetchOffers(widget.postId);
       },
       color: Colors.white,
       backgroundColor: Constants.secondaryColor,
@@ -451,9 +434,9 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                                         ],
                                                       ),
                                                     const SizedBox(height: 25),
-                                                    _buildSubmitButton(
-                                                        widget.postId,
-                                                        offerDetail.id),
+                                                    // _buildSubmitButton(
+                                                    //     widget.postId,
+                                                    //     offerDetail.id),
                                                     const SizedBox(height: 25),
                                                     // _buildSubmitButton()
                                                   ],
@@ -505,34 +488,32 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
     );
   }
 
-  Widget _buildSubmitButton(String postId, String offerID) {
-    return Align(
-      alignment: Alignment.center,
-      child: SizedBox(
-        width: 150,
-        child: ElevatedButton(
-          onPressed: () async {
-            sendOfferController.addOffer(postId: postId, offerId: offerID);
-            Navigator.pop(context);
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Constants.secondaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          ),
-          child: Text(
-            'ยื่นข้อเสนอ',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildSubmitButton(String postId, String offerID) {
+  //   return Align(
+  //     alignment: Alignment.center,
+  //     child: SizedBox(
+  //       width: 150,
+  //       child: ElevatedButton(
+  //         onPressed: () async {
+  //           sendOfferController.addOffer(postId: postId, offerId: offerID);
+  //           Navigator.pop(context);
+  //         },
+  //         style: ElevatedButton.styleFrom(
+  //           foregroundColor: Colors.white,
+  //           backgroundColor: Constants.secondaryColor,
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(12),
+  //           ),
+  //           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+  //         ),
+  //         child: Text(
+  //           'ยื่นข้อเสนอ',
+  //           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget mediaContent(OfferDetail offerDetail) {
     final mediaItems = [

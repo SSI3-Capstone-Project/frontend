@@ -4,7 +4,9 @@ import 'package:mbea_ssi3_front/controller/post_detail_controller.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/delete_post_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/post_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/post_edit.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/post_offer_page.dart';
 import 'package:video_player/video_player.dart';
 
 class PostDetailPage extends StatefulWidget {
@@ -16,12 +18,14 @@ class PostDetailPage extends StatefulWidget {
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
+  final PostOfferController offerController = Get.put(PostOfferController());
   final PostDetailController postDetailController =
       Get.put(PostDetailController());
   final PostDeleteController postDeleteController =
       Get.put(PostDeleteController());
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  bool isActiveDetail = true;
 
   @override
   void initState() {
@@ -43,61 +47,225 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
           var postDetail = postDetailController.postDetail.value;
           if (postDetail != null) {
-            return Stack(
+            return Column(
               children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 18),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () => {Navigator.pop(context, true)},
-                            child: const Icon(Icons.arrow_back, size: 30),
-                          ),
-                        ],
-                      ),
-                    ),
-                    mediaContent(postDetail),
-                    const SizedBox(height: 30),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 45),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: _buildTabContainer(),
                 ),
-                DraggableScrollableSheet(
-                  initialChildSize: 0.28,
-                  minChildSize: 0.28,
-                  maxChildSize: 0.9,
-                  builder: (context, scrollController) {
-                    return Container(
-                      padding: const EdgeInsets.only(top: 28),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 0.5,
-                            blurRadius: 6,
-                            offset: const Offset(0, 0),
-                          ),
-                        ],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
+                if (isActiveDetail)
+                  Column(
+                    children: [
+                      const SizedBox(height: 25),
+                      mediaContent(postDetail),
+                      const SizedBox(height: 25),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      postDetail.title,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 21),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(30)),
+                                        color: Constants.primaryColor,
+                                      ),
+                                      child: Text(
+                                        postDetail.subCollectionName,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        spreadRadius: 2,
+                                        blurRadius: 6,
+                                        offset: Offset(0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        size: 25,
+                                        Icons.location_on,
+                                        color: Colors.black54,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        postDetail.location,
+                                        style: TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'สนใจแลก :',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: () {
+                                    // Add button tap functionality here
+                                    print("Button tapped");
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3, horizontal: 15),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFE875C),
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      postDetail.desiredItem,
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                  child: Text(
+                                    postDetail.description,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                    softWrap:
+                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                    overflow: TextOverflow
+                                        .visible, // แสดงข้อความทั้งหมด
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+                            if (postDetail.flaw != null)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'ตำหนิ : ${postDetail.flaw}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Constants.secondaryColor,
+                                    ),
+                                    softWrap:
+                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ],
+                              ),
+                            const SizedBox(height: 25),
+                          ],
                         ),
-                        color: Colors.white,
                       ),
-                      child: productDetails(scrollController, postDetail),
-                    );
-                  },
-                ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                if (!isActiveDetail)
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: PostOfferPage(
+                      postId: widget.postId,
+                    ),
+                  ))
+
+                // DraggableScrollableSheet(
+                //   initialChildSize: 0.28,
+                //   minChildSize: 0.28,
+                //   maxChildSize: 0.9,
+                //   builder: (context, scrollController) {
+                //     return Container(
+                //       padding: const EdgeInsets.only(top: 28),
+                //       decoration: BoxDecoration(
+                //         boxShadow: [
+                //           BoxShadow(
+                //             color: Colors.grey.withOpacity(0.5),
+                //             spreadRadius: 0.5,
+                //             blurRadius: 6,
+                //             offset: const Offset(0, 0),
+                //           ),
+                //         ],
+                //         borderRadius: const BorderRadius.only(
+                //           topLeft: Radius.circular(30),
+                //           topRight: Radius.circular(30),
+                //         ),
+                //         color: Colors.white,
+                //       ),
+                //       child: productDetails(scrollController, postDetail),
+                //     );
+                //   },
+                // ),
               ],
             );
           } else {
@@ -108,315 +276,361 @@ class _PostDetailPageState extends State<PostDetailPage> {
     );
   }
 
+  Widget _buildTabContainer() {
+    return Container(
+      // margin: EdgeInsets.symmetric(horizontal: 20.0),
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 25,
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              _buildTabItem('รายละเอียด', isActiveDetail, () {
+                setState(() {
+                  isActiveDetail = true;
+                });
+              }),
+            ],
+          ),
+          _buildTabItem('ข้อเสนอ', !isActiveDetail, () async {
+            await offerController.fetchOffers(widget.postId);
+            setState(() {
+              isActiveDetail = false;
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => PostOfferPage(),
+              //   ),
+              // );
+            });
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabItem(String label, bool isSelected, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: isSelected ? Constants.secondaryColor : Colors.transparent,
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget mediaContent(PostDetail postDetail) {
     final mediaItems = [
       ...postDetail.postImages.map((img) => img.imageUrl),
       ...postDetail.postVideos.map((vid) => vid.videoUrl),
     ];
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
-        Center(
-          child: SizedBox(
-            width: 335,
-            height: 350,
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: mediaItems.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                final mediaItem = mediaItems[index];
-                if (mediaItem.endsWith('.jpg') || mediaItem.endsWith('.png')) {
-                  return Hero(
-                    tag: mediaItem,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: Image.network(
-                          mediaItem,
-                          width: 320,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  );
-                } else {
-                  return VideoPlayerWidget(videoUrl: mediaItem);
-                }
-              },
-            ),
-          ),
-        ),
-        const SizedBox(height: 15),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(mediaItems.length, (index) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: 10.0,
-              width: _currentPage == index ? 20 : 8,
-              margin: const EdgeInsets.only(right: 5.0),
-              decoration: BoxDecoration(
-                color: Constants.primaryColor,
-                borderRadius: BorderRadius.circular(5),
-              ),
-            );
-          }),
-        ),
-        const SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            GestureDetector(
-              onTap: () async {
-                // Navigate to EditPostForm และรอผลลัพธ์
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditPostForm(postDetail: postDetail),
+            Center(
+              child: SizedBox(
+                width: 420,
+                height: 300,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: mediaItems.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    final mediaItem = mediaItems[index];
+                    if (mediaItem.endsWith('.jpg') ||
+                        mediaItem.endsWith('.png')) {
+                      return Hero(
+                        tag: mediaItem,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
+                          child: ClipRRect(
+                            child: Image.network(
+                              mediaItem,
+                              width: 320,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return VideoPlayerWidget(videoUrl: mediaItem);
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(mediaItems.length, (index) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: 10.0,
+                  width: _currentPage == index ? 20 : 8,
+                  margin: const EdgeInsets.only(right: 5.0),
+                  decoration: BoxDecoration(
+                    color: Constants.primaryColor,
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 );
-
-                // ตรวจสอบว่าโพสต์มีการอัปเดตหรือไม่
-                if (result == true) {
-                  // ดึงข้อมูลใหม่
-                  postDetailController.fetchPostDetail(widget.postId);
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF3AB0F8), Color(0xFF3176B1)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 3,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Text(
-                  'แก้ไขโพสต์',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 30),
-            GestureDetector(
-              onTap: () async {
-                deletePost(widget.postId);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFE875C), Color(0xFFE4593F)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 3,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Text(
-                  'ลบโพสต์',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget productDetails(
-      ScrollController scrollController, PostDetail postDetail) {
-    return ListView(
-      controller: scrollController,
-      physics: const BouncingScrollPhysics(),
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 150,
-              child: Divider(
-                color: Colors.black.withOpacity(0.7),
-                thickness: 3,
-              ),
-            ),
-            SizedBox(width: 10),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              postDetail.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              }),
             ),
           ],
         ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-                color: Constants.primaryColor,
-              ),
-              child: Text(
-                postDetail.subCollectionName,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Padding(
-          padding: const EdgeInsets.only(left: 18),
+        Positioned(
+          top: 10,
+          right: 10,
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'สนใจแลก :',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withOpacity(0.3),
+                ),
+                child: IconButton(
+                  onPressed: () async {
+                    // Navigate to EditPostForm และรอผลลัพธ์
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EditPostForm(postDetail: postDetail),
+                      ),
+                    );
+
+                    // ตรวจสอบว่าโพสต์มีการอัปเดตหรือไม่
+                    if (result == true) {
+                      // ดึงข้อมูลใหม่
+                      postDetailController.fetchPostDetail(widget.postId);
+                    }
+                    print('แก้ไข');
+                  },
+                  icon: Icon(Icons.edit, color: Colors.white),
                 ),
               ),
               const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () {
-                  // Add button tap functionality here
-                  print("Button tapped");
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFE875C),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    postDetail.desiredItem,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withOpacity(0.3),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    deletePost(widget.postId);
+                    print('ลบ');
+                  },
+                  icon: Icon(Icons.delete, color: Colors.white),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 25),
-        Padding(
-          padding: const EdgeInsets.only(left: 18),
-          child: Text(
-            postDetail.description,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-          ),
-        ),
-        const SizedBox(height: 25),
-        if (postDetail.flaw != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 18),
-            child: Text(
-              'ตำหนิ : ${postDetail.flaw}',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Constants.secondaryColor,
-              ),
-            ),
-          ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                      offset: Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.black54,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      postDetail.location,
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
+
+  // Widget productDetails(
+  //     ScrollController scrollController, PostDetail postDetail) {
+  //   return ListView(
+  //     controller: scrollController,
+  //     physics: const BouncingScrollPhysics(),
+  //     children: [
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           SizedBox(
+  //             width: 150,
+  //             child: Divider(
+  //               color: Colors.black.withOpacity(0.7),
+  //               thickness: 3,
+  //             ),
+  //           ),
+  //           SizedBox(width: 10),
+  //         ],
+  //       ),
+  //       const SizedBox(height: 25),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Text(
+  //             postDetail.title,
+  //             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+  //           ),
+  //         ],
+  //       ),
+  //       const SizedBox(height: 25),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         children: [
+  //           Container(
+  //             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+  //             decoration: BoxDecoration(
+  //               borderRadius: const BorderRadius.only(
+  //                 topRight: Radius.circular(30),
+  //                 bottomRight: Radius.circular(30),
+  //               ),
+  //               color: Constants.primaryColor,
+  //             ),
+  //             child: Text(
+  //               postDetail.subCollectionName,
+  //               style: const TextStyle(
+  //                 fontSize: 16,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: Colors.white,
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //       const SizedBox(height: 25),
+  //       Padding(
+  //         padding: const EdgeInsets.only(left: 18),
+  //         child: Row(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             const Text(
+  //               'สนใจแลก :',
+  //               style: TextStyle(
+  //                 fontSize: 16,
+  //                 color: Colors.black87,
+  //               ),
+  //             ),
+  //             const SizedBox(width: 8),
+  //             GestureDetector(
+  //               onTap: () {
+  //                 // Add button tap functionality here
+  //                 print("Button tapped");
+  //               },
+  //               child: Container(
+  //                 padding:
+  //                     const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+  //                 decoration: BoxDecoration(
+  //                   color: const Color(0xFFFE875C),
+  //                   borderRadius: BorderRadius.circular(20),
+  //                   boxShadow: [
+  //                     BoxShadow(
+  //                       color: Colors.black.withOpacity(0.1),
+  //                       blurRadius: 4,
+  //                       offset: Offset(0, 2),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 child: Text(
+  //                   postDetail.desiredItem,
+  //                   style: const TextStyle(
+  //                     color: Colors.white,
+  //                     fontSize: 16,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       const SizedBox(height: 25),
+  //       Padding(
+  //         padding: const EdgeInsets.only(left: 18),
+  //         child: Text(
+  //           postDetail.description,
+  //           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+  //         ),
+  //       ),
+  //       const SizedBox(height: 25),
+  //       if (postDetail.flaw != null)
+  //         Padding(
+  //           padding: const EdgeInsets.only(left: 18),
+  //           child: Text(
+  //             'ตำหนิ : ${postDetail.flaw}',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //               color: Constants.secondaryColor,
+  //             ),
+  //           ),
+  //         ),
+  //       const SizedBox(height: 25),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.end,
+  //         children: [
+  //           Padding(
+  //             padding: const EdgeInsets.symmetric(horizontal: 18),
+  //             child: Container(
+  //               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.white,
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 boxShadow: [
+  //                   BoxShadow(
+  //                     color: Colors.black.withOpacity(0.1),
+  //                     spreadRadius: 2,
+  //                     blurRadius: 6,
+  //                     offset: Offset(0, 0),
+  //                   ),
+  //                 ],
+  //               ),
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Icon(
+  //                     Icons.location_on,
+  //                     color: Colors.black54,
+  //                   ),
+  //                   SizedBox(width: 4),
+  //                   Text(
+  //                     postDetail.location,
+  //                     style: TextStyle(
+  //                       color: Colors.black87,
+  //                       fontSize: 16,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ],
+  //   );
+  // }
 
   void deletePost(String id) {
     // การทำงานเมื่อกดปุ่มลบ
@@ -629,9 +843,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       allowScrubbing: true,
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       colors: VideoProgressColors(
-        playedColor: Theme.of(context).primaryColor,
+        playedColor: Colors.white,
         bufferedColor: Colors.grey,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.grey,
       ),
     );
   }
