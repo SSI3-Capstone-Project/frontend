@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/views/authen/controllers/create_user_controller.dart';
 import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
-import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
+// import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -103,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => RootPage()),
+              MaterialPageRoute(builder: (_) => LoginPage()),
             );
           },
         ),
