@@ -23,6 +23,7 @@ class ProductController extends GetxController {
 
   Future<void> fetchProducts() async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {
@@ -43,7 +44,7 @@ class ProductController extends GetxController {
               postData.map((item) => Product.fromJson(item)).toList();
         } else {
           productList.clear(); // Clear the list if no data is present
-          Get.snackbar('แจ้งเตือน', 'ไม่พบโพสต์ในระบบ');
+          // Get.snackbar('แจ้งเตือน', 'ไม่พบโพสต์ในระบบ');
         }
         // productList.value =
         //     jsonData.map((item) => Product.fromJson(item)).toList();

@@ -22,6 +22,7 @@ class PostOfferController extends GetxController {
 
   Future<void> fetchOffers(String postId) async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {

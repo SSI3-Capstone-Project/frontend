@@ -23,6 +23,7 @@ class PostsController extends GetxController {
 
   Future<void> fetchPosts() async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {

@@ -33,6 +33,7 @@ class AddressController extends GetxController {
   // Fetch addresses from the API
   Future<void> fetchAddresses() async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading.value = true;
       if (accessToken == null) {
@@ -78,6 +79,7 @@ class AddressController extends GetxController {
     required bool isDefault,
   }) async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading.value = true;
 
@@ -135,6 +137,7 @@ class AddressController extends GetxController {
     required bool isDefault,
   }) async {
     try {
+      await tokenController.loadTokens();
       print('----------------------------------------------------------------');
       print(subDistrictId);
       print(address);
@@ -195,6 +198,7 @@ class AddressController extends GetxController {
     required String id,
   }) async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading.value = true;
 

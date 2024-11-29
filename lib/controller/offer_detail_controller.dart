@@ -22,6 +22,7 @@ class OfferDetailController extends GetxController {
 
   Future<bool> fetchOfferDetail(String offerId) async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {

@@ -23,6 +23,7 @@ class BrandController extends GetxController {
   }
 
   void fetchBrands() async {
+    await tokenController.loadTokens();
     isLoading(true);
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');

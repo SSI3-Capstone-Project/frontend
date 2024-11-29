@@ -25,6 +25,7 @@ class SendOfferController extends GetxController {
     required String offerId,
   }) async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading.value = true;
 

@@ -20,6 +20,7 @@ class CreatePostController extends GetxController {
   }
 
   Future<bool> createPost(Post post) async {
+    await tokenController.loadTokens();
     final token = tokenController.accessToken.value;
     isLoading.value = true;
     if (accessToken == null) {

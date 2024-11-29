@@ -23,6 +23,7 @@ class ProvinceController extends GetxController {
   }
 
   void fetchProvince() async {
+    await tokenController.loadTokens();
     isLoading(true);
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');

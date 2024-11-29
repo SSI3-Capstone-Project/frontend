@@ -35,6 +35,7 @@ class UpdateOfferController extends GetxController {
   ).obs;
 
   Future<bool> updateOfferDetails(UpdateOffer offerToUpdate) async {
+    await tokenController.loadTokens();
     final token = tokenController.accessToken.value;
     print('--- Offer Data to be Updated ---');
     print('ID: ${offerToUpdate.id}');

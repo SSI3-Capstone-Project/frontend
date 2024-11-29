@@ -83,7 +83,7 @@ class Product {
       subCollectionName: json['sub_collection_name'] as String,
       coverImage: json['cover_image'] as String,
       username: json['username'] as String,
-      imageUrl: json['image_url'] as String,
+      imageUrl: json['image_url'] as String? ?? '',
     );
   }
 }

@@ -36,6 +36,7 @@ class UpdatePostController extends GetxController {
   ).obs;
 
   Future<bool> updatePostDetails(UpdatePost postToUpdate) async {
+    await tokenController.loadTokens();
     final token = tokenController.accessToken.value;
     print('--- Post Data to be Updated ---');
     print('ID: ${postToUpdate.id}');

@@ -22,6 +22,7 @@ class ProductDetailController extends GetxController {
 
   Future<void> fetchProductDetail(String productId) async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {

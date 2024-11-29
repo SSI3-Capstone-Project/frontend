@@ -23,6 +23,7 @@ class OffersController extends GetxController {
 
   Future<void> fetchOffers() async {
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {

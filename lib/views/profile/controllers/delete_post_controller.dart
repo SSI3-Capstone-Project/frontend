@@ -18,6 +18,7 @@ class PostDeleteController extends GetxController {
   }
 
   Future<bool> deletePost(String postId) async {
+    await tokenController.loadTokens();
     isLoading.value = true;
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');

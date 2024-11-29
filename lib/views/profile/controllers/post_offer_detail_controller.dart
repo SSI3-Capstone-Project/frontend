@@ -21,11 +21,8 @@ class PostOfferDetailController extends GetxController {
   }
 
   Future<bool> fetchOfferDetail(String postId, String offerId) async {
-    print('------------------------------------------------------------------');
-    print(postId);
-    print(offerId);
-    print('------------------------------------------------------------------');
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {

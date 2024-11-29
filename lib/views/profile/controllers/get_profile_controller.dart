@@ -24,6 +24,7 @@ class UserProfileController extends GetxController {
     isLoading.value = true;
 
     try {
+      await tokenController.loadTokens();
       final token = tokenController.accessToken.value;
       if (accessToken == null) {
         Get.snackbar('Error', 'No access token found.');

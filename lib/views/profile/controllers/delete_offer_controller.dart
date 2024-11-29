@@ -18,6 +18,7 @@ class OfferDeleteController extends GetxController {
   }
 
   Future<bool> deleteOffer(String offerId) async {
+    await tokenController.loadTokens();
     isLoading.value = true;
     if (accessToken == null) {
       Get.snackbar('Error', 'No access token found.');

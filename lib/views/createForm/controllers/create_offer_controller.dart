@@ -22,6 +22,7 @@ class CreateOfferController extends GetxController {
   }
 
   Future<String?> createOffer(Offer offer) async {
+    await tokenController.loadTokens();
     final token = tokenController.accessToken.value;
     isLoading.value = true;
     if (accessToken == null) {

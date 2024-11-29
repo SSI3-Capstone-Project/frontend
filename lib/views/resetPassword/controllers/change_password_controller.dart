@@ -30,6 +30,7 @@ class ChangePasswordController extends GetxController {
     // };
 
     try {
+      await tokenController.loadTokens();
       print('---------------------------------------------------------------');
       print(oldPassword);
       print(newPassword);
