@@ -153,7 +153,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
-                    maxLength: 100,
+                    maxLength: 30,
                     field: 'username',
                     onChanged: _onFieldChanged,
                     errorText: _usernameError,
@@ -168,7 +168,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
-                    maxLength: 50,
+                    maxLength: 30,
                     field: 'firstname',
                     onChanged: _onFieldChanged,
                   ),
@@ -182,7 +182,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
-                    maxLength: 50,
+                    maxLength: 45,
                     field: 'lastname',
                     onChanged: _onFieldChanged,
                   ),
@@ -196,7 +196,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
-                    maxLength: 100,
+                    maxLength: 255,
                     field: 'email',
                     onChanged: _onFieldChanged,
                   ),
@@ -210,7 +210,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                       return null;
                     },
-                    maxLength: 15,
+                    maxLength: 10,
                     field: 'phone',
                     onChanged: _onFieldChanged,
                   ),

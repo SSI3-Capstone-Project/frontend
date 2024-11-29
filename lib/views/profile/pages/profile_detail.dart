@@ -182,7 +182,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       Icons.logout_outlined
     ];
     List<String> menuItems = [
-      "ที่อยู๋ของคุณ",
+      "ที่อยู่ของคุณ",
       "ช่องทางชำระเงิน",
       "ประวัติการแลก",
       "รายงานปัญหา",

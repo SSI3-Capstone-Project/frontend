@@ -38,8 +38,10 @@ class UserProfileController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body)['data'];
+        final utf8Data = utf8.decode(response.bodyBytes);
+        final data = json.decode(utf8Data)['data'];
         userProfile.value = UserProfile.fromJson(data);
+
         print("This is data of user profile: ${userProfile.value}");
       } else {
         Get.snackbar('Error', 'Failed to fetch user profile');
