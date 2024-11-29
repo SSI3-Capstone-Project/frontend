@@ -100,7 +100,9 @@ class _ProfileDetailState extends State<ProfileDetail> {
       children: [
         CircleAvatar(
           radius: 50,
-          backgroundImage: NetworkImage(user.imageUrl!),
+          backgroundImage: user.imageUrl != null
+                    ? NetworkImage(user.imageUrl!)
+                    : AssetImage('assets/images/dimoo.png'),
         ),
         SizedBox(width: 20),
         Column(
@@ -121,7 +123,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ProfileEditPage(),
+                        builder: (context) => EditProfilePage(),
                       ),
                     );
                   },
