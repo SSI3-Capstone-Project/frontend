@@ -3,11 +3,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
-import 'package:mbea_ssi3_front/model/offers_model.dart';
+import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
 
-class OffersController extends GetxController {
+class PostOfferDetailController extends GetxController {
   final tokenController = Get.find<TokenController>();
-  var offerList = <Offers>[].obs;
+  var offerDetail = Rxn<OfferDetail>();
   var isLoading = false.obs;
 
   // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
@@ -18,44 +18,45 @@ class OffersController extends GetxController {
     super.onInit();
     // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
     accessToken = tokenController.accessToken.value;
-    fetchOffers();
   }
 
-  Future<void> fetchOffers() async {
+  Future<bool> fetchOfferDetail(String postId, String offerId) async {
+    print('------------------------------------------------------------------');
+    print(postId);
+    print(offerId);
+    print('------------------------------------------------------------------');
     try {
       final token = tokenController.accessToken.value;
       isLoading(true);
       if (accessToken == null) {
         Get.snackbar('Error', 'No access token found.');
-        return;
+        isLoading(false);
+        return false;
       }
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/offers'),
+        Uri.parse('${dotenv.env['API_URL']}/posts/$postId/offer/$offerId'),
         headers: {
           'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${utf8.decode(response.bodyBytes)}');
       if (response.statusCode == 200) {
-        // Ensure decoding with UTF-8
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         var offerData = jsonData['data'];
-        if (offerData != null && offerData is List && offerData.isNotEmpty) {
-          offerList.value =
-              offerData.map((item) => Offers.fromJson(item)).toList();
-        } else {
-          offerList.clear(); // Clear the list if no data is present
-          Get.snackbar(
-              'แจ้งเตือน', 'สร้างข้อเสนอของคุณ เพื่อยืนให้กับโพสต์ที่สนใจ');
-        }
+        offerDetail.value = OfferDetail.fromJson(offerData);
+        isLoading(false);
+        return true;
       } else {
-        print('adsadasdasdasdasdasdasd');
         Get.snackbar(
-            'Error', 'Failed to load offers: ${response.reasonPhrase}');
+            'Error', 'Failed to load offer detail: ${response.reasonPhrase}');
+        isLoading(false);
+        return false;
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: ${e.toString()}');
-    } finally {
       isLoading(false);
+      return false;
     }
   }
 }
