@@ -439,7 +439,7 @@ class _ProfilePageState extends State<ProfilePage> {
           print("$label tapped!");
         },
         child: Container(
-          width: 182,
+          width: 170,
           height: 70,
           decoration: BoxDecoration(
             color: Colors.white,
