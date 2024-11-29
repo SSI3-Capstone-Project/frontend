@@ -9,7 +9,7 @@ class TokenController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadTokens(); // โหลด token เมื่อเริ่มแอป
+    loadTokens(); // โหลด token เมื่อเริ่มต้น
   }
 
   Future<void> saveTokens(String accessToken) async {
@@ -19,7 +19,8 @@ class TokenController extends GetxController {
   }
 
   Future<void> loadTokens() async {
-    accessToken.value = await _storage.read(key: 'accessToken');
+    final token = await _storage.read(key: 'accessToken');
+    accessToken.value = token; // อัปเดตค่า token ใน controller
     print('Token loaded: ${accessToken.value}');
   }
 

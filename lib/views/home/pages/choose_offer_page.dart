@@ -264,202 +264,232 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                   if (offerDetail != null) {
                                     return Stack(
                                       children: [
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              mediaContent(offerDetail),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 16),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 80),
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              children: [
+                                                mediaContent(offerDetail),
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 16),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                offerDetail
+                                                                    .title,
+                                                                style: const TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .normal,
+                                                                    fontSize:
+                                                                        16),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Container(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        15,
+                                                                    vertical:
+                                                                        5),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      const BorderRadius
+                                                                          .all(
+                                                                          Radius.circular(
+                                                                              30)),
+                                                                  color: Constants
+                                                                      .primaryColor,
+                                                                ),
+                                                                child: Text(
+                                                                  offerDetail
+                                                                      .subCollectionName,
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 15),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    horizontal:
+                                                                        15,
+                                                                    vertical:
+                                                                        6),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.1),
+                                                                  spreadRadius:
+                                                                      2,
+                                                                  blurRadius: 6,
+                                                                  offset:
+                                                                      Offset(
+                                                                          0, 0),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                Icon(
+                                                                  size: 21,
+                                                                  Icons
+                                                                      .location_on,
+                                                                  color: Colors
+                                                                      .black54,
+                                                                ),
+                                                                SizedBox(
+                                                                    width: 4),
+                                                                Text(
+                                                                  offerDetail
+                                                                      .location,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black87,
+                                                                    fontSize:
+                                                                        12,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 25),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Expanded(
+                                                            // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                                            child: Text(
+                                                              offerDetail
+                                                                  .description,
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                              ),
+                                                              softWrap:
+                                                                  true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                              overflow: TextOverflow
+                                                                  .visible, // แสดงข้อความทั้งหมด
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 25),
+
+                                                      if (offerDetail.flaw !=
+                                                          null)
                                                         Row(
                                                           mainAxisAlignment:
                                                               MainAxisAlignment
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                              offerDetail.title,
-                                                              style: const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal,
-                                                                  fontSize: 16),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        SizedBox(
-                                                          width: 10,
-                                                        ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          15,
-                                                                      vertical:
-                                                                          5),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    const BorderRadius
-                                                                        .all(
-                                                                        Radius.circular(
-                                                                            30)),
+                                                              'ตำหนิ : ${offerDetail.flaw}',
+                                                              style: TextStyle(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
                                                                 color: Constants
-                                                                    .primaryColor,
+                                                                    .secondaryColor,
                                                               ),
-                                                              child: Text(
-                                                                offerDetail
-                                                                    .subCollectionName,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
+                                                              softWrap:
+                                                                  true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .visible,
                                                             ),
                                                           ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 15),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      15,
-                                                                  vertical: 6),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20),
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                color: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.1),
-                                                                spreadRadius: 2,
-                                                                blurRadius: 6,
-                                                                offset: Offset(
-                                                                    0, 0),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              Icon(
-                                                                size: 21,
-                                                                Icons
-                                                                    .location_on,
-                                                                color: Colors
-                                                                    .black54,
-                                                              ),
-                                                              SizedBox(
-                                                                  width: 4),
-                                                              Text(
-                                                                offerDetail
-                                                                    .location,
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .black87,
-                                                                  fontSize: 12,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 25),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Expanded(
-                                                          // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
-                                                          child: Text(
-                                                            offerDetail
-                                                                .description,
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                            ),
-                                                            softWrap:
-                                                                true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                                            overflow: TextOverflow
-                                                                .visible, // แสดงข้อความทั้งหมด
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 25),
-                                                    if (offerDetail.flaw !=
-                                                        null)
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            'ตำหนิ : ${offerDetail.flaw}',
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: Constants
-                                                                  .secondaryColor,
-                                                            ),
-                                                            softWrap:
-                                                                true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .visible,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    const SizedBox(height: 25),
-                                                    _buildSubmitButton(
-                                                        widget.postId,
-                                                        offerDetail.id),
-                                                    const SizedBox(height: 25),
-                                                    // _buildSubmitButton()
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                                      const SizedBox(
+                                                          height: 25),
+                                                      // _buildSubmitButton(
+                                                      //     widget.postId,
+                                                      //     offerDetail.id),
+                                                      // const SizedBox(height: 25),
+                                                      // _buildSubmitButton()
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 25),
+                                        Positioned(
+                                          bottom: 15,
+                                          left: 0,
+                                          right: 0,
+                                          child: InkWell(
+                                            onTap: () {
+                                              Navigator.pop(
+                                                  context); // ปิด Dialog
+                                            },
+                                            child: _buildSubmitButton(
+                                                widget.postId, offerDetail.id),
                                           ),
                                         ),
                                       ],

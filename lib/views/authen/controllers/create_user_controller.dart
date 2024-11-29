@@ -63,6 +63,9 @@ class UserCreationController extends GetxController {
         isLoading.value = false;
       }
     } catch (e) {
+      print(
+          '-----------------------------------------------------------------');
+      print(e);
       Get.snackbar('Error', 'An error occurred');
       isLoading.value = false;
     }

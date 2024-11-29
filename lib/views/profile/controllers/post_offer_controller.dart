@@ -43,8 +43,7 @@ class PostOfferController extends GetxController {
               offerData.map((item) => Offers.fromJson(item)).toList();
         } else {
           offerList.clear(); // Clear the list if no data is present
-          Get.snackbar(
-              'แจ้งเตือน', 'สร้างข้อเสนอของคุณ เพื่อยืนให้กับโพสต์ที่สนใจ');
+          Get.snackbar('แจ้งเตือน', 'ยังไม่พบข้อเสนอถูกที่ถูกยื่นมา');
         }
       } else {
         Get.snackbar(
