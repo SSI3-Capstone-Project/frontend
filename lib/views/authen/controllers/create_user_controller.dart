@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +23,7 @@ class UserCreationController extends GetxController {
   var isLoading = false.obs;
 
   // Register User method
-  Future<void> registerUser(String imagePath) async {
+  Future<bool> registerUser(String imagePath) async {
     isLoading.value = true;
 
     var uri = Uri.parse('${dotenv.env['API_URL']}/user/registration');
@@ -41,6 +44,18 @@ class UserCreationController extends GetxController {
         contentType:
             MediaType('image', 'jpeg'), // กำหนดประเภทไฟล์เป็น image/jpeg
       ));
+    } else {
+      // Load the default asset image
+      ByteData byteData =
+          await rootBundle.load('assets/images/white_gray_person_image.png');
+      List<int> imageData = byteData.buffer.asUint8List();
+
+      request.files.add(http.MultipartFile.fromBytes(
+        'image_file',
+        imageData,
+        filename: 'default_image.jpg',
+        contentType: MediaType('image', 'jpeg'),
+      ));
     }
 
     try {
@@ -49,18 +64,42 @@ class UserCreationController extends GetxController {
         var responseData = await response.stream.bytesToString();
         var jsonResponse = json.decode(responseData);
         userRequest.value = CreateUserRequest.fromJson(jsonResponse['data']);
-        isLoading.value = false;
         Get.snackbar('สำเร็จ', 'ลงทะเบียนผู้ใช้เรียบร้อยแล้ว');
         isLoading.value = false;
-      } else if (response.statusCode == 500) {
-        Get.snackbar('แจ้งเตือน', 'ชื่อผู้ใช้นี้ถูกลงทะเบียนไปแล้ว');
+        return true;
+      } else if (response.statusCode == 409) {
+        var errorData = await response.stream.bytesToString();
+        var errorJson = json.decode(errorData);
+
+        // แปลงข้อความข้อผิดพลาดเป็นภาษาไทย
+        var errorMessages = (errorJson['errors'] as List).map((e) {
+          switch (e['field']) {
+            case 'Username':
+              return 'ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว';
+            case 'Email':
+              return 'อีเมลนี้ถูกใช้ไปแล้ว';
+            case 'Phone':
+              return 'เบอร์โทรนี้ถูกใช้ไปแล้ว';
+            default:
+              return e['error']; // หากไม่มีคำแปล ให้ใช้ข้อความเดิม
+          }
+        }).join(', '); // รวมข้อความทั้งหมดเข้าด้วยกัน
+
+        Get.snackbar('แจ้งเตือน', errorMessages);
+        print(errorMessages); // Debug log
         isLoading.value = false;
+        return false;
+      } else if (response.statusCode == 500) {
+        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (500)');
+        isLoading.value = false;
+        return false;
       } else {
         var errorData = await response.stream.bytesToString();
         print(
             'Failed to create post: ${response.statusCode}, Error: $errorData');
         Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการสมัครสมาชิค');
         isLoading.value = false;
+        return false;
       }
     } catch (e) {
       print(
@@ -68,6 +107,7 @@ class UserCreationController extends GetxController {
       print(e);
       Get.snackbar('Error', 'An error occurred');
       isLoading.value = false;
+      return false;
     }
   }
 }

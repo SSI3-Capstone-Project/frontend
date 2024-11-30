@@ -135,6 +135,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   void _submitForm() async {
+    if (_passwordController.value == _newPasswordController.value &&
+        _newPasswordController.value == _confirmNewPasswordController.value) {
+      Get.snackbar('แจ้งเตือน', 'รหัสผ่านใหม่ต้องไม่ตรงกับรหัสผ่านเดิม');
+      return;
+    }
     if (_formKey.currentState!.validate()) {
       var result = await controller.changePassword(
           _passwordController.text, _newPasswordController.text);

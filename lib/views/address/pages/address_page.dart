@@ -61,24 +61,29 @@ class _AddressPageState extends State<AddressPage> {
           return Container(
             color: Colors.white,
             child: Center(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 30, horizontal: 90),
-                child: ElevatedButton(
-                  onPressed: _createAddress,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                    backgroundColor: Constants.secondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              child: Stack(children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: ElevatedButton(
+                    onPressed: _createAddress,
+                    style: ElevatedButton.styleFrom(
+                      fixedSize:
+                          const Size(150, 15), // กำหนดขนาดตายตัว (กว้าง x สูง)
+                      backgroundColor: Constants.secondaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'เพิ่มที่อยู่ใหม่',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
-                  child: Text(
-                    'เพิ่มที่อยู่ใหม่',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
                 ),
-              ),
+              ]),
             ),
           );
         }
@@ -100,28 +105,30 @@ class _AddressPageState extends State<AddressPage> {
                   final item = entry.value;
                   return _buildAddressCard(item, index);
                 }).toList(),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 30, horizontal: 120),
-                  child: ElevatedButton(
-                    onPressed: _createAddress,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Constants.secondaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                Center(
+                  child: Stack(children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 30),
+                      child: ElevatedButton(
+                        onPressed: _createAddress,
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(
+                              150, 15), // กำหนดขนาดตายตัว (กว้าง x สูง)
+                          backgroundColor: Constants.secondaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'เพิ่มที่อยู่ใหม่',
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     ),
-                    child: Text(
-                      'เพิ่มที่อยู่ใหม่',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                  ]),
                 ),
               ],
             ),
@@ -887,7 +894,7 @@ class _AddressPageState extends State<AddressPage> {
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           ),
           child: Text(
-            'เพิ่มที่อยู่',
+            'ยืนยัน',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),

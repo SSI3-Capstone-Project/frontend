@@ -50,9 +50,9 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity),
       home: Obx(() {
         final tokenController = Get.find<TokenController>();
-        return tokenController.accessToken.value != null
-            ? const RootPage() // ถ้ามี token
-            : LoginPage(); // ถ้าไม่มี token
+        return tokenController.accessToken.value == null
+            ? LoginPage() // ถ้ามี token
+            : RootPage(); // ถ้าไม่มี token
       }), // ถ้าไม่มี token
       debugShowCheckedModeBanner: false,
     );

@@ -80,10 +80,15 @@ class _RegisterPageState extends State<RegisterPage> {
         barrierDismissible: false,
       );
 
-      await _controller.registerUser(_profileImage?.path ?? '');
+      var result = await _controller.registerUser(_profileImage?.path ?? '');
 
       if (!_controller.isLoading.value) {
         Navigator.of(context).pop();
+      }
+
+      if (result) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => LoginPage()));
       }
     }
   }
