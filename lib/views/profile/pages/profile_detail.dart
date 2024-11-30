@@ -101,8 +101,8 @@ class _ProfileDetailState extends State<ProfileDetail> {
         CircleAvatar(
           radius: 50,
           backgroundImage: user.imageUrl != null
-                    ? NetworkImage(user.imageUrl!)
-                    : AssetImage('assets/images/dimoo.png'),
+              ? NetworkImage(user.imageUrl!)
+              : AssetImage('assets/images/dimoo.png'),
         ),
         SizedBox(width: 20),
         Column(
@@ -199,7 +199,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
         return InkWell(
           onTap: () async {
             switch (menuItems[index]) {
-              case "ที่อยู๋ของคุณ":
+              case "ที่อยู่ของคุณ":
                 await addressController.fetchAddresses();
                 Navigator.push(
                   context,

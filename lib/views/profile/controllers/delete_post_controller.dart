@@ -7,21 +7,10 @@ class PostDeleteController extends GetxController {
   final tokenController = Get.find<TokenController>();
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
-  }
-
   Future<bool> deletePost(String postId) async {
-    await tokenController.loadTokens();
     isLoading.value = true;
-    if (accessToken == null) {
-      Get.snackbar('Error', 'No access token found.');
+    if (tokenController.accessToken.value == null) {
+      // Get.snackbar('Error', 'No access token found.');
       isLoading.value = false;
       return false;
     }

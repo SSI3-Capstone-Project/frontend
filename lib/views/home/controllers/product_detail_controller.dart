@@ -10,25 +10,14 @@ class ProductDetailController extends GetxController {
   var productDetail = Rxn<ProductDetail>();
   var isLoading = false.obs;
 
-  // Access token received from login or other authentication processes
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // Initialize accessToken in onInit
-    accessToken = tokenController.accessToken.value;
-  }
-
   Future<void> fetchProductDetail(String productId) async {
     try {
-      await tokenController.loadTokens();
-      final token = tokenController.accessToken.value;
       isLoading(true);
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
         return;
       }
+      final token = tokenController.accessToken.value;
       final response = await http.get(
         Uri.parse('${dotenv.env['API_URL']}/posts/$productId'),
         headers: {

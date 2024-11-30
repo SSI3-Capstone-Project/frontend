@@ -10,26 +10,22 @@ class OffersController extends GetxController {
   var offerList = <Offers>[].obs;
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
   @override
   void onInit() {
     super.onInit();
     // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
     fetchOffers();
   }
 
   Future<void> fetchOffers() async {
     try {
-      await tokenController.loadTokens();
-      final token = tokenController.accessToken.value;
       isLoading(true);
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading(false);
         return;
       }
+      final token = tokenController.accessToken.value;
       final response = await http.get(
         Uri.parse('${dotenv.env['API_URL']}/offers'),
         headers: {
@@ -48,13 +44,16 @@ class OffersController extends GetxController {
           Get.snackbar(
               'แจ้งเตือน', 'สร้างข้อเสนอของคุณ เพื่อยืนให้กับโพสต์ที่สนใจ');
         }
+        isLoading(false);
       } else {
         print('adsadasdasdasdasdasdasd');
         Get.snackbar(
             'Error', 'Failed to load offers: ${response.reasonPhrase}');
+        isLoading(false);
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      isLoading(false);
     } finally {
       isLoading(false);
     }

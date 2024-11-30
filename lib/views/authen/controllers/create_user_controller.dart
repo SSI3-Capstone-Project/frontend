@@ -23,7 +23,7 @@ class UserCreationController extends GetxController {
   Future<void> registerUser(String imagePath) async {
     isLoading.value = true;
 
-    var uri = Uri.parse('${dotenv.env['API_URL']}/users/registration');
+    var uri = Uri.parse('${dotenv.env['API_URL']}/user/registration');
     var request = http.MultipartRequest('POST', uri)
       ..fields['username'] = userRequest.value.username
       ..fields['password'] = userRequest.value.password ?? ''

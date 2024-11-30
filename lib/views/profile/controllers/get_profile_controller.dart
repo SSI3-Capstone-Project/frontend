@@ -7,13 +7,11 @@ import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 
 class UserProfileController extends GetxController {
   final tokenController = Get.find<TokenController>();
-  String? accessToken;
 
   @override
   void onInit() {
     super.onInit();
     // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
     fetchUserProfile();
   }
 
@@ -24,14 +22,14 @@ class UserProfileController extends GetxController {
     isLoading.value = true;
 
     try {
-      await tokenController.loadTokens();
-      final token = tokenController.accessToken.value;
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading.value = false;
         return;
       }
+      final token = tokenController.accessToken.value;
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/users/profile'),
+        Uri.parse('${dotenv.env['API_URL']}/user/profile'),
         headers: {
           'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
@@ -43,12 +41,15 @@ class UserProfileController extends GetxController {
         userProfile.value = UserProfile.fromJson(data);
 
         print("This is data of user profile: ${userProfile.value}");
+        isLoading.value = false;
       } else {
         Get.snackbar('Error', 'Failed to fetch user profile');
         print("failed to fetch user profile");
+        isLoading.value = false;
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
+      isLoading.value = false;
     } finally {
       isLoading.value = false;
     }

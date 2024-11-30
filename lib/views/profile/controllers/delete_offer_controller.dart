@@ -7,25 +7,14 @@ class OfferDeleteController extends GetxController {
   final tokenController = Get.find<TokenController>();
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
-  }
-
   Future<bool> deleteOffer(String offerId) async {
-    await tokenController.loadTokens();
-    isLoading.value = true;
-    if (accessToken == null) {
-      Get.snackbar('Error', 'No access token found.');
-      isLoading.value = false;
-      return false;
-    }
     try {
+      isLoading.value = true;
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading.value = false;
+        return false;
+      }
       final token = tokenController.accessToken.value;
       final response = await http.delete(
         Uri.parse('${dotenv.env['API_URL']}/offers/$offerId'),

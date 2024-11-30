@@ -62,14 +62,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
           lastnameController.text = userProfile.lastname ?? '';
           emailController.text = userProfile.email ?? '';
           phoneController.text = userProfile.phone ?? '';
-          genderController.value = userProfile.gender ?? '';
-          // Store initial values for comparison
+          genderController.value = userProfile.gender ?? 'non-identify';
           _initialValues['username'] = userProfile.username ?? '';
           _initialValues['firstname'] = userProfile.firstname ?? '';
           _initialValues['lastname'] = userProfile.lastname ?? '';
           _initialValues['email'] = userProfile.email ?? '';
           _initialValues['phone'] = userProfile.phone ?? '';
-          _initialValues['gender'] = userProfile.gender ?? '';
+          _initialValues['gender'] = userProfile.gender ?? 'non-identify';
         });
       }
     });
@@ -216,7 +215,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
-                    value: genderController.value,
+                    value: ['male', 'female', 'other', 'non-identify']
+                            .contains(genderController.value)
+                        ? genderController.value
+                        : 'non-identify',
                     decoration: InputDecoration(
                       labelText: 'เพศ',
                       border: OutlineInputBorder(
@@ -226,12 +228,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     items: ['male', 'female', 'other', 'non-identify']
                         .map((gender) => DropdownMenuItem(
                               value: gender,
-                              child: Text(gender),
+                              child: Text(
+                                gender == 'male'
+                                    ? 'ชาย'
+                                    : gender == 'female'
+                                        ? 'หญิง'
+                                        : gender == 'other'
+                                            ? 'อื่น ๆ'
+                                            : 'ไม่ระบุ',
+                              ),
                             ))
                         .toList(),
                     onChanged: (value) {
-                      genderController.value = value!;
-                      _onFieldChanged(genderController.value);
+                      setState(() {
+                        genderController.value = value!;
+                        _onFieldChanged(genderController.value);
+                      });
                     },
                   ),
                   const SizedBox(height: 20),
@@ -276,9 +288,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       context); // เพิ่มการเรียก pop เพื่อกลับไปหน้าเดิม
 
                                   // สามารถใช้ Snackbar หรือ Dialog เพื่อแจ้งผลการอัปเดต
-                                  Get.snackbar('สำเร็จ',
-                                      'โปรไฟล์ของคุณได้รับการอัปเดตแล้ว',
-                                      snackPosition: SnackPosition.BOTTOM);
+                                  // Get.snackbar('สำเร็จ',
+                                  //     'โปรไฟล์ของคุณได้รับการอัปเดตแล้ว',
+                                  //     snackPosition: SnackPosition.BOTTOM);
                                 } else if (_isUsernameValid) {
                                   setState(() {
                                     _usernameError = 'ชื่อนี้ถูกใช้งานแล้ว';

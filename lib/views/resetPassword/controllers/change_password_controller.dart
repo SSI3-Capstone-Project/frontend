@@ -10,18 +10,8 @@ class ChangePasswordController extends GetxController {
   var isLoading = false.obs;
   var message = ''.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
-  }
-
   Future<bool> changePassword(String oldPassword, String newPassword) async {
-    isLoading.value = true;
+    isLoading.value = false;
     // final url = Uri.parse('http://localhost:8080/api/user/change-password');
 
     // final body = {
@@ -30,19 +20,19 @@ class ChangePasswordController extends GetxController {
     // };
 
     try {
-      await tokenController.loadTokens();
+      isLoading.value = true;
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading.value = false;
+        return false;
+      }
       print('---------------------------------------------------------------');
       print(oldPassword);
       print(newPassword);
       print('---------------------------------------------------------------');
       final token = tokenController.accessToken.value;
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
-        isLoading.value = false;
-        return false;
-      }
       final response = await http.put(
-        Uri.parse('${dotenv.env['API_URL']}/users/change-password'),
+        Uri.parse('${dotenv.env['API_URL']}/user/change-password'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json' // แนบ Bearer Token

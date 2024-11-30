@@ -32,7 +32,7 @@ class UpdateProfileController extends GetxController {
       if (profileData.imageUrl != null && profileData.imageUrl!.isNotEmpty) {
         final request = http.MultipartRequest(
           'PUT',
-          Uri.parse('${dotenv.env['API_URL']}/users/profile'),
+          Uri.parse('${dotenv.env['API_URL']}/user/profile'),
         );
 
         // Add authorization header
@@ -71,7 +71,7 @@ class UpdateProfileController extends GetxController {
       } else {
         // If no image, send the data without image file
         final response = await http.put(
-          Uri.parse('${dotenv.env['API_URL']}/users/profile'),
+          Uri.parse('${dotenv.env['API_URL']}/user/profile'),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -81,11 +81,15 @@ class UpdateProfileController extends GetxController {
 
         // Handle the response
         if (response.statusCode == 200) {
-          Get.snackbar('Success', 'Profile updated successfully.');
+          Get.snackbar('สำเร็จ', 'อัปเดตโปรไฟล์สำเร็จแล้ว');
           print(userProfileController.fetchUserProfile());
           print("userProfile value: ${profileData}");
         } else {
-          Get.snackbar('Error', response.body);
+          print('------------------------------------------------------------');
+          print('Failed to refresh tokens: ${response.statusCode}');
+          print('Response body: ${utf8.decode(response.bodyBytes)}');
+          Get.snackbar('Errorsss', response.body);
+          print('------------------------------------------------------------');
         }
       }
     } catch (e) {

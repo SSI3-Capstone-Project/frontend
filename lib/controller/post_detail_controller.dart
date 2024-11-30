@@ -10,26 +10,15 @@ class PostDetailController extends GetxController {
   var postDetail = Rxn<PostDetail>();
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
-  }
-
   Future<bool> fetchPostDetail(String postId) async {
     try {
-      await tokenController.loadTokens();
-      final token = tokenController.accessToken.value;
       isLoading(true);
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
         isLoading(false);
         return false;
       }
+      final token = tokenController.accessToken.value;
       final response = await http.get(
         Uri.parse('${dotenv.env['API_URL']}/posts/$postId'),
         headers: {

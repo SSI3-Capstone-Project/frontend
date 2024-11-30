@@ -5,6 +5,7 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
+import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
 import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_controller.dart';
@@ -22,6 +23,7 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  final TokenController tokenController = Get.put(TokenController());
   final ProductController productController = Get.put(ProductController());
   final UserProfileController userProfileController =
       Get.put(UserProfileController());
@@ -53,6 +55,7 @@ class _RootPageState extends State<RootPage> {
   void initState() {
     super.initState();
     Future.microtask(() async {
+      // await tokenController.loadTokens();
       await productController.fetchProducts();
       await userProfileController.fetchUserProfile();
     });

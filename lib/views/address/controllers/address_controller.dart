@@ -12,14 +12,10 @@ class AddressController extends GetxController {
   var isLoading = false.obs; // Observable for loading state
   var message = ''.obs; // Observable for API message
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
   @override
   void onInit() {
     super.onInit();
     // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
     fetchAddresses();
   }
 
@@ -33,14 +29,13 @@ class AddressController extends GetxController {
   // Fetch addresses from the API
   Future<void> fetchAddresses() async {
     try {
-      await tokenController.loadTokens();
-      final token = tokenController.accessToken.value;
       isLoading.value = true;
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
         isLoading.value = false;
         return;
       }
+      final token = tokenController.accessToken.value;
       final response = await http.get(
         Uri.parse('${dotenv.env['API_URL']}/addresses'),
         headers: {
@@ -79,15 +74,14 @@ class AddressController extends GetxController {
     required bool isDefault,
   }) async {
     try {
-      await tokenController.loadTokens();
-      final token = tokenController.accessToken.value;
       isLoading.value = true;
 
-      if (token == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
         isLoading.value = false;
         return false;
       }
+      final token = tokenController.accessToken.value;
 
       final response = await http.post(
         Uri.parse('${dotenv.env['API_URL']}/addresses'),
@@ -137,21 +131,19 @@ class AddressController extends GetxController {
     required bool isDefault,
   }) async {
     try {
-      await tokenController.loadTokens();
       print('----------------------------------------------------------------');
       print(subDistrictId);
       print(address);
       print(isDefault);
       print('----------------------------------------------------------------');
-      final token = tokenController.accessToken.value;
       isLoading.value = true;
 
-      if (token == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
         isLoading.value = false;
         return false;
       }
-
+      final token = tokenController.accessToken.value;
       final response = await http.put(
         Uri.parse('${dotenv.env['API_URL']}/addresses/${id}'),
         headers: {
@@ -198,16 +190,13 @@ class AddressController extends GetxController {
     required String id,
   }) async {
     try {
-      await tokenController.loadTokens();
-      final token = tokenController.accessToken.value;
       isLoading.value = true;
-
-      if (token == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
         isLoading.value = false;
         return false;
       }
-
+      final token = tokenController.accessToken.value;
       final response = await http.delete(
         Uri.parse('${dotenv.env['API_URL']}/addresses/${id}'),
         headers: {

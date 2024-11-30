@@ -11,26 +11,21 @@ class ProvinceController extends GetxController {
   var provinces = <Province>[].obs;
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
   @override
   void onInit() {
     super.onInit();
     // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
     fetchProvince();
   }
 
   void fetchProvince() async {
-    await tokenController.loadTokens();
-    isLoading(true);
-    if (accessToken == null) {
-      Get.snackbar('Error', 'No access token found.');
-      return;
-    }
-
     try {
+      isLoading(true);
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading(false);
+        return;
+      }
       final token = tokenController.accessToken.value;
       final response = await http.get(
         Uri.parse('${dotenv.env['API_URL']}/provinces'),
@@ -43,11 +38,14 @@ class ProvinceController extends GetxController {
         provinces.value = List<Province>.from(
           data['data'].map((item) => Province.fromJson(item)),
         );
+        isLoading(false);
       } else {
-        Get.snackbar('Error', 'Failed to fetch provinces');
+        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาในการดึงข้อมูลสถานที่');
+        isLoading(false);
       }
     } catch (e) {
       Get.snackbar('Error', e.toString());
+      isLoading(false);
     } finally {
       isLoading(false);
     }

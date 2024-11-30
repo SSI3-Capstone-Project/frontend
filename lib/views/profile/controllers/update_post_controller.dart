@@ -11,16 +11,6 @@ import 'package:mbea_ssi3_front/views/profile/models/post_update_model.dart';
 class UpdatePostController extends GetxController {
   final tokenController = Get.find<TokenController>();
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
-  }
-
   var updatedPost = UpdatePost(
     id: '',
     title: '',
@@ -36,7 +26,10 @@ class UpdatePostController extends GetxController {
   ).obs;
 
   Future<bool> updatePostDetails(UpdatePost postToUpdate) async {
-    await tokenController.loadTokens();
+    if (tokenController.accessToken.value == null) {
+      // Get.snackbar('Error', 'No access token found.');
+      return false;
+    }
     final token = tokenController.accessToken.value;
     print('--- Post Data to be Updated ---');
     print('ID: ${postToUpdate.id}');
@@ -56,10 +49,6 @@ class UpdatePostController extends GetxController {
       print(' - Path: ${file.path}');
     }
     print('-----------------------------');
-    if (accessToken == null) {
-      Get.snackbar('Error', 'No access token found.');
-      return false;
-    }
     final request = http.MultipartRequest(
         'PUT', Uri.parse('${dotenv.env['API_URL']}/posts/${postToUpdate.id}'));
 

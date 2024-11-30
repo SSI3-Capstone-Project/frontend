@@ -11,16 +11,6 @@ import 'package:mbea_ssi3_front/views/profile/models/offer_update_model.dart';
 class UpdateOfferController extends GetxController {
   final tokenController = Get.find<TokenController>();
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
-  }
-
   var updatedOffer = UpdateOffer(
     id: '',
     title: '',
@@ -35,7 +25,10 @@ class UpdateOfferController extends GetxController {
   ).obs;
 
   Future<bool> updateOfferDetails(UpdateOffer offerToUpdate) async {
-    await tokenController.loadTokens();
+    if (tokenController.accessToken.value == null) {
+      // Get.snackbar('Error', 'No access token found.');
+      return false;
+    }
     final token = tokenController.accessToken.value;
     print('--- Offer Data to be Updated ---');
     print('ID: ${offerToUpdate.id}');
@@ -54,10 +47,6 @@ class UpdateOfferController extends GetxController {
       print(' - Path: ${file.path}');
     }
     print('-----------------------------');
-    if (accessToken == null) {
-      Get.snackbar('Error', 'No access token found.');
-      return false;
-    }
     final request = http.MultipartRequest('PUT',
         Uri.parse('${dotenv.env['API_URL']}/offers/${offerToUpdate.id}'));
 

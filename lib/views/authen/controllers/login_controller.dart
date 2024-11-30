@@ -15,7 +15,7 @@ class LoginController extends GetxController {
     isLoading.value = true;
     try {
       final response = await http.post(
-        Uri.parse('${dotenv.env['API_URL']}/users/login'),
+        Uri.parse('${dotenv.env['API_URL']}/user/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "username": username,
@@ -30,7 +30,7 @@ class LoginController extends GetxController {
         final refreshToken = tokenData['refresh_token'];
 
         // บันทึก token ลงใน TokenController
-        tokenController.saveTokens(accessToken, refreshToken);
+        await tokenController.saveTokens(accessToken, refreshToken);
 
         Get.snackbar('สำเร็จ', 'เข้าสู่ระบบสำเร็จ');
         isLoading.value = false;

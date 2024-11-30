@@ -14,8 +14,8 @@ import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller
 // import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 void main() async {
-  final tokenController = Get.put(TokenController());
-  await tokenController.loadTokens(); // โหลด token ก่อนเริ่มแอป
+  Get.lazyPut(() => TokenController());
+  // await tokenController.loadTokens(); // โหลด token ก่อนเริ่มแอป
   Get.lazyPut(() => CreatePostController());
   Get.lazyPut(
       () => UpdatePostController()); // เพิ่ม UpdatePostController ที่นี่
