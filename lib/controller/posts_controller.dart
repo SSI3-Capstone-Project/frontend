@@ -27,7 +27,7 @@ class PostsController extends GetxController {
       }
       final token = tokenController.accessToken.value;
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/posts/owner'),
+        Uri.parse('${dotenv.env['API_URL']}/posts/own'),
         headers: {
           'Authorization': 'Bearer $token', // แนบ Bearer Token
         },

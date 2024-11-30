@@ -64,7 +64,7 @@ class UpdatePost {
 
 class PostMedia {
   String? id;
-  int hierarchy;
+  int? hierarchy;
   String status;
 
   PostMedia({

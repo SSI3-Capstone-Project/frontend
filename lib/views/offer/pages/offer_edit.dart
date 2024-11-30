@@ -8,8 +8,8 @@ import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/model/brand_model.dart';
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
 import 'package:mbea_ssi3_front/model/province_model.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/update_offer_controller.dart';
-import 'package:mbea_ssi3_front/views/profile/models/offer_update_model.dart';
+import 'package:mbea_ssi3_front/views/offer/controllers/update_offer_controller.dart';
+import 'package:mbea_ssi3_front/views/offer/models/offer_update_model.dart';
 
 class EditOfferForm extends StatefulWidget {
   final OfferDetail offerDetail;

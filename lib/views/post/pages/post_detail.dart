@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/controller/post_detail_controller.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/delete_post_controller.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/post_offer_controller.dart';
-import 'package:mbea_ssi3_front/views/profile/pages/post_edit.dart';
-import 'package:mbea_ssi3_front/views/profile/pages/post_offer_page.dart';
+import 'package:mbea_ssi3_front/views/post/controllers/delete_post_controller.dart';
+import 'package:mbea_ssi3_front/views/post/controllers/post_offer_controller.dart';
+import 'package:mbea_ssi3_front/views/post/pages/post_edit.dart';
+import 'package:mbea_ssi3_front/views/post/pages/post_offer_page.dart';
 import 'package:video_player/video_player.dart';
 
 class PostDetailPage extends StatefulWidget {

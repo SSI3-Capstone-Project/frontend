@@ -8,8 +8,8 @@ import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/model/brand_model.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
 import 'package:mbea_ssi3_front/model/province_model.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
-import 'package:mbea_ssi3_front/views/profile/models/post_update_model.dart';
+import 'package:mbea_ssi3_front/views/post/controllers/update_post_controller.dart';
+import 'package:mbea_ssi3_front/views/post/models/post_update_model.dart';
 
 class EditPostForm extends StatefulWidget {
   final PostDetail postDetail;
@@ -679,7 +679,11 @@ class _EditPostFormState extends State<EditPostForm> {
               int imageHierarchy = 1;
               postImages = postImages.map((media) {
                 if (media.status == "delete") {
-                  return media;
+                  return PostMedia(
+                    id: media.id,
+                    hierarchy: null,
+                    status: media.status,
+                  );
                 } else {
                   return PostMedia(
                     id: media.id,
@@ -692,7 +696,11 @@ class _EditPostFormState extends State<EditPostForm> {
               int videoHierarchy = 1;
               postVideos = postVideos.map((media) {
                 if (media.status == "delete") {
-                  return media;
+                  return PostMedia(
+                    id: media.id,
+                    hierarchy: null,
+                    status: media.status,
+                  );
                 } else {
                   return PostMedia(
                     id: media.id,

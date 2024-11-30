@@ -9,8 +9,8 @@ import 'package:mbea_ssi3_front/views/createForm/controllers/create_post_control
 // import 'package:mbea_ssi3_front/views/onboardingScreen/onboarding_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/update_offer_controller.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/update_post_controller.dart';
+import 'package:mbea_ssi3_front/views/offer/controllers/update_offer_controller.dart';
+import 'package:mbea_ssi3_front/views/post/controllers/update_post_controller.dart';
 // import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 void main() async {
