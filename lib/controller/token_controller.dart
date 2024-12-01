@@ -62,6 +62,7 @@ class TokenController extends GetxController with WidgetsBindingObserver {
       if (isTokenExpired(refresh)) {
         await deleteTokens();
         // Get.offAllNamed('/login');
+        print('(Token) Refresh token data expired.');
         Get.snackbar('Error', 'Refresh token data expired.');
         return;
       }
@@ -85,16 +86,20 @@ class TokenController extends GetxController with WidgetsBindingObserver {
               tokenData['access_token'], tokenData['refresh_token']);
           Get.snackbar('Success', 'Tokens refreshed successfully.');
         } else {
+          print('(Token) Invalid token data received.');
           Get.snackbar('Error', 'Invalid token data received.');
         }
       } else if (response.statusCode == 401) {
         await deleteTokens();
         // Get.offAllNamed('/login');
-        Get.snackbar('Error', 'Invalid refresh token data');
+        print('(Token) Invalid refresh token data.');
+        Get.snackbar('Error', 'Invalid refresh token data.');
       } else {
+        print('(Token) Failed to refresh tokens: ${response.body}');
         Get.snackbar('Error', 'Failed to refresh tokens: ${response.body}');
       }
     } catch (e) {
+      print('(Token) Error during token refresh: $e');
       Get.snackbar('Error', 'Error during token refresh: $e');
     } finally {
       _mutex.value = false;
@@ -112,7 +117,7 @@ class TokenController extends GetxController with WidgetsBindingObserver {
       print('----------------------------------------------------------------');
       return expiry < now;
     } catch (e) {
-      print('Error decoding token: $e');
+      print('(Token) Error during check token expired: $e');
       return true;
     }
   }
@@ -124,7 +129,7 @@ class TokenController extends GetxController with WidgetsBindingObserver {
 
       if (currentAccessToken == newAccessToken &&
           currentRefreshToken == newRefreshToken) {
-        print('Tokens are already up-to-date.');
+        print('(Token) Tokens are already up-to-date.');
         return;
       }
 
@@ -133,10 +138,11 @@ class TokenController extends GetxController with WidgetsBindingObserver {
 
       accessToken.value = newAccessToken;
       refreshToken.value = newRefreshToken;
+      print('(Token) Save new token success');
 
       restartTokenRefresh();
     } catch (e) {
-      print('Error saving tokens: $e');
+      print('(Token) Error saving tokens: $e');
     }
   }
 
@@ -149,7 +155,7 @@ class TokenController extends GetxController with WidgetsBindingObserver {
 
   void startTokenRefresh() {
     if (_timer != null && _timer!.isActive) {
-      print('Token refresh is already running.');
+      print('(Token) Token refresh is already running.');
       return;
     }
     _timer = Timer.periodic(const Duration(seconds: 30), (timer) {

@@ -280,6 +280,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
             Text(
               offerDetail.title,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              softWrap: true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+              overflow: TextOverflow.visible,
             ),
           ],
         ),
@@ -303,6 +305,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
+                softWrap: true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -326,6 +330,8 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                 fontWeight: FontWeight.bold,
                 color: Constants.secondaryColor,
               ),
+              softWrap: true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+              overflow: TextOverflow.visible,
             ),
           ),
         const SizedBox(height: 25),

@@ -465,7 +465,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
             SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(fontSize: 14, color: Colors.black),
+              style: TextStyle(fontSize: 12, color: Colors.black),
             ),
           ],
         ),

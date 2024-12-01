@@ -5,6 +5,7 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
+import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
 import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
@@ -30,6 +31,7 @@ class _RootPageState extends State<RootPage> {
   final PostsController postController = Get.put(PostsController());
   final OffersController offerController = Get.put(OffersController());
   final BrandController brandController = Get.put(BrandController());
+  final ProvinceController provinceController = Get.put(ProvinceController());
   int _bottomNavIndex = 0;
 
   //List of the pages
@@ -58,6 +60,8 @@ class _RootPageState extends State<RootPage> {
       // await tokenController.loadTokens();
       await productController.fetchProducts();
       await userProfileController.fetchUserProfile();
+      brandController.fetchBrands();
+      provinceController.fetchProvince();
     });
   }
 
@@ -92,7 +96,6 @@ class _RootPageState extends State<RootPage> {
         shape: const CircleBorder(),
         backgroundColor: Constants.primaryColor,
         onPressed: () {
-          brandController.fetchBrands();
           Navigator.push(
               context,
               PageTransition(

@@ -48,7 +48,7 @@ class _AddressPageState extends State<AddressPage> {
         //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
         // ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
         ),
       ),

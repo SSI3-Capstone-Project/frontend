@@ -33,6 +33,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SafeArea(
         child: Container(

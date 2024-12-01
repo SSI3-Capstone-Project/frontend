@@ -67,6 +67,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ListView(
                 children: [
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, // จัดชิดซ้าย
                     children: [
                       const SizedBox(
                         height: 15,
@@ -128,45 +129,39 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Row(
+                            Wrap(
+                              alignment:
+                                  WrapAlignment.start, // จัดชิดซ้ายในแนวนอน
+                              runAlignment: WrapAlignment.start,
+                              spacing: 10, // ระยะห่างระหว่าง children ในแนวนอน
+                              runSpacing: 10, // ระยะห่างระหว่างบรรทัด
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      productDetail.title,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 21),
-                                    ),
-                                  ],
+                                Text(
+                                  productDetail.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 21,
+                                  ),
                                 ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(30)),
-                                        color: Constants.primaryColor,
-                                      ),
-                                      child: Text(
-                                        productDetail.subCollectionName,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(30)),
+                                    color: Constants.primaryColor,
+                                  ),
+                                  child: Text(
+                                    productDetail.subCollectionName,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -211,8 +206,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               ],
                             ),
                             const SizedBox(height: 25),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                            Wrap(
+                              alignment:
+                                  WrapAlignment.start, // จัดชิดซ้ายในแนวนอน
+                              runAlignment: WrapAlignment.start,
+                              spacing: 8, // ระยะห่างระหว่าง children ในแนวนอน
+                              runSpacing: 10, // ระยะห่างระหว่างบรรทัด
                               children: [
                                 const Text(
                                   'สนใจแลก :',
@@ -221,33 +220,26 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     color: Colors.black87,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () {
-                                    // Add button tap functionality here
-                                    print("Button tapped");
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 3, horizontal: 15),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFFE875C),
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 4,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Text(
-                                      productDetail.desiredItem,
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                    ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 3, horizontal: 15),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFE875C),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    productDetail.desiredItem,
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],

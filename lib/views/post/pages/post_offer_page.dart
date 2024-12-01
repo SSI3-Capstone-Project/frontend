@@ -261,64 +261,65 @@ class _PostOfferPageState extends State<PostOfferPage> {
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.start,
                                                   children: [
-                                                    Row(
+                                                    Wrap(
+                                                      alignment: WrapAlignment
+                                                          .start, // จัดชิดซ้ายในแนวนอน
+                                                      runAlignment:
+                                                          WrapAlignment.start,
+                                                      spacing:
+                                                          8, // ระยะห่างระหว่าง children ในแนวนอน
+                                                      runSpacing: 6,
                                                       children: [
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              offerDetail.title,
-                                                              style: const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal,
-                                                                  fontSize: 16),
-                                                            ),
-                                                          ],
+                                                        Text(
+                                                          offerDetail.title,
+                                                          style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal,
+                                                              fontSize: 16),
+                                                          softWrap:
+                                                              true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                          overflow: TextOverflow
+                                                              .visible,
                                                         ),
                                                         SizedBox(
                                                           width: 10,
                                                         ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      horizontal:
-                                                                          15,
-                                                                      vertical:
-                                                                          5),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    const BorderRadius
-                                                                        .all(
-                                                                        Radius.circular(
+                                                        Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      15,
+                                                                  vertical: 5),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            borderRadius:
+                                                                const BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
                                                                             30)),
-                                                                color: Constants
-                                                                    .primaryColor,
-                                                              ),
-                                                              child: Text(
-                                                                offerDetail
-                                                                    .subCollectionName,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
+                                                            color: Constants
+                                                                .primaryColor,
+                                                          ),
+                                                          child: Text(
+                                                            offerDetail
+                                                                .subCollectionName,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  Colors.white,
                                                             ),
-                                                          ],
+                                                            softWrap:
+                                                                true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .visible,
+                                                          ),
                                                         ),
                                                       ],
                                                     ),

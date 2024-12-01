@@ -108,8 +108,8 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
                 width: 20,
               ),
               _buildTabItem('สร้างโพสต์', isCreatingPost, () {
-                brandController.fetchBrands();
-                provinceController.fetchProvince();
+                // brandController.fetchBrands();
+                // provinceController.fetchProvince();
                 if (mounted) {
                   setState(() {
                     isCreatingPost = true;
@@ -119,8 +119,8 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
             ],
           ),
           _buildTabItem('สร้างข้อเสนอ', !isCreatingPost, () {
-            brandController.fetchBrands();
-            provinceController.fetchProvince();
+            // brandController.fetchBrands();
+            // provinceController.fetchProvince();
             if (mounted) {
               setState(() {
                 isCreatingPost = false;

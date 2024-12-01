@@ -42,6 +42,15 @@ class SendOfferController extends GetxController {
         Get.snackbar('สำเร็จ', 'ข้อเสนอของคุณถูกส่งไปแล้ว');
         isLoading.value = false;
         return true;
+      } else if (response.statusCode == 409) {
+        final Map<String, dynamic> responseData =
+            json.decode(utf8.decode(response.bodyBytes));
+        message.value =
+            responseData['message'] ?? 'Failed to add offer to post';
+        print(responseData);
+        Get.snackbar('แจ้งเตือน', 'ไม่สามารถยื่นข้อเสนอเดิมซ้ำได้');
+        isLoading.value = false;
+        return false;
       } else {
         final Map<String, dynamic> responseData =
             json.decode(utf8.decode(response.bodyBytes));

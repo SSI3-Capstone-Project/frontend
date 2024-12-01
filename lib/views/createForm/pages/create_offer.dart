@@ -108,6 +108,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     return Form(
       key: _formKey,
       child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 1, vertical: 0),
         children: [
           SizedBox(height: 16),
           _buildTextFormField(
@@ -129,6 +130,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               constraints:
                   BoxConstraints(maxHeight: 300), // Set a maximum height
               child: ListView(
+                padding: EdgeInsets.only(top: 0),
                 shrinkWrap:
                     true, // This allows the ListView to take only as much height as it needs
                 physics:
@@ -219,6 +221,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               constraints:
                   BoxConstraints(maxHeight: 300), // Set a maximum height
               child: ListView(
+                padding: EdgeInsets.only(top: 0),
                 shrinkWrap:
                     true, // This allows the ListView to take only as much height as it needs
                 physics:
@@ -384,8 +387,8 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         return Stack(
           children: [
             Container(
-              width: widget.isSendOffer ? 90 : 100,
-              height: widget.isSendOffer ? 90 : 100,
+              width: widget.isSendOffer ? 80 : 100,
+              height: widget.isSendOffer ? 80 : 100,
               child: isImage
                   ? Image.file(file, fit: BoxFit.cover)
                   : Icon(Icons.videocam, size: 50),
@@ -456,7 +459,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     return InkWell(
       onTap: onPressed,
       child: Container(
-        width: widget.isSendOffer ? 135 : 160, // ความกว้างของปุ่ม
+        width: widget.isSendOffer ? 120 : 160, // ความกว้างของปุ่ม
         height: 50, // ความสูงของปุ่ม
         decoration: BoxDecoration(
           color: Colors.white,
@@ -470,7 +473,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
             SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(fontSize: 14, color: Colors.black),
+              style: TextStyle(fontSize: 12, color: Colors.black),
             ),
           ],
         ),

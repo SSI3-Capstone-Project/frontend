@@ -43,7 +43,7 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
         // ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => {Navigator.pop(context), Navigator.pop(context)},
         ),
       ),
       body: SafeArea(
@@ -279,7 +279,14 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.start,
                                                     children: [
-                                                      Row(
+                                                      Wrap(
+                                                        alignment: WrapAlignment
+                                                            .start, // จัดชิดซ้ายในแนวนอน
+                                                        runAlignment:
+                                                            WrapAlignment.start,
+                                                        spacing:
+                                                            8, // ระยะห่างระหว่าง children ในแนวนอน
+                                                        runSpacing: 6,
                                                         children: [
                                                           Row(
                                                             mainAxisAlignment:
@@ -295,6 +302,11 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                                                             .normal,
                                                                     fontSize:
                                                                         16),
+                                                                softWrap:
+                                                                    true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .visible,
                                                               ),
                                                             ],
                                                           ),
@@ -336,6 +348,11 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                                                     color: Colors
                                                                         .white,
                                                                   ),
+                                                                  softWrap:
+                                                                      true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .visible,
                                                                 ),
                                                               ),
                                                             ],
@@ -542,10 +559,15 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
         width: 150,
         child: ElevatedButton(
           onPressed: () async {
-            sendOfferController.addOffer(postId: postId, offerId: offerID);
-            Navigator.pop(context);
-            Navigator.pop(context);
-            Navigator.pop(context);
+            var result = await sendOfferController.addOffer(
+                postId: postId, offerId: offerID);
+            if (result) {
+              Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+            }
           },
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
