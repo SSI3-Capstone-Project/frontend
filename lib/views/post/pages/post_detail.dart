@@ -73,7 +73,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                               alignment:
                                   WrapAlignment.start, // จัดชิดซ้ายในแนวนอน
                               runAlignment: WrapAlignment.start,
-                              spacing: 0, // ระยะห่างระหว่าง children ในแนวนอน
+                              spacing: 10, // ระยะห่างระหว่าง children ในแนวนอน
                               runSpacing: 10, // ระยะห่างระหว่างบรรทัด
                               children: [
                                 Text(
