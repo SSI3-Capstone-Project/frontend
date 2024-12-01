@@ -590,9 +590,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       allowScrubbing: true,
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       colors: VideoProgressColors(
-        playedColor: Theme.of(context).primaryColor,
+        playedColor: Colors.white,
         bufferedColor: Colors.grey,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.grey,
       ),
     );
   }

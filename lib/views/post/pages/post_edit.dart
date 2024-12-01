@@ -45,6 +45,7 @@ class _EditPostFormState extends State<EditPostForm> {
   @override
   void initState() {
     super.initState();
+    brandController.fetchBrands();
 
     // เรียก _initializeForm เมื่อ isLoading เปลี่ยนเป็น false และข้อมูลถูกโหลดเสร็จ
     ever(brandController.isLoading, (loading) {
@@ -60,6 +61,36 @@ class _EditPostFormState extends State<EditPostForm> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _initializeForm();
+  }
+
+  bool isEdited = false;
+
+  void _checkIfEdited() {
+    List<String> parts =
+        widget.postDetail.location.split(',').map((e) => e.trim()).toList();
+
+    String oldSubDistrict = parts.length > 0 ? parts[0] : '';
+    bool hasMediaChanged = mediaFiles.length !=
+        (widget.postDetail.postImages.length +
+            widget.postDetail.postVideos.length);
+
+    bool hasTextChanged =
+        _productNameController.text != widget.postDetail.title ||
+            _descriptionController.text != widget.postDetail.description ||
+            _flawController.text != (widget.postDetail.flaw ?? '') ||
+            _desiredController.text != widget.postDetail.desiredItem;
+
+    bool hasDropdownChanged =
+        selectedSubCategory != widget.postDetail.subCollectionName ||
+            selectedSubDistrict != oldSubDistrict;
+
+    setState(() {
+      isEdited = hasTextChanged || hasDropdownChanged || hasMediaChanged;
+    });
+  }
+
+  void _onFieldChanged() {
+    _checkIfEdited();
   }
 
   void _initializeForm() {
@@ -145,6 +176,7 @@ class _EditPostFormState extends State<EditPostForm> {
         _isPickingMedia = false; // จบการเลือกสื่อ
       });
     }
+    _onFieldChanged();
   }
 
   Future<void> _pickVideo() async {
@@ -167,6 +199,7 @@ class _EditPostFormState extends State<EditPostForm> {
         _isPickingMedia = false; // จบการเลือกสื่อ
       });
     }
+    _onFieldChanged();
   }
 
   @override
@@ -395,6 +428,7 @@ class _EditPostFormState extends State<EditPostForm> {
     String? Function(String?)? validator,
   }) {
     return TextFormField(
+      onChanged: (_) => _onFieldChanged(),
       controller: controller,
       maxLength: maxLength,
       maxLines: maxLines,
@@ -442,7 +476,10 @@ class _EditPostFormState extends State<EditPostForm> {
                   ))
               .toList(),
           value: value,
-          onChanged: onChanged,
+          onChanged: (newValue) {
+            onChanged(newValue);
+            _onFieldChanged(); // เรียกเมื่อเปลี่ยน dropdown
+          },
           dropdownStyleData: DropdownStyleData(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
@@ -500,7 +537,8 @@ class _EditPostFormState extends State<EditPostForm> {
               top: 0,
               child: GestureDetector(
                 onTap: () => {
-                  if (mounted) {setState(() => mediaFiles.remove(file))}
+                  if (mounted) {setState(() => mediaFiles.remove(file))},
+                  _onFieldChanged()
                 },
                 child: Icon(Icons.close, color: Colors.red),
               ),
@@ -591,175 +629,181 @@ class _EditPostFormState extends State<EditPostForm> {
       child: SizedBox(
         width: 150,
         child: ElevatedButton(
-          onPressed: () async {
-            if (_formKey.currentState!.validate() &&
-                mediaFiles.isNotEmpty &&
-                mediaFiles.any((file) {
-                  // ตรวจสอบว่าเป็นรูปภาพหรือไม่
-                  String filePath = file is File ? file.path : file as String;
-                  return filePath.endsWith('.jpg') ||
-                      filePath.endsWith('.jpeg') ||
-                      filePath.endsWith('.png');
-                })) {
-              String? subCollectionId;
+          onPressed: isEdited
+              ? () async {
+                  if (_formKey.currentState!.validate() &&
+                      mediaFiles.isNotEmpty &&
+                      mediaFiles.any((file) {
+                        // ตรวจสอบว่าเป็นรูปภาพหรือไม่
+                        String filePath =
+                            file is File ? file.path : file as String;
+                        return filePath.endsWith('.jpg') ||
+                            filePath.endsWith('.jpeg') ||
+                            filePath.endsWith('.png');
+                      })) {
+                    String? subCollectionId;
 
-              if (selectedSubCategory != null) {
-                subCollectionId = brandController.brands
-                    .firstWhere((b) => b.name == selectedBrand)
-                    .collections
-                    ?.firstWhere((c) => c.name == selectedMainCategory)
-                    .subCollections
-                    ?.firstWhere((sc) => sc.name == selectedSubCategory)
-                    .id;
-              }
+                    if (selectedSubCategory != null) {
+                      subCollectionId = brandController.brands
+                          .firstWhere((b) => b.name == selectedBrand)
+                          .collections
+                          ?.firstWhere((c) => c.name == selectedMainCategory)
+                          .subCollections
+                          ?.firstWhere((sc) => sc.name == selectedSubCategory)
+                          .id;
+                    }
 
-              if (subCollectionId == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('กรุณาเลือกคอลเลคชั่นย่อย')),
-                );
-                return;
-              }
+                    if (subCollectionId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('กรุณาเลือกคอลเลคชั่นย่อย')),
+                      );
+                      return;
+                    }
 
-              int? subDistrictId = 0;
+                    int? subDistrictId = 0;
 
-              if (selectedSubDistrict != null) {
-                subDistrictId = provinceController.provinces
-                    .firstWhere((b) => b.name == selectedProvince)
-                    .districts
-                    ?.firstWhere((c) => c.name == selectedMainDistrict)
-                    .subDistricts
-                    ?.firstWhere((sc) => sc.name == selectedSubDistrict)
-                    .id;
-              }
+                    if (selectedSubDistrict != null) {
+                      subDistrictId = provinceController.provinces
+                          .firstWhere((b) => b.name == selectedProvince)
+                          .districts
+                          ?.firstWhere((c) => c.name == selectedMainDistrict)
+                          .subDistricts
+                          ?.firstWhere((sc) => sc.name == selectedSubDistrict)
+                          .id;
+                    }
 
-              if (subCollectionId == 0) {
-                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
-                return;
-              }
+                    if (subCollectionId == 0) {
+                      Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                      return;
+                    }
 
-              // ดำเนินการสร้าง UpdatePost ตามที่กำหนดไว้
-              List<PostMedia> postImages =
-                  widget.postDetail.postImages.map((image) {
-                bool isDeleted = !mediaFiles.contains(image.imageUrl);
-                return PostMedia(
-                  id: image.id,
-                  hierarchy: image.hierarchy,
-                  status: isDeleted ? "delete" : "update",
-                );
-              }).toList();
+                    // ดำเนินการสร้าง UpdatePost ตามที่กำหนดไว้
+                    List<PostMedia> postImages =
+                        widget.postDetail.postImages.map((image) {
+                      bool isDeleted = !mediaFiles.contains(image.imageUrl);
+                      return PostMedia(
+                        id: image.id,
+                        hierarchy: image.hierarchy,
+                        status: isDeleted ? "delete" : "update",
+                      );
+                    }).toList();
 
-              mediaFiles
-                  .where((file) =>
-                      file is File &&
-                      (file.path.endsWith('.jpg') ||
-                          file.path.endsWith('.jpeg') ||
-                          file.path.endsWith('.png')))
-                  .forEach((file) {
-                postImages.add(PostMedia(
-                  id: null,
-                  hierarchy: 0,
-                  status: "add",
-                ));
-              });
+                    mediaFiles
+                        .where((file) =>
+                            file is File &&
+                            (file.path.endsWith('.jpg') ||
+                                file.path.endsWith('.jpeg') ||
+                                file.path.endsWith('.png')))
+                        .forEach((file) {
+                      postImages.add(PostMedia(
+                        id: null,
+                        hierarchy: 0,
+                        status: "add",
+                      ));
+                    });
 
-              List<PostMedia> postVideos =
-                  widget.postDetail.postVideos.map((video) {
-                bool isDeleted = !mediaFiles.contains(video.videoUrl);
-                return PostMedia(
-                  id: video.id,
-                  hierarchy: video.hierarchy,
-                  status: isDeleted ? "delete" : "update",
-                );
-              }).toList();
+                    List<PostMedia> postVideos =
+                        widget.postDetail.postVideos.map((video) {
+                      bool isDeleted = !mediaFiles.contains(video.videoUrl);
+                      return PostMedia(
+                        id: video.id,
+                        hierarchy: video.hierarchy,
+                        status: isDeleted ? "delete" : "update",
+                      );
+                    }).toList();
 
-              mediaFiles
-                  .where((file) => file is File && file.path.endsWith('.mp4'))
-                  .forEach((file) {
-                postVideos.add(PostMedia(
-                  id: null,
-                  hierarchy: 0,
-                  status: "add",
-                ));
-              });
+                    mediaFiles
+                        .where((file) =>
+                            file is File && file.path.endsWith('.mp4'))
+                        .forEach((file) {
+                      postVideos.add(PostMedia(
+                        id: null,
+                        hierarchy: 0,
+                        status: "add",
+                      ));
+                    });
 
-              int imageHierarchy = 1;
-              postImages = postImages.map((media) {
-                if (media.status == "delete") {
-                  return PostMedia(
-                    id: media.id,
-                    hierarchy: null,
-                    status: media.status,
-                  );
-                } else {
-                  return PostMedia(
-                    id: media.id,
-                    hierarchy: imageHierarchy++,
-                    status: media.status,
-                  );
+                    int imageHierarchy = 1;
+                    postImages = postImages.map((media) {
+                      if (media.status == "delete") {
+                        return PostMedia(
+                          id: media.id,
+                          hierarchy: null,
+                          status: media.status,
+                        );
+                      } else {
+                        return PostMedia(
+                          id: media.id,
+                          hierarchy: imageHierarchy++,
+                          status: media.status,
+                        );
+                      }
+                    }).toList();
+
+                    int videoHierarchy = 1;
+                    postVideos = postVideos.map((media) {
+                      if (media.status == "delete") {
+                        return PostMedia(
+                          id: media.id,
+                          hierarchy: null,
+                          status: media.status,
+                        );
+                      } else {
+                        return PostMedia(
+                          id: media.id,
+                          hierarchy: videoHierarchy++,
+                          status: media.status,
+                        );
+                      }
+                    }).toList();
+
+                    UpdatePost postToUpdate = UpdatePost(
+                      id: widget.postDetail.id,
+                      title: _productNameController.text,
+                      subCollectionId: subCollectionId,
+                      subDistrictId: subDistrictId.toString(),
+                      description: _descriptionController.text,
+                      flaw: _flawController.text.isNotEmpty
+                          ? _flawController.text
+                          : null,
+                      desiredItem: _desiredController.text,
+                      postImages: postImages,
+                      postVideos: postVideos,
+                      imageFiles: mediaFiles
+                          .where((file) =>
+                              file is File &&
+                              (file.path.endsWith('.jpg') ||
+                                  file.path.endsWith('.jpeg') ||
+                                  file.path.endsWith('.png')))
+                          .cast<File>()
+                          .toList(),
+                      videoFiles: mediaFiles
+                          .where((file) =>
+                              file is File && file.path.endsWith('.mp4'))
+                          .cast<File>()
+                          .toList(),
+                    );
+
+                    var result = await updatePostController
+                        .updatePostDetails(postToUpdate);
+                    if (result) {
+                      bool isUpdated = true;
+                      Navigator.pop(context, isUpdated);
+                    }
+                  } else {
+                    String errorMessage = mediaFiles.any((file) {
+                      String filePath =
+                          file is File ? file.path : file as String;
+                      return filePath.endsWith('.jpg') ||
+                          filePath.endsWith('.jpeg') ||
+                          filePath.endsWith('.png');
+                    })
+                        ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
+                        : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รายการ';
+                    Get.snackbar('แจ้งเตือน', errorMessage);
+                  }
                 }
-              }).toList();
-
-              int videoHierarchy = 1;
-              postVideos = postVideos.map((media) {
-                if (media.status == "delete") {
-                  return PostMedia(
-                    id: media.id,
-                    hierarchy: null,
-                    status: media.status,
-                  );
-                } else {
-                  return PostMedia(
-                    id: media.id,
-                    hierarchy: videoHierarchy++,
-                    status: media.status,
-                  );
-                }
-              }).toList();
-
-              UpdatePost postToUpdate = UpdatePost(
-                id: widget.postDetail.id,
-                title: _productNameController.text,
-                subCollectionId: subCollectionId,
-                subDistrictId: subDistrictId.toString(),
-                description: _descriptionController.text,
-                flaw: _flawController.text.isNotEmpty
-                    ? _flawController.text
-                    : null,
-                desiredItem: _desiredController.text,
-                postImages: postImages,
-                postVideos: postVideos,
-                imageFiles: mediaFiles
-                    .where((file) =>
-                        file is File &&
-                        (file.path.endsWith('.jpg') ||
-                            file.path.endsWith('.jpeg') ||
-                            file.path.endsWith('.png')))
-                    .cast<File>()
-                    .toList(),
-                videoFiles: mediaFiles
-                    .where((file) => file is File && file.path.endsWith('.mp4'))
-                    .cast<File>()
-                    .toList(),
-              );
-
-              var result =
-                  await updatePostController.updatePostDetails(postToUpdate);
-              if (result) {
-                bool isUpdated = true;
-                Navigator.pop(context, isUpdated);
-              }
-            } else {
-              String errorMessage = mediaFiles.any((file) {
-                String filePath = file is File ? file.path : file as String;
-                return filePath.endsWith('.jpg') ||
-                    filePath.endsWith('.jpeg') ||
-                    filePath.endsWith('.png');
-              })
-                  ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
-                  : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รายการ';
-              Get.snackbar('แจ้งเตือน', errorMessage);
-            }
-          },
+              : null,
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
             backgroundColor: Colors.blue,
