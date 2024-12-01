@@ -14,50 +14,47 @@ import 'package:mbea_ssi3_front/views/post/controllers/update_post_controller.da
 // import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // สำหรับตั้งค่าก่อน runApp
-  await dotenv.load(fileName: "./.env");
-
-  // Lazy initialization ของ Controller
   Get.lazyPut(() => TokenController());
+  // await tokenController.loadTokens(); // โหลด token ก่อนเริ่มแอป
   Get.lazyPut(() => CreatePostController());
-  Get.lazyPut(() => UpdatePostController());
+  Get.lazyPut(
+      () => UpdatePostController()); // เพิ่ม UpdatePostController ที่นี่
   Get.lazyPut(() => UpdateOfferController());
-
+  await dotenv.load(fileName: "./.env");
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //       title: 'My Title',
+  //       home: Scaffold(
+  //         appBar: AppBar(
+  //           title: const Text('Capstone Project'),
+  //           backgroundColor: Colors.blue,
+  //           centerTitle: true,
+  //         ),
+  //         body: const Item(), // เปลี่ยนจาก Item() เป็น MapPage()
+  //       ));
+  // }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'My Title',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity),
+      home: Obx(() {
+        final tokenController = Get.find<TokenController>();
+        return tokenController.accessToken.value == null
+            ? LoginPage() // ถ้ามี token
+            : RootPage(); // ถ้าไม่มี token
+      }), // ถ้าไม่มี token
       debugShowCheckedModeBanner: false,
-      initialRoute: '/', // เส้นทางเริ่มต้น
-      getPages: [
-        GetPage(
-          name: '/',
-          page: () => Obx(() {
-            final tokenController = Get.find<TokenController>();
-            return tokenController.accessToken.value == null
-                ? LoginPage()
-                : RootPage();
-          }),
-        ),
-        GetPage(
-          name: '/login',
-          page: () => LoginPage(),
-        ),
-        GetPage(
-          name: '/main',
-          page: () => RootPage(),
-        ),
-      ],
     );
   }
 }

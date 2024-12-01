@@ -61,7 +61,7 @@ class TokenController extends GetxController with WidgetsBindingObserver {
 
       if (isTokenExpired(refresh)) {
         await deleteTokens();
-        Get.offAllNamed('/login');
+        // Get.offAllNamed('/login');
         print('(Token) Refresh token data expired.');
         Get.snackbar('Error', 'Refresh token data expired.');
         return;
