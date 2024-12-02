@@ -215,7 +215,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   child: Text(
-                    'ต่อไป',
+                    'สมัครสมาชิก',
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
