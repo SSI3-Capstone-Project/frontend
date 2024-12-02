@@ -375,7 +375,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Icon(
                             Icons.edit, // ไอคอนแก้ไข
                             color: Colors.white, // สีของไอคอน
-                            size: 18,
+                            size: 20,
                           )),
                     ],
                   ),

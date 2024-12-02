@@ -143,19 +143,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildTextFormField(
-                    controller: usernameController,
-                    label: 'ชื่อผู้ใช้งาน',
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'กรุณากรอกชื่อผู้ใช้งาน';
-                      }
-                      return null;
-                    },
-                    maxLength: 30,
-                    field: 'username',
-                    onChanged: _onFieldChanged,
-                    errorText: _usernameError,
+                  IgnorePointer(
+                    ignoring: true, // ทำให้ฟิลด์ไม่สามารถแก้ไขได้
+                    child: _buildTextFormField(
+                      controller: usernameController,
+                      label: 'ชื่อผู้ใช้งาน',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'กรุณากรอกชื่อผู้ใช้งาน';
+                        }
+                        return null;
+                      },
+                      maxLength: 30,
+                      field: 'username',
+                      onChanged: _onFieldChanged,
+                      errorText: _usernameError,
+                      fillColor: Colors.grey.withOpacity(0.9),// สีเทาอ่อน
+                    ),
                   ),
                   const SizedBox(height: 10),
                   _buildTextFormField(
@@ -328,7 +332,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     required String field,
     required Function(String) onChanged,
     String? errorText,
+    Color? fillColor,
   }) {
+    // Color? finalFillColor = (field == 'username') ? fillColor : Colors.grey;
+    // bool finalFilled = (field == 'username');
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -340,6 +347,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
         errorText: errorText,
+        // fillColor: finalFillColor, // ใช้ fillColor ที่กำหนดจากเงื่อนไข
+        // filled: finalFilled, // ใช้ filled ที่กำหนดจากเงื่อนไข
       ),
       maxLength: maxLength,
       validator: validator,
