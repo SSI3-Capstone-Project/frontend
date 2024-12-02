@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/controller/post_detail_controller.dart';
+import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/delete_post_controller.dart';
@@ -18,6 +19,7 @@ class PostDetailPage extends StatefulWidget {
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
+  final PostsController postController = Get.put(PostsController());
   final PostOfferController offerController = Get.put(PostOfferController());
   final PostDetailController postDetailController =
       Get.put(PostDetailController());
@@ -295,7 +297,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
           Row(
             children: [
               GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () async => {
+                  await postController.fetchPosts(),
+                  Navigator.pop(context),
+                },
                 child: const Icon(
                   Icons.arrow_back_ios,
                   size: 25,

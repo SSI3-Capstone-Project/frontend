@@ -208,6 +208,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           _buildTextFormField(
             controller: _flawController,
             label: 'ตำหนิ',
+            maxLength: 50,
           ),
           SizedBox(height: 16),
           Obx(() {

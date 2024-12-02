@@ -312,6 +312,7 @@ class _EditOfferFormState extends State<EditOfferForm> {
               _buildTextFormField(
                 controller: _flawController,
                 label: 'ตำหนิ',
+                maxLength: 50,
               ),
               SizedBox(height: 16),
               Obx(() {

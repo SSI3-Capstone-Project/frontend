@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart'; // Import the controller
+import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
 import 'package:mbea_ssi3_front/views/offer/controllers/delete_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/offer/pages/offer_edit.dart';
@@ -16,6 +17,7 @@ class OfferDetailPage extends StatefulWidget {
 }
 
 class _OfferDetailPageState extends State<OfferDetailPage> {
+  final OffersController offerController = Get.put(OffersController());
   final OfferDetailController offerDetailController =
       Get.put(OfferDetailController());
   final OfferDeleteController offerDeleteController =
@@ -54,7 +56,10 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () => Navigator.pop(context, true),
+                            onTap: () async => {
+                              await offerController.fetchOffers(),
+                              Navigator.pop(context, true),
+                            },
                             child: const Icon(Icons.arrow_back, size: 30),
                           ),
                         ],

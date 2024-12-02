@@ -199,11 +199,13 @@ class _CreatePostFormState extends State<CreatePostForm> {
           _buildTextFormField(
             controller: _flawController,
             label: 'ตำหนิ',
+            maxLength: 50,
           ),
           SizedBox(height: 16),
           _buildTextFormField(
             controller: _desiredController,
             label: 'ระบุสิ่งที่อยากแลก',
+            maxLength: 50,
             validator: (value) => value == null || value.isEmpty
                 ? 'โปรดระบุสิ่งที่อยากแลก'
                 : null,
