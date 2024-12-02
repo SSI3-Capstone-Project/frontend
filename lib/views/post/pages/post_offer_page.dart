@@ -122,6 +122,40 @@ class _PostOfferPageState extends State<PostOfferPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {},
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: Colors.white,
+                        ),
+                        child: CircleAvatar(
+                            radius: 18,
+                            backgroundImage: NetworkImage(item.imageURL))),
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  item.userName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black, // Text color
+                  ),
+                )
+              ],
+            ),
+          ),
           Stack(
             children: [
               Positioned.fill(
@@ -141,10 +175,6 @@ class _PostOfferPageState extends State<PostOfferPage> {
               ),
               Center(
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                  ),
                   child: Image.network(
                     item.coverImage,
                     fit: BoxFit.fill,

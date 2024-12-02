@@ -53,7 +53,8 @@ class TokenController extends GetxController with WidgetsBindingObserver {
       if (access == null || refresh == null) {
         accessToken.value = null;
         refreshToken.value = null;
-        Get.snackbar('Error', 'No tokens found. Skipping refresh.');
+        // Get.snackbar('Error', 'No tokens found. Skipping refresh.');
+        print('(Token) No tokens found. Skipping refresh.');
         return;
       }
 
@@ -84,7 +85,7 @@ class TokenController extends GetxController with WidgetsBindingObserver {
             tokenData['refresh_token'] != null) {
           await saveTokens(
               tokenData['access_token'], tokenData['refresh_token']);
-          Get.snackbar('Success', 'Tokens refreshed successfully.');
+          // Get.snackbar('Success', 'Tokens refreshed successfully.');
         } else {
           print('(Token) Invalid token data received.');
           Get.snackbar('Error', 'Invalid token data received.');

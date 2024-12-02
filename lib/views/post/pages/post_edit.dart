@@ -42,6 +42,8 @@ class _EditPostFormState extends State<EditPostForm> {
 
   bool _mediaError = false;
 
+  bool _loadPage = false;
+
   @override
   void initState() {
     super.initState();
@@ -210,214 +212,224 @@ class _EditPostFormState extends State<EditPostForm> {
       ),
       body: Container(
         color: Colors.white,
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: EdgeInsets.all(16.0),
-            children: [
-              _buildTextFormField(
-                controller: _productNameController,
-                label: 'ชื่อสินค้า',
-                validator: (value) => value == null || value.isEmpty
-                    ? 'โปรดระบุชื่อสินค้า'
-                    : null,
-              ),
-              SizedBox(height: 16),
-              Obx(() {
-                if (!mounted) return const SizedBox();
+        child: _loadPage
+            ? Center(child: CircularProgressIndicator())
+            : Form(
+                key: _formKey,
+                child: ListView(
+                  padding: EdgeInsets.all(16.0),
+                  children: [
+                    _buildTextFormField(
+                      controller: _productNameController,
+                      label: 'ชื่อสินค้า',
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'โปรดระบุชื่อสินค้า'
+                          : null,
+                    ),
+                    SizedBox(height: 16),
+                    Obx(() {
+                      if (!mounted) return const SizedBox();
 
-                if (brandController.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
+                      if (brandController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
 
-                return Container(
-                  constraints: BoxConstraints(maxHeight: 300),
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: [
-                      _buildDropdownField(
-                        label: 'เลือกแบรนด์',
-                        items:
-                            brandController.brands.map((b) => b.name).toList(),
-                        value: selectedBrand,
-                        onChanged: (newValue) {
-                          if (mounted) {
-                            setState(() {
-                              selectedBrand = newValue;
-                              selectedMainCategory = null;
-                              selectedSubCategory = null;
-                            });
-                          }
-                        },
-                        validator: (value) =>
-                            value == null ? 'โปรดเลือกแบรนด์' : null,
-                      ),
-                      if (selectedBrand != null)
-                        _buildDropdownField(
-                          label: 'เลือกคอลเลคชั่น',
-                          items: brandController.brands
-                                  .firstWhere((b) => b.name == selectedBrand)
-                                  .collections
-                                  ?.map((c) => c.name)
-                                  .toList() ??
-                              [],
-                          value: selectedMainCategory,
-                          onChanged: (newValue) {
-                            if (mounted) {
-                              setState(() {
-                                selectedMainCategory = newValue;
-                                selectedSubCategory = null;
-                              });
-                            }
-                          },
-                          validator: (value) =>
-                              value == null ? 'โปรดเลือกคอลเลคชั่น' : null,
+                      return Container(
+                        constraints: BoxConstraints(maxHeight: 300),
+                        child: ListView(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          children: [
+                            _buildDropdownField(
+                              label: 'เลือกแบรนด์',
+                              items: brandController.brands
+                                  .map((b) => b.name)
+                                  .toList(),
+                              value: selectedBrand,
+                              onChanged: (newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    selectedBrand = newValue;
+                                    selectedMainCategory = null;
+                                    selectedSubCategory = null;
+                                  });
+                                }
+                              },
+                              validator: (value) =>
+                                  value == null ? 'โปรดเลือกแบรนด์' : null,
+                            ),
+                            if (selectedBrand != null)
+                              _buildDropdownField(
+                                label: 'เลือกคอลเลคชั่น',
+                                items: brandController.brands
+                                        .firstWhere(
+                                            (b) => b.name == selectedBrand)
+                                        .collections
+                                        ?.map((c) => c.name)
+                                        .toList() ??
+                                    [],
+                                value: selectedMainCategory,
+                                onChanged: (newValue) {
+                                  if (mounted) {
+                                    setState(() {
+                                      selectedMainCategory = newValue;
+                                      selectedSubCategory = null;
+                                    });
+                                  }
+                                },
+                                validator: (value) => value == null
+                                    ? 'โปรดเลือกคอลเลคชั่น'
+                                    : null,
+                              ),
+                            if (selectedMainCategory != null)
+                              _buildDropdownField(
+                                label: 'เลือกคอลเลคชั่นย่อย',
+                                items: brandController.brands
+                                        .firstWhere(
+                                            (b) => b.name == selectedBrand)
+                                        .collections
+                                        ?.firstWhere((c) =>
+                                            c.name == selectedMainCategory)
+                                        .subCollections
+                                        ?.map((sc) => sc.name)
+                                        .toList() ??
+                                    [],
+                                value: selectedSubCategory,
+                                onChanged: (newValue) {
+                                  if (mounted) {
+                                    setState(() {
+                                      selectedSubCategory = newValue;
+                                    });
+                                  }
+                                },
+                                validator: (value) => value == null
+                                    ? 'โปรดเลือกคอลเลคชั่นย่อย'
+                                    : null,
+                              ),
+                          ],
                         ),
-                      if (selectedMainCategory != null)
-                        _buildDropdownField(
-                          label: 'เลือกคอลเลคชั่นย่อย',
-                          items: brandController.brands
-                                  .firstWhere((b) => b.name == selectedBrand)
-                                  .collections
-                                  ?.firstWhere(
-                                      (c) => c.name == selectedMainCategory)
-                                  .subCollections
-                                  ?.map((sc) => sc.name)
-                                  .toList() ??
-                              [],
-                          value: selectedSubCategory,
-                          onChanged: (newValue) {
-                            if (mounted) {
-                              setState(() {
-                                selectedSubCategory = newValue;
-                              });
-                            }
-                          },
-                          validator: (value) =>
-                              value == null ? 'โปรดเลือกคอลเลคชั่นย่อย' : null,
-                        ),
-                    ],
-                  ),
-                );
-              }),
-              _buildTextFormField(
-                controller: _descriptionController,
-                label: 'รายละเอียดสินค้า',
-                maxLength: 200,
-                maxLines: 4,
-                validator: (value) => value == null || value.isEmpty
-                    ? 'โปรดระบุรายละเอียดของสินค้า'
-                    : null,
-              ),
-              SizedBox(height: 16),
-              _buildTextFormField(
-                controller: _flawController,
-                label: 'ตำหนิ',
-                maxLength: 50,
-              ),
-              SizedBox(height: 16),
-              _buildTextFormField(
-                controller: _desiredController,
-                label: 'ระบุสิ่งที่อยากแลก',
-                maxLength: 50,
-                validator: (value) => value == null || value.isEmpty
-                    ? 'โปรดระบุสิ่งที่อยากแลก'
-                    : null,
-              ),
-              SizedBox(height: 16),
-              Obx(() {
-                if (!mounted) return const SizedBox();
+                      );
+                    }),
+                    _buildTextFormField(
+                      controller: _descriptionController,
+                      label: 'รายละเอียดสินค้า',
+                      maxLength: 200,
+                      maxLines: 4,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'โปรดระบุรายละเอียดของสินค้า'
+                          : null,
+                    ),
+                    SizedBox(height: 16),
+                    _buildTextFormField(
+                      controller: _flawController,
+                      label: 'ตำหนิ',
+                      maxLength: 50,
+                    ),
+                    SizedBox(height: 16),
+                    _buildTextFormField(
+                      controller: _desiredController,
+                      label: 'ระบุสิ่งที่อยากแลก',
+                      maxLength: 50,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'โปรดระบุสิ่งที่อยากแลก'
+                          : null,
+                    ),
+                    SizedBox(height: 16),
+                    Obx(() {
+                      if (!mounted) return const SizedBox();
 
-                if (provinceController.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
-                }
+                      if (provinceController.isLoading.value) {
+                        return Center(child: CircularProgressIndicator());
+                      }
 
-                return Container(
-                  constraints:
-                      BoxConstraints(maxHeight: 300), // Set a maximum height
-                  child: ListView(
-                    shrinkWrap:
-                        true, // This allows the ListView to take only as much height as it needs
-                    physics:
-                        NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
-                    children: [
-                      _buildDropdownField(
-                        label: 'เลือกจังหวัด',
-                        items: provinceController.provinces
-                            .map((b) => b.name)
-                            .toList(),
-                        value: selectedProvince,
-                        onChanged: (newValue) {
-                          if (mounted) {
-                            setState(() {
-                              selectedProvince = newValue;
-                              selectedMainDistrict = null;
-                              selectedSubDistrict = null;
-                            });
-                          }
-                        },
-                        validator: (value) =>
-                            value == null ? 'โปรดเลือกจังหวัด' : null,
-                      ),
-                      if (selectedProvince != null)
-                        _buildDropdownField(
-                          label: 'เลือกเขต / อำเภอ',
-                          items: provinceController.provinces
-                                  .firstWhere((b) => b.name == selectedProvince)
-                                  .districts
-                                  ?.map((c) => c.name)
-                                  .toList() ??
-                              [],
-                          value: selectedMainDistrict,
-                          onChanged: (newValue) {
-                            if (mounted) {
-                              setState(() {
-                                selectedMainDistrict = newValue;
-                                selectedSubDistrict = null;
-                              });
-                            }
-                          },
-                          validator: (value) =>
-                              value == null ? 'โปรดเลือกเขต / อำเภอ' : null,
+                      return Container(
+                        constraints: BoxConstraints(
+                            maxHeight: 300), // Set a maximum height
+                        child: ListView(
+                          shrinkWrap:
+                              true, // This allows the ListView to take only as much height as it needs
+                          physics:
+                              NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                          children: [
+                            _buildDropdownField(
+                              label: 'เลือกจังหวัด',
+                              items: provinceController.provinces
+                                  .map((b) => b.name)
+                                  .toList(),
+                              value: selectedProvince,
+                              onChanged: (newValue) {
+                                if (mounted) {
+                                  setState(() {
+                                    selectedProvince = newValue;
+                                    selectedMainDistrict = null;
+                                    selectedSubDistrict = null;
+                                  });
+                                }
+                              },
+                              validator: (value) =>
+                                  value == null ? 'โปรดเลือกจังหวัด' : null,
+                            ),
+                            if (selectedProvince != null)
+                              _buildDropdownField(
+                                label: 'เลือกเขต / อำเภอ',
+                                items: provinceController.provinces
+                                        .firstWhere(
+                                            (b) => b.name == selectedProvince)
+                                        .districts
+                                        ?.map((c) => c.name)
+                                        .toList() ??
+                                    [],
+                                value: selectedMainDistrict,
+                                onChanged: (newValue) {
+                                  if (mounted) {
+                                    setState(() {
+                                      selectedMainDistrict = newValue;
+                                      selectedSubDistrict = null;
+                                    });
+                                  }
+                                },
+                                validator: (value) => value == null
+                                    ? 'โปรดเลือกเขต / อำเภอ'
+                                    : null,
+                              ),
+                            if (selectedMainDistrict != null)
+                              _buildDropdownField(
+                                label: 'เลือกตำบล',
+                                items: provinceController.provinces
+                                        .firstWhere(
+                                            (b) => b.name == selectedProvince)
+                                        .districts
+                                        ?.firstWhere((c) =>
+                                            c.name == selectedMainDistrict)
+                                        .subDistricts
+                                        ?.map((sc) => sc.name)
+                                        .toList() ??
+                                    [],
+                                value: selectedSubDistrict,
+                                onChanged: (newValue) {
+                                  if (mounted) {
+                                    setState(() {
+                                      selectedSubDistrict = newValue;
+                                    });
+                                  }
+                                },
+                                validator: (value) =>
+                                    value == null ? 'โปรดเลือกตำบล' : null,
+                              ),
+                          ],
                         ),
-                      if (selectedMainDistrict != null)
-                        _buildDropdownField(
-                          label: 'เลือกตำบล',
-                          items: provinceController.provinces
-                                  .firstWhere((b) => b.name == selectedProvince)
-                                  .districts
-                                  ?.firstWhere(
-                                      (c) => c.name == selectedMainDistrict)
-                                  .subDistricts
-                                  ?.map((sc) => sc.name)
-                                  .toList() ??
-                              [],
-                          value: selectedSubDistrict,
-                          onChanged: (newValue) {
-                            if (mounted) {
-                              setState(() {
-                                selectedSubDistrict = newValue;
-                              });
-                            }
-                          },
-                          validator: (value) =>
-                              value == null ? 'โปรดเลือกตำบล' : null,
-                        ),
-                    ],
-                  ),
-                );
-              }),
-              // SizedBox(height: 30),
-              _buildMediaPreview(),
-              SizedBox(height: 30),
-              _buildMediaButtons(),
-              SizedBox(height: 30),
-              _buildSubmitButton(),
-              SizedBox(height: 30),
-            ],
-          ),
-        ),
+                      );
+                    }),
+                    // SizedBox(height: 30),
+                    _buildMediaPreview(),
+                    SizedBox(height: 30),
+                    _buildMediaButtons(),
+                    SizedBox(height: 30),
+                    _buildSubmitButton(),
+                    SizedBox(height: 30),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -786,11 +798,23 @@ class _EditPostFormState extends State<EditPostForm> {
                           .toList(),
                     );
 
+                    if (mounted) {
+                      setState(() {
+                        _loadPage = true;
+                      });
+                    }
+
                     var result = await updatePostController
                         .updatePostDetails(postToUpdate);
                     if (result) {
                       bool isUpdated = true;
                       Navigator.pop(context, isUpdated);
+                    }
+
+                    if (mounted) {
+                      setState(() {
+                        _loadPage = false;
+                      });
                     }
                   } else {
                     String errorMessage = mediaFiles.any((file) {

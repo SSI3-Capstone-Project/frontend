@@ -60,7 +60,7 @@ class UpdateOffer {
 
 class OfferMedia {
   String? id;
-  int hierarchy;
+  int? hierarchy;
   String status;
 
   OfferMedia({

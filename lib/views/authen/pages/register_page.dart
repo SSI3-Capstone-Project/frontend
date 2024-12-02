@@ -180,6 +180,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   label: 'รหัสผ่าน',
                   isPassword: true,
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 8),
+                  child: Text(
+                    'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษรและประกอบด้วย\nตัวอักษร a-z, A-Z, และ 0-9',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
                 SizedBox(height: 20),
                 _buildTextField(
                   controller: _confirmPasswordController,
@@ -292,7 +299,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (isPassword &&
             !RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d!@#\$&*~]{8,}$')
                 .hasMatch(value)) {
-          return 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร\nและประกอบด้วยตัวอักษร a-z, A-Z, และ 0-9 (อักขระพิเศษจะมีหรือไม่ก็ได้)';
+          return 'โปรดตรวจสอบรูปแบบรหัสผ่านไม่ถูกต้อง';
         }
         if (isConfirmPassword && value != _passwordController.text) {
           return 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';

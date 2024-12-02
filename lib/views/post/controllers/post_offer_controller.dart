@@ -4,10 +4,11 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/model/offers_model.dart';
+import 'package:mbea_ssi3_front/views/post/models/post_offer_model.dart';
 
 class PostOfferController extends GetxController {
   final tokenController = Get.find<TokenController>();
-  var offerList = <Offers>[].obs;
+  var offerList = <PostOffers>[].obs;
   var isLoading = false.obs;
 
   Future<void> fetchOffers(String postId) async {
@@ -31,7 +32,7 @@ class PostOfferController extends GetxController {
         var offerData = jsonData['data']?['offers'];
         if (offerData != null && offerData is List && offerData.isNotEmpty) {
           offerList.value =
-              offerData.map((item) => Offers.fromJson(item)).toList();
+              offerData.map((item) => PostOffers.fromJson(item)).toList();
           isLoading(false);
         } else {
           offerList.clear(); // Clear the list if no data is present

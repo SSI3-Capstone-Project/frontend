@@ -43,6 +43,8 @@ class _CreatePostFormState extends State<CreatePostForm> {
 
   bool _mediaError = false;
 
+  bool _loadPage = false;
+
   Future<void> _pickImage() async {
     if (mounted) {
       setState(() {
@@ -99,204 +101,208 @@ class _CreatePostFormState extends State<CreatePostForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: ListView(
-        children: [
-          SizedBox(height: 15),
-          _buildTextFormField(
-            controller: _productNameController,
-            label: 'ชื่อสินค้า',
-            validator: (value) =>
-                value == null || value.isEmpty ? 'โปรดระบุชื่อสินค้า' : null,
-          ),
-          SizedBox(height: 16),
-          Obx(() {
-            if (!mounted) return const SizedBox();
+    if (_loadPage) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return Form(
+        key: _formKey,
+        child: ListView(
+          children: [
+            SizedBox(height: 15),
+            _buildTextFormField(
+              controller: _productNameController,
+              label: 'ชื่อสินค้า',
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'โปรดระบุชื่อสินค้า' : null,
+            ),
+            SizedBox(height: 16),
+            Obx(() {
+              if (!mounted) return const SizedBox();
 
-            if (brandController.isLoading.value) {
-              return Center(child: CircularProgressIndicator());
-            }
+              if (brandController.isLoading.value) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-            return Container(
-              constraints:
-                  BoxConstraints(maxHeight: 300), // Set a maximum height
-              child: ListView(
-                shrinkWrap:
-                    true, // This allows the ListView to take only as much height as it needs
-                physics:
-                    NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
-                children: [
-                  _buildDropdownField(
-                    label: 'เลือกแบรนด์',
-                    items: brandController.brands.map((b) => b.name).toList(),
-                    value: selectedBrand,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedBrand = newValue;
-                        selectedMainCategory = null;
-                        selectedSubCategory = null;
-                      });
-                    },
-                    validator: (value) =>
-                        value == null ? 'โปรดเลือกแบรนด์' : null,
-                  ),
-                  if (selectedBrand != null)
+              return Container(
+                constraints:
+                    BoxConstraints(maxHeight: 300), // Set a maximum height
+                child: ListView(
+                  shrinkWrap:
+                      true, // This allows the ListView to take only as much height as it needs
+                  physics:
+                      NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                  children: [
                     _buildDropdownField(
-                      label: 'เลือกคอลเลคชั่น',
-                      items: brandController.brands
-                              .firstWhere((b) => b.name == selectedBrand)
-                              .collections
-                              ?.map((c) => c.name)
-                              .toList() ??
-                          [],
-                      value: selectedMainCategory,
+                      label: 'เลือกแบรนด์',
+                      items: brandController.brands.map((b) => b.name).toList(),
+                      value: selectedBrand,
                       onChanged: (newValue) {
                         setState(() {
-                          selectedMainCategory = newValue;
+                          selectedBrand = newValue;
+                          selectedMainCategory = null;
                           selectedSubCategory = null;
                         });
                       },
                       validator: (value) =>
-                          value == null ? 'โปรดเลือกคอลเลคชั่น' : null,
+                          value == null ? 'โปรดเลือกแบรนด์' : null,
                     ),
-                  if (selectedMainCategory != null)
-                    _buildDropdownField(
-                      label: 'เลือกคอลเลคชั่นย่อย',
-                      items: brandController.brands
-                              .firstWhere((b) => b.name == selectedBrand)
-                              .collections
-                              ?.firstWhere(
-                                  (c) => c.name == selectedMainCategory)
-                              .subCollections
-                              ?.map((sc) => sc.name)
-                              .toList() ??
-                          [],
-                      value: selectedSubCategory,
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedSubCategory = newValue;
-                        });
-                      },
-                      validator: (value) =>
-                          value == null ? 'โปรดเลือกคอลเลคชั่นย่อย' : null,
-                    ),
-                ],
-              ),
-            );
-          }),
-          // SizedBox(height: 30),
-          _buildTextFormField(
-            controller: _descriptionController,
-            label: 'รายละเอียดสินค้า',
-            maxLength: 200,
-            maxLines: 4,
-            validator: (value) => value == null || value.isEmpty
-                ? 'โปรดระบุรายละเอียดของสินค้า'
-                : null,
-          ),
-          SizedBox(height: 16),
-          _buildTextFormField(
-            controller: _flawController,
-            label: 'ตำหนิ',
-            maxLength: 50,
-          ),
-          SizedBox(height: 16),
-          _buildTextFormField(
-            controller: _desiredController,
-            label: 'ระบุสิ่งที่อยากแลก',
-            maxLength: 50,
-            validator: (value) => value == null || value.isEmpty
-                ? 'โปรดระบุสิ่งที่อยากแลก'
-                : null,
-          ),
-          SizedBox(height: 16),
-          Obx(() {
-            if (!mounted) return const SizedBox();
+                    if (selectedBrand != null)
+                      _buildDropdownField(
+                        label: 'เลือกคอลเลคชั่น',
+                        items: brandController.brands
+                                .firstWhere((b) => b.name == selectedBrand)
+                                .collections
+                                ?.map((c) => c.name)
+                                .toList() ??
+                            [],
+                        value: selectedMainCategory,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedMainCategory = newValue;
+                            selectedSubCategory = null;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกคอลเลคชั่น' : null,
+                      ),
+                    if (selectedMainCategory != null)
+                      _buildDropdownField(
+                        label: 'เลือกคอลเลคชั่นย่อย',
+                        items: brandController.brands
+                                .firstWhere((b) => b.name == selectedBrand)
+                                .collections
+                                ?.firstWhere(
+                                    (c) => c.name == selectedMainCategory)
+                                .subCollections
+                                ?.map((sc) => sc.name)
+                                .toList() ??
+                            [],
+                        value: selectedSubCategory,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedSubCategory = newValue;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกคอลเลคชั่นย่อย' : null,
+                      ),
+                  ],
+                ),
+              );
+            }),
+            // SizedBox(height: 30),
+            _buildTextFormField(
+              controller: _descriptionController,
+              label: 'รายละเอียดสินค้า',
+              maxLength: 200,
+              maxLines: 4,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'โปรดระบุรายละเอียดของสินค้า'
+                  : null,
+            ),
+            SizedBox(height: 16),
+            _buildTextFormField(
+              controller: _flawController,
+              label: 'ตำหนิ',
+              maxLength: 50,
+            ),
+            SizedBox(height: 16),
+            _buildTextFormField(
+              controller: _desiredController,
+              label: 'ระบุสิ่งที่อยากแลก',
+              maxLength: 50,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'โปรดระบุสิ่งที่อยากแลก'
+                  : null,
+            ),
+            SizedBox(height: 16),
+            Obx(() {
+              if (!mounted) return const SizedBox();
 
-            if (provinceController.isLoading.value) {
-              return Center(child: CircularProgressIndicator());
-            }
+              if (provinceController.isLoading.value) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-            return Container(
-              constraints:
-                  BoxConstraints(maxHeight: 300), // Set a maximum height
-              child: ListView(
-                shrinkWrap:
-                    true, // This allows the ListView to take only as much height as it needs
-                physics:
-                    NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
-                children: [
-                  _buildDropdownField(
-                    label: 'เลือกจังหวัด',
-                    items: provinceController.provinces
-                        .map((b) => b.name)
-                        .toList(),
-                    value: selectedProvince,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedProvince = newValue;
-                        selectedMainDistrict = null;
-                        selectedSubDistrict = null;
-                      });
-                    },
-                    validator: (value) =>
-                        value == null ? 'โปรดเลือกจังหวัด' : null,
-                  ),
-                  if (selectedProvince != null)
+              return Container(
+                constraints:
+                    BoxConstraints(maxHeight: 300), // Set a maximum height
+                child: ListView(
+                  shrinkWrap:
+                      true, // This allows the ListView to take only as much height as it needs
+                  physics:
+                      NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                  children: [
                     _buildDropdownField(
-                      label: 'เลือกเขต / อำเภอ',
+                      label: 'เลือกจังหวัด',
                       items: provinceController.provinces
-                              .firstWhere((b) => b.name == selectedProvince)
-                              .districts
-                              ?.map((c) => c.name)
-                              .toList() ??
-                          [],
-                      value: selectedMainDistrict,
+                          .map((b) => b.name)
+                          .toList(),
+                      value: selectedProvince,
                       onChanged: (newValue) {
                         setState(() {
-                          selectedMainDistrict = newValue;
+                          selectedProvince = newValue;
+                          selectedMainDistrict = null;
                           selectedSubDistrict = null;
                         });
                       },
                       validator: (value) =>
-                          value == null ? 'โปรดเลือกเขต / อำเภอ' : null,
+                          value == null ? 'โปรดเลือกจังหวัด' : null,
                     ),
-                  if (selectedMainDistrict != null)
-                    _buildDropdownField(
-                      label: 'เลือกตำบล',
-                      items: provinceController.provinces
-                              .firstWhere((b) => b.name == selectedProvince)
-                              .districts
-                              ?.firstWhere(
-                                  (c) => c.name == selectedMainDistrict)
-                              .subDistricts
-                              ?.map((sc) => sc.name)
-                              .toList() ??
-                          [],
-                      value: selectedSubDistrict,
-                      onChanged: (newValue) {
-                        setState(() {
-                          selectedSubDistrict = newValue;
-                        });
-                      },
-                      validator: (value) =>
-                          value == null ? 'โปรดเลือกตำบล' : null,
-                    ),
-                ],
-              ),
-            );
-          }),
-          // SizedBox(height: 30),
-          _buildMediaPreview(),
-          SizedBox(height: 30),
-          _buildMediaButtons(),
-          SizedBox(height: 30),
-          _buildSubmitButton(),
-          SizedBox(height: 30),
-        ],
-      ),
-    );
+                    if (selectedProvince != null)
+                      _buildDropdownField(
+                        label: 'เลือกเขต / อำเภอ',
+                        items: provinceController.provinces
+                                .firstWhere((b) => b.name == selectedProvince)
+                                .districts
+                                ?.map((c) => c.name)
+                                .toList() ??
+                            [],
+                        value: selectedMainDistrict,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedMainDistrict = newValue;
+                            selectedSubDistrict = null;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกเขต / อำเภอ' : null,
+                      ),
+                    if (selectedMainDistrict != null)
+                      _buildDropdownField(
+                        label: 'เลือกตำบล',
+                        items: provinceController.provinces
+                                .firstWhere((b) => b.name == selectedProvince)
+                                .districts
+                                ?.firstWhere(
+                                    (c) => c.name == selectedMainDistrict)
+                                .subDistricts
+                                ?.map((sc) => sc.name)
+                                .toList() ??
+                            [],
+                        value: selectedSubDistrict,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedSubDistrict = newValue;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกตำบล' : null,
+                      ),
+                  ],
+                ),
+              );
+            }),
+            // SizedBox(height: 30),
+            _buildMediaPreview(),
+            SizedBox(height: 30),
+            _buildMediaButtons(),
+            SizedBox(height: 30),
+            _buildSubmitButton(),
+            SizedBox(height: 30),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildTextFormField({
@@ -535,6 +541,12 @@ class _CreatePostFormState extends State<CreatePostForm> {
                 mediaFiles: mediaFiles,
               );
 
+              if (mounted) {
+                setState(() {
+                  _loadPage = true;
+                });
+              }
+
               // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
               var result = await createPostController.createPost(post);
               if (mounted) {
@@ -543,6 +555,11 @@ class _CreatePostFormState extends State<CreatePostForm> {
                   await postController.fetchPosts();
                   Navigator.pop(context);
                 }
+              }
+              if (mounted) {
+                setState(() {
+                  _loadPage = false;
+                });
               }
             } else {
               // แสดงข้อความแจ้งเตือนเมื่อไม่มีรูปภาพใน mediaFiles
