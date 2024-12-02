@@ -238,7 +238,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               children: [
                 Row(
                   children: [
-                    if (menuItems == "ออกจากระบบ") ...[
+                    if (menuItems[index] == "ออกจากระบบ") ...[
                       Icon(iconList[index], color: Colors.red),
                       SizedBox(width: 10),
                       Text(
@@ -262,7 +262,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                     ],
                   ],
                 ),
-                if (menuItems != "ออกจากระบบ")
+                if (menuItems[index] != "ออกจากระบบ")
                   Icon(Icons.arrow_forward_ios,
                       size: 16), // ลูกศรย้อนกลับเมื่อ index != 4
               ],
