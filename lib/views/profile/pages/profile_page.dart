@@ -369,7 +369,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => EditProfilePage()),
+                                  builder: (context) => EditProfilePage(userProfile: user)),
                             );
                           },
                           child: Icon(

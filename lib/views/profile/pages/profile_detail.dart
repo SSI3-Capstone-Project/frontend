@@ -123,7 +123,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditProfilePage(),
+                        builder: (context) => EditProfilePage(userProfile: user),
                       ),
                     );
                   },

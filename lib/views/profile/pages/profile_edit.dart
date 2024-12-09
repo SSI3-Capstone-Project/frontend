@@ -4,11 +4,14 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/update_profile_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:mbea_ssi3_front/views/profile/models/profile_update_model.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  final UserProfile userProfile;
+
+  const EditProfilePage({super.key, required this.userProfile});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -26,25 +29,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final userProfileController = Get.put(UserProfileController());
 
   String? profileImageUrl;
-  File? profileImageFile; // To hold the selected profile image
+  File? profileImageFile;
+  bool isEdited = false;  // To hold the selected profile image
   final Map<String, bool> _isFieldModified = {
     'image': false,
-    'username': false,
-    'firstname': false,
-    'lastname': false,
-    'email': false,
-    'phone': false,
-    'gender': false, // Track gender modification
+    // 'username': false,
+    // 'firstname': false,
+    // 'lastname': false,
+    // 'email': false,
+    // 'phone': false,
+    // 'gender': false, // Track gender modification
   };
 
-  Map<String, String> _initialValues = {
-    'username': '',
-    'firstname': '',
-    'lastname': '',
-    'email': '',
-    'phone': '',
-    'gender': '',
-  };
+  // Map<String, String> _initialValues = {
+  //   'username': '',
+  //   'firstname': '',
+  //   'lastname': '',
+  //   'email': '',
+  //   'phone': '',
+  //   'gender': '',
+  // };
 
   String? _usernameError;
   bool _isUsernameValid = true;
@@ -56,19 +60,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final userProfile = userProfileController.userProfile.value;
       if (userProfile != null) {
         setState(() {
-          profileImageUrl = userProfile.imageUrl;
-          usernameController.text = userProfile.username ?? '';
-          firstnameController.text = userProfile.firstname ?? '';
-          lastnameController.text = userProfile.lastname ?? '';
-          emailController.text = userProfile.email ?? '';
-          phoneController.text = userProfile.phone ?? '';
-          genderController.value = userProfile.gender ?? 'non-identify';
-          _initialValues['username'] = userProfile.username ?? '';
-          _initialValues['firstname'] = userProfile.firstname ?? '';
-          _initialValues['lastname'] = userProfile.lastname ?? '';
-          _initialValues['email'] = userProfile.email ?? '';
-          _initialValues['phone'] = userProfile.phone ?? '';
-          _initialValues['gender'] = userProfile.gender ?? 'non-identify';
+          profileImageUrl = widget.userProfile.imageUrl;
+          usernameController.text = widget.userProfile.username ?? '';
+          firstnameController.text = widget.userProfile.firstname ?? '';
+          lastnameController.text = widget.userProfile.lastname ?? '';
+          emailController.text = widget.userProfile.email ?? '';
+          phoneController.text = widget.userProfile.phone ?? '';
+          genderController.value = widget.userProfile.gender ?? 'non-identify';
+          // _initialValues['username'] = userProfile.username ?? '';
+          // _initialValues['firstname'] = userProfile.firstname ?? '';
+          // _initialValues['lastname'] = userProfile.lastname ?? '';
+          // _initialValues['email'] = userProfile.email ?? '';
+          // _initialValues['phone'] = userProfile.phone ?? '';
+          // _initialValues['gender'] = userProfile.gender ?? 'non-identify';
         });
       }
     });
@@ -268,7 +272,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       const SizedBox(width: 20),
                       ElevatedButton(
-                        onPressed: _canSubmit()
+                        onPressed: isEdited
                             ? () async {
                                 if (_formKey.currentState!.validate()) {
                                   // สร้างข้อมูลโปรไฟล์ที่อัปเดต
@@ -304,7 +308,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               }
                             : null,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: _canSubmit()
+                          backgroundColor: isEdited
                               ? Constants.primaryColor
                               : Colors.grey,
                           padding: const EdgeInsets.symmetric(
@@ -359,24 +363,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _onFieldChanged(String value) {
+    // setState(() {
+    //   _isFieldModified['image'] = true;
+    //   _isFieldModified['username'] =
+    //       usernameController.text != _initialValues['username'];
+    //   _isFieldModified['firstname'] =
+    //       firstnameController.text != _initialValues['firstname'];
+    //   _isFieldModified['lastname'] =
+    //       lastnameController.text != _initialValues['lastname'];
+    //   _isFieldModified['email'] =
+    //       emailController.text != _initialValues['email'];
+    //   _isFieldModified['phone'] =
+    //       phoneController.text != _initialValues['phone'];
+    //   _isFieldModified['gender'] =
+    //       genderController.value != _initialValues['gender'];
+    // });
+
+    // bool hasTextChanged = usernameController.text != widget.userProfile.username
+    // _isFieldModified['image'] = true;
+    bool hasTextChanged = usernameController.text != widget.userProfile.username ||
+                          firstnameController.text != widget.userProfile.firstname ||
+                          lastnameController.text != widget.userProfile.lastname ||
+                          emailController.text != widget.userProfile.email ||
+                          phoneController.text != widget.userProfile.phone;
+
+    bool hasDropdownChanged = genderController.value != widget.userProfile.gender;
+
     setState(() {
-      _isFieldModified['image'] = true;
-      _isFieldModified['username'] =
-          usernameController.text != _initialValues['username'];
-      _isFieldModified['firstname'] =
-          firstnameController.text != _initialValues['firstname'];
-      _isFieldModified['lastname'] =
-          lastnameController.text != _initialValues['lastname'];
-      _isFieldModified['email'] =
-          emailController.text != _initialValues['email'];
-      _isFieldModified['phone'] =
-          phoneController.text != _initialValues['phone'];
-      _isFieldModified['gender'] =
-          genderController.value != _initialValues['gender'];
-    });
+      isEdited = hasTextChanged || hasDropdownChanged || _isFieldModified['image'] == true;
+    });                
+     
   }
 
-  bool _canSubmit() {
-    return _isFieldModified.values.contains(true);
-  }
+  // bool _canSubmit() {
+  //   return _isFieldModified.values.contains(true);
+  // }
 }
