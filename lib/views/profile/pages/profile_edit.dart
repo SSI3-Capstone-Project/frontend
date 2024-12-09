@@ -29,26 +29,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final userProfileController = Get.put(UserProfileController());
 
   String? profileImageUrl;
-  File? profileImageFile;
-  bool isEdited = false;  // To hold the selected profile image
+  File? profileImageFile; // To hold the selected profile image
+  bool isEdited = false;
   final Map<String, bool> _isFieldModified = {
     'image': false,
-    // 'username': false,
-    // 'firstname': false,
-    // 'lastname': false,
-    // 'email': false,
-    // 'phone': false,
-    // 'gender': false, // Track gender modification
   };
-
-  // Map<String, String> _initialValues = {
-  //   'username': '',
-  //   'firstname': '',
-  //   'lastname': '',
-  //   'email': '',
-  //   'phone': '',
-  //   'gender': '',
-  // };
 
   String? _usernameError;
   bool _isUsernameValid = true;
@@ -67,12 +52,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           emailController.text = widget.userProfile.email ?? '';
           phoneController.text = widget.userProfile.phone ?? '';
           genderController.value = widget.userProfile.gender ?? 'non-identify';
-          // _initialValues['username'] = userProfile.username ?? '';
-          // _initialValues['firstname'] = userProfile.firstname ?? '';
-          // _initialValues['lastname'] = userProfile.lastname ?? '';
-          // _initialValues['email'] = userProfile.email ?? '';
-          // _initialValues['phone'] = userProfile.phone ?? '';
-          // _initialValues['gender'] = userProfile.gender ?? 'non-identify';
         });
       }
     });
@@ -119,6 +98,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           _isFieldModified['image'] =
                               true; // Force marking a field as modified
                         });
+                        _onFieldChanged("");
                       }
                     },
                     child: Stack(
@@ -162,7 +142,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       field: 'username',
                       onChanged: _onFieldChanged,
                       errorText: _usernameError,
-                      fillColor: Colors.grey.withOpacity(0.9),// สีเทาอ่อน
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -308,9 +287,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               }
                             : null,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isEdited
-                              ? Constants.primaryColor
-                              : Colors.grey,
+                          backgroundColor:
+                              isEdited ? Constants.primaryColor : Colors.grey,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 15),
                         ),
@@ -336,10 +314,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     required String field,
     required Function(String) onChanged,
     String? errorText,
-    Color? fillColor,
   }) {
-    // Color? finalFillColor = (field == 'username') ? fillColor : Colors.grey;
-    // bool finalFilled = (field == 'username');
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
@@ -351,8 +326,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
         errorText: errorText,
-        // fillColor: finalFillColor, // ใช้ fillColor ที่กำหนดจากเงื่อนไข
-        // filled: finalFilled, // ใช้ filled ที่กำหนดจากเงื่อนไข
       ),
       maxLength: maxLength,
       validator: validator,
@@ -363,39 +336,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _onFieldChanged(String value) {
-    // setState(() {
-    //   _isFieldModified['image'] = true;
-    //   _isFieldModified['username'] =
-    //       usernameController.text != _initialValues['username'];
-    //   _isFieldModified['firstname'] =
-    //       firstnameController.text != _initialValues['firstname'];
-    //   _isFieldModified['lastname'] =
-    //       lastnameController.text != _initialValues['lastname'];
-    //   _isFieldModified['email'] =
-    //       emailController.text != _initialValues['email'];
-    //   _isFieldModified['phone'] =
-    //       phoneController.text != _initialValues['phone'];
-    //   _isFieldModified['gender'] =
-    //       genderController.value != _initialValues['gender'];
-    // });
+    _isFieldModified['image'] = true;
+    bool hasTextChanged =
+        usernameController.text != widget.userProfile.username ||
+            firstnameController.text != widget.userProfile.firstname ||
+            lastnameController.text != widget.userProfile.lastname ||
+            emailController.text != widget.userProfile.email ||
+            phoneController.text != widget.userProfile.phone;
 
-    // bool hasTextChanged = usernameController.text != widget.userProfile.username
-    // _isFieldModified['image'] = true;
-    bool hasTextChanged = usernameController.text != widget.userProfile.username ||
-                          firstnameController.text != widget.userProfile.firstname ||
-                          lastnameController.text != widget.userProfile.lastname ||
-                          emailController.text != widget.userProfile.email ||
-                          phoneController.text != widget.userProfile.phone;
-
-    bool hasDropdownChanged = genderController.value != widget.userProfile.gender;
+    bool hasDropdownChanged =
+        genderController.value != widget.userProfile.gender;
 
     setState(() {
-      isEdited = hasTextChanged || hasDropdownChanged || _isFieldModified['image'] == true;
-    });                
-     
+      if (_isFieldModified['image'] == true) {
+        isEdited = true;
+      } else {
+         isEdited = hasTextChanged ||
+          hasDropdownChanged;
+      }
+    });
   }
-
-  // bool _canSubmit() {
-  //   return _isFieldModified.values.contains(true);
-  // }
 }
