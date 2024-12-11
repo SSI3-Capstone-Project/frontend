@@ -336,7 +336,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _onFieldChanged(String value) {
-    _isFieldModified['image'] = true;
     bool hasTextChanged =
         usernameController.text != widget.userProfile.username ||
             firstnameController.text != widget.userProfile.firstname ||
@@ -348,12 +347,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         genderController.value != widget.userProfile.gender;
 
     setState(() {
-      if (_isFieldModified['image'] == true) {
-        isEdited = true;
-      } else {
-         isEdited = hasTextChanged ||
-          hasDropdownChanged;
-      }
+        isEdited = hasTextChanged || hasDropdownChanged || _isFieldModified['image'] == true;
     });
   }
 }
