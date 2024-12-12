@@ -7,6 +7,7 @@ import 'package:mbea_ssi3_front/views/address/pages/address_page.dart';
 import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/account_delete.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_page.dart';
 import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
@@ -123,7 +124,8 @@ class _ProfileDetailState extends State<ProfileDetail> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditProfilePage(userProfile: user),
+                        builder: (context) =>
+                            EditProfilePage(userProfile: user),
                       ),
                     );
                   },
@@ -179,6 +181,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       Icons.history_outlined,
       Icons.report_problem,
       Icons.lock_outline,
+      Icons.delete_outline,
       Icons.logout_outlined
     ];
     List<String> menuItems = [
@@ -187,6 +190,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
       "ประวัติการแลก",
       "รายงานปัญหา",
       "เปลี่ยนรหัสผ่าน",
+      "ลบบัญชี",
       "ออกจากระบบ"
     ];
 
@@ -216,6 +220,12 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ChangePasswordPage()),
+                );
+                break;
+              case "ลบบัญชี":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DeleteAccount()),
                 );
                 break;
               case "ออกจากระบบ":
