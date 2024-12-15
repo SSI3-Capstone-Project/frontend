@@ -140,12 +140,9 @@ class _DeleteAccountState extends State<DeleteAccount> {
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState?.validate() ?? false) {
-                  if (_passwordController.text ==
-                      _confirmPasswordController.text) {
-                    _deleteAccount(_passwordController
-                        .text); // ส่งรหัสผ่านไปยังฟังก์ชันลบบัญชี
-                    Navigator.of(context).pop(); // ปิดกล่องยืนยัน
-                  }
+                  _deleteAccount(_passwordController
+                      .text); // ส่งรหัสผ่านไปยังฟังก์ชันลบบัญชี
+                  Navigator.of(context).pop(); // ปิดกล่องยืนยัน
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -183,7 +180,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
           return 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร\nและประกอบด้วยตัวอักษร a-z, A-Z, และ 0-9';
         }
         if (field == "confirmPasswordField" &&
-            _confirmPasswordController.text != _passwordController)
+            _confirmPasswordController.text != _passwordController.text)
           return 'กรุณากรอกรหัสผ่านให้ตรงกัน';
         return null;
       },
