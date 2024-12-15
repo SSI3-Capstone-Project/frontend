@@ -20,8 +20,6 @@ class DeleteAccountController extends GetxController {
 
     try {
       final token = tokenController.accessToken.value;
-      Get.snackbar('Token', token!);
-
       // สร้างคำขอ HTTP แบบ DELETE
       final request = http.Request(
         'DELETE',

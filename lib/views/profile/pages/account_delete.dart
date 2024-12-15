@@ -18,6 +18,8 @@ class _DeleteAccountState extends State<DeleteAccount> {
       Get.put(DeleteAccountController());
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool showConfirmationPage = false; // ใช้สำหรับควบคุมหน้าที่แสดง
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +38,32 @@ class _DeleteAccountState extends State<DeleteAccount> {
       ),
       backgroundColor: Colors.white,
       body: SafeArea(
-          child: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
-              child: Column(
-                children: [_buildDeleteConfirmationMessage()],
-              ),
-            ),
-          ],
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
+          color: Colors.white,
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 500), // เพิ่มระยะเวลาให้ลื่นขึ้น
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              // ใช้การรวมกันของ Fade และ Scale Transition
+              return FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeInOut, // ทำให้การเคลื่อนไหวเนียนขึ้น
+                    ),
+                  ),
+                  child: child,
+                ),
+              );
+            },
+            child: showConfirmationPage
+                ? _buildConfirmationForm()
+                : _buildDeleteConfirmationMessage(),
+          ),
         ),
-      )),
+      ),
     );
   }
 
@@ -67,7 +82,9 @@ class _DeleteAccountState extends State<DeleteAccount> {
           width: double.infinity, // ขยายปุ่มให้เต็มพื้นที่
           child: ElevatedButton(
             onPressed: () {
-              _showConfirmationDialog();
+              setState(() {
+                showConfirmationPage = true; // เปลี่ยนไปหน้าฟอร์ม
+              });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor:
@@ -79,7 +96,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
               ),
             ),
             child: Text(
-              "ลบบัญชี",
+              "ต่อไป",
               style: TextStyle(
                 color: Colors.white, // สีข้อความเป็นสีขาว
                 fontSize: 16, // ขนาดข้อความ
@@ -91,45 +108,73 @@ class _DeleteAccountState extends State<DeleteAccount> {
     );
   }
 
-  void _showConfirmationDialog() {
-    String? passwordError;
-    String? confirmPasswordError;
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Widget _buildConfirmationForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "กรุณากรอกรหัสผ่านเพื่อยืนยันการลบบัญชี",
+            style: TextStyle(fontSize: 14),
+          ),
+          SizedBox(height: 20),
+          _buildPasswordField(
+            controller: _passwordController,
+            label: "รหัสผ่าน",
+            field: "passwordField",
+          ),
+          SizedBox(height: 10),
+          _buildPasswordField(
+            controller: _confirmPasswordController,
+            label: "ยืนยันรหัสผ่าน",
+            field: "confirmPasswordField",
+          ),
+          SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showConfirmationPage = false; // ย้อนกลับไปหน้าแรก
+                    });
+                  },
+                  child: Text("ย้อนกลับ"),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() ?? false) {
+                       _showConfirmationDialog();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Constants.secondaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text("ยืนยัน", style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
+  void _showConfirmationDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text("ยืนยันการลบบัญชี"),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                        "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี? การกระทำนี้ไม่สามารถย้อนกลับได้"),
-                    SizedBox(height: 20),
-                    _buildPasswordField(
-                      controller: _passwordController,
-                      label: "รหัสผ่าน",
-                      field: "passwordField",
-                      errorText: passwordError,
-                    ),
-                    SizedBox(height: 10),
-                    _buildPasswordField(
-                      controller: _confirmPasswordController,
-                      label: "ยืนยันรหัสผ่าน",
-                      field: "confirmPasswordField",
-                      errorText: confirmPasswordError,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          content: Text(
+              "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี? การกระทำนี้ไม่สามารถย้อนกลับได้"),
           actions: [
             TextButton(
               onPressed: () {
@@ -139,11 +184,8 @@ class _DeleteAccountState extends State<DeleteAccount> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  _deleteAccount(_passwordController
-                      .text); // ส่งรหัสผ่านไปยังฟังก์ชันลบบัญชี
-                  Navigator.of(context).pop(); // ปิดกล่องยืนยัน
-                }
+                Navigator.of(context).pop(); // ปิดกล่องยืนยัน
+                _deleteAccount(_passwordController.text); // ดำเนินการลบบัญชี
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Constants.secondaryColor,
@@ -168,6 +210,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
         ),
