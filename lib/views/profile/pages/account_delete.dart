@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/delete_account_controller.dart';
 
 class DeleteAccount extends StatefulWidget {
   const DeleteAccount({super.key});
@@ -10,6 +14,11 @@ class DeleteAccount extends StatefulWidget {
 }
 
 class _DeleteAccountState extends State<DeleteAccount> {
+  final DeleteAccountController deleteAccountController =
+      Get.put(DeleteAccountController());
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,14 +92,44 @@ class _DeleteAccountState extends State<DeleteAccount> {
   }
 
   void _showConfirmationDialog() {
+    String? passwordError;
+    String? confirmPasswordError;
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
           title: Text("ยืนยันการลบบัญชี"),
-          content: Text(
-              "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี? การกระทำนี้ไม่สามารถย้อนกลับได้"),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                        "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี? การกระทำนี้ไม่สามารถย้อนกลับได้"),
+                    SizedBox(height: 20),
+                    _buildPasswordField(
+                      controller: _passwordController,
+                      label: "รหัสผ่าน",
+                      field: "passwordField",
+                      errorText: passwordError,
+                    ),
+                    SizedBox(height: 10),
+                    _buildPasswordField(
+                      controller: _confirmPasswordController,
+                      label: "ยืนยันรหัสผ่าน",
+                      field: "confirmPasswordField",
+                      errorText: confirmPasswordError,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -100,8 +139,14 @@ class _DeleteAccountState extends State<DeleteAccount> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop(); // ปิดกล่องยืนยัน
-                _deleteAccount(); // เรียกฟังก์ชันเพื่อลบบัญชี
+                if (_formKey.currentState?.validate() ?? false) {
+                  if (_passwordController.text ==
+                      _confirmPasswordController.text) {
+                    _deleteAccount(_passwordController
+                        .text); // ส่งรหัสผ่านไปยังฟังก์ชันลบบัญชี
+                    Navigator.of(context).pop(); // ปิดกล่องยืนยัน
+                  }
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Constants.secondaryColor,
@@ -114,8 +159,44 @@ class _DeleteAccountState extends State<DeleteAccount> {
     );
   }
 
-  void _deleteAccount() {
-    // ฟังก์ชันสำหรับการลบบัญชี
-    print("Account deleted");
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required String field,
+    String? errorText,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: true, // ซ่อนรหัสผ่านที่กรอก
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        errorText: errorText,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) return 'กรุณากรอก$label';
+        if (!RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d!@#\$&*~]{8,}$')
+            .hasMatch(value)) {
+          return 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร\nและประกอบด้วยตัวอักษร a-z, A-Z, และ 0-9';
+        }
+        if (field == "confirmPasswordField" &&
+            _confirmPasswordController.text != _passwordController)
+          return 'กรุณากรอกรหัสผ่านให้ตรงกัน';
+        return null;
+      },
+    );
+  }
+
+  Future<void> _deleteAccount(String password) async {
+    var result = await deleteAccountController.deleteAccount(password);
+    if (result) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
   }
 }
