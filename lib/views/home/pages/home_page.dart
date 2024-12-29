@@ -6,6 +6,7 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/brand_controller.dart';
 // import 'package:mbea_ssi3_front/model/plants.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_controller.dart';
+import 'package:mbea_ssi3_front/views/home/models/product_model.dart';
 import 'package:mbea_ssi3_front/views/home/pages/product_detail_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
@@ -21,6 +22,13 @@ class _HomePageState extends State<HomePage> {
   final ProductController productController = Get.put(ProductController());
   final BrandControllerTwo brandController = Get.put(BrandControllerTwo());
   int _selectedCategoryIndex = 0;
+
+  void toggleFavorite(String productId) {
+    var product = productController.FindFirstProduct(productId);
+    if (product != null) {
+      product.isFavorated.value = !product.isFavorated.value; // ใช้ .value
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +195,34 @@ class _HomePageState extends State<HomePage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
                                           children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                toggleFavorite(product.id);
+                                              },
+                                              child: Obx(() {
+                                                return Container(
+                                                  padding:
+                                                      const EdgeInsets.all(6),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50),
+                                                    color: product
+                                                            .isFavorated.value
+                                                        ? Colors.pink.shade50
+                                                        : Colors.grey.shade400,
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.favorite,
+                                                    color: product
+                                                            .isFavorated.value
+                                                        ? Colors.pink
+                                                        : Colors.black54,
+                                                  ),
+                                                );
+                                              }),
+                                            ),
+                                            const SizedBox(width: 8),
                                             Container(
                                               decoration: BoxDecoration(
                                                 color: Colors

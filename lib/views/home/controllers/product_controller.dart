@@ -51,6 +51,11 @@ class ProductController extends GetxController {
     }
   }
 
+  Product FindFirstProduct(String productId) {
+  return productList.firstWhere((p) => p.id == productId);
+}
+
+
   // Future<void> updateProduct(
   //     String id, String title, String description) async {
   //   try {
