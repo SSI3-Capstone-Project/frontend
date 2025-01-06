@@ -4,11 +4,13 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/post_detail_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_offer.dart';
+import 'package:mbea_ssi3_front/views/favoritePosts/controllers/create_wishList_controller.dart';
+import 'package:mbea_ssi3_front/views/favoritePosts/controllers/delete_wishList_controller.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_detail_controller.dart';
 import 'package:mbea_ssi3_front/views/home/models/product_detail_model.dart';
-import 'package:mbea_ssi3_front/views/home/models/product_model.dart';
 import 'package:mbea_ssi3_front/views/home/pages/choose_offer_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:video_player/video_player.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -26,12 +28,40 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   final ProductDetailController productDetailController =
       Get.put(ProductDetailController());
   final PageController _pageController = PageController();
+  final CreateWishListController createWishListController =
+      Get.put(CreateWishListController());
+  final DeleteWishlistController deleteWishlistController =
+      Get.put(DeleteWishlistController());
   int _currentPage = 0;
+  UserProfile? user;
 
   @override
   void initState() {
     super.initState();
     productDetailController.fetchProductDetail(widget.postId);
+    _initializeUser();
+  }
+
+  Future<void> _initializeUser() async {
+    await userProfileController.fetchUserProfile();
+    setState(() {
+      user = userProfileController.userProfile.value;
+    });
+  }
+
+  void createAndDeleteWishList(String postId, String wishListId) {
+    Get.snackbar("user", user!.username.toString());
+    if (user != null) {
+      Get.snackbar("isFavorite", productDetailController.productDetail.value!.isFavorated.value.toString()); 
+      if (productDetailController.productDetail.value!.isFavorated.value == false) {
+        Get.snackbar("Create", "WishList");        
+        createWishListController.createWishList(user!.id, postId);
+      } else {
+        Get.snackbar("Delete", "WishList"); 
+        deleteWishlistController.deleteWishList(wishListId);
+      }
+      productDetailController.productDetail.value!.isFavorated.value = !productDetailController.productDetail.value!.isFavorated.value;
+    }
   }
 
   @override
@@ -45,10 +75,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           'โพสต์',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
-        // const Text(
-        //   'จัดการที่อยู่',
-        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
-        // ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
@@ -110,6 +136,33 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                 )
                               ],
                             ),
+                            // Favorite
+                            if (userProfileController
+                                    .userProfile.value?.username !=
+                                productDetail.username)
+                              GestureDetector(
+                                onTap: () {
+                                  createAndDeleteWishList(productDetail.id,
+                                      productDetail.wishListId);
+                                },
+                                child: Obx(() {
+                                  return Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: productDetail.isFavorated.value
+                                          ? Colors.pink.shade50
+                                          : Colors.grey.shade400,
+                                    ),
+                                    child: Icon(
+                                      Icons.favorite,
+                                      color: productDetail.isFavorated.value
+                                          ? Colors.pink
+                                          : Colors.black54,
+                                    ),
+                                  );
+                                }),
+                              ),
                             GestureDetector(
                               onTap: () {
                                 // widget.product.isFavorated =

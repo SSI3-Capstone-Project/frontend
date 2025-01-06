@@ -50,9 +50,6 @@ class ProductController extends GetxController {
       isLoading(false);
     }
   }
-
-  Product FindFirstProduct(String productId) {
-  return productList.firstWhere((p) => p.id == productId);
 }
 
 
@@ -84,4 +81,3 @@ class ProductController extends GetxController {
   //     isLoading(false);
   //   }
   // }
-}

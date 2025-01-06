@@ -6,7 +6,6 @@ import 'package:mbea_ssi3_front/controller/token_controller.dart';
 
 class DeleteAccountController extends GetxController {
   final tokenController = Get.find<TokenController>();
-
   var isLoading = false.obs;
 
   Future<bool> deleteAccount(String password) async {

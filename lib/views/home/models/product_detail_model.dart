@@ -1,3 +1,5 @@
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+
 class ProductDetail {
   String id;
   String title;
@@ -12,6 +14,8 @@ class ProductDetail {
   String location;
   List<ProductImage> productImages;
   List<ProductVideo> productVideos;
+  RxBool isFavorated;
+  String wishListId;
 
   ProductDetail({
     required this.id,
@@ -27,7 +31,9 @@ class ProductDetail {
     required this.location,
     required this.productImages,
     required this.productVideos,
-  });
+    required bool isFavorated,
+    required this.wishListId
+  }) : isFavorated = RxBool(isFavorated);
 
   factory ProductDetail.fromJson(Map<String, dynamic> json) {
     var productImagesFromJson = json['post_images'] as List?;
@@ -54,6 +60,8 @@ class ProductDetail {
       location: json['location'],
       productImages: productImagesList,
       productVideos: productVideosList,
+      isFavorated: json['is_favorited'],
+      wishListId: json['wish_list_id'],
     );
   }
 }

@@ -1,7 +1,5 @@
 import 'dart:ffi';
 
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-
 // class Product {
 //   String id;
 //   String createdAt;
@@ -65,7 +63,6 @@ class Product {
   final String coverImage;
   final String username;
   final String imageUrl;
-  RxBool isFavorated;
 
   Product({
     required this.id,
@@ -75,8 +72,7 @@ class Product {
     required this.coverImage,
     required this.username,
     required this.imageUrl,
-    bool isFavorated = false,
-  }) : isFavorated = RxBool(isFavorated);
+  });
 
   // Factory constructor to create a Product from JSON
   factory Product.fromJson(Map<String, dynamic> json) {
