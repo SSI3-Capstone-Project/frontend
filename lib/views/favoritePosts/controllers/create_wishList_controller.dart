@@ -1,48 +1,55 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'dart:convert';
 
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
+import 'package:mbea_ssi3_front/views/favoritePosts/models/wishList_create_model.dart'; // Import WishList model
 
 class CreateWishListController extends GetxController {
   final tokenController = Get.find<TokenController>();
   var isLoading = false.obs;
 
-  Future<bool> createWishList(String userId, String postId) async {
+  Future<WishListDetail> createWishList(String userId, String postId) async {
     isLoading.value = true;
-    
+
     try {
-      // ดึง Token ปัจจุบัน
       final token = tokenController.accessToken.value;
 
-      // สร้างคำขอ MultipartRequest
       var request = http.MultipartRequest(
         'POST',
         Uri.parse('${dotenv.env['API_URL']}/wishlist/$userId/$postId'),
       );
 
-      // เพิ่ม Header Authorization
       request.headers['Authorization'] = 'Bearer $token';
 
-      // ส่งคำขอไปยังเซิร์ฟเวอร์
       var response = await request.send();
 
-      // ตรวจสอบสถานะคำขอ
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // คำขอสำเร็จ
+        var responseBody = await response.stream.bytesToString();
+        var jsonData = json.decode(responseBody);
+
+        WishListDetail wishList = WishListDetail.fromJson(
+            jsonData['wish_list_detail']); // อ้างอิงฟิลด์ที่ถูกต้อง
+
         Get.snackbar("สำเร็จ", "สร้าง wish list แล้ว");
-        return true;
+        return wishList;
       } else {
-        // คำขอล้มเหลว
         var responseBody = await response.stream.bytesToString();
         print('Error: ${response.statusCode}, Body: $responseBody');
-        return false;
+        throw Exception('Failed to create wish list: ${response.statusCode}');
       }
     } catch (e) {
-      // จัดการข้อผิดพลาด
       print('Exception occurred: $e');
-      return false;
+      // สร้าง WishListDetail default เพื่อลดผลกระทบจากข้อผิดพลาด
+      return WishListDetail(
+        wishListId: "unknown",
+        postId: postId,
+        userId: userId,
+        status: "error",
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
     } finally {
       isLoading.value = false;
     }

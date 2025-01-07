@@ -34,34 +34,49 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       Get.put(DeleteWishlistController());
   int _currentPage = 0;
   UserProfile? user;
+  var wishListId = "";
 
   @override
   void initState() {
     super.initState();
     productDetailController.fetchProductDetail(widget.postId);
-    _initializeUser();
+    userProfileController.fetchUserProfile();
   }
 
-  Future<void> _initializeUser() async {
-    await userProfileController.fetchUserProfile();
-    setState(() {
-      user = userProfileController.userProfile.value;
-    });
-  }
-
-  void createAndDeleteWishList(String postId, String wishListId) {
-    Get.snackbar("user", user!.username.toString());
-    if (user != null) {
-      Get.snackbar("isFavorite", productDetailController.productDetail.value!.isFavorated.value.toString()); 
-      if (productDetailController.productDetail.value!.isFavorated.value == false) {
-        Get.snackbar("Create", "WishList");        
-        createWishListController.createWishList(user!.id, postId);
-      } else {
-        Get.snackbar("Delete", "WishList"); 
-        deleteWishlistController.deleteWishList(wishListId);
+  void createAndDeleteWishList(String postId, String userId) async {
+    Get.snackbar("Id", userId);
+    if (productDetailController.productDetail.value!.isFavorated.value ==
+        false) {
+      Get.snackbar("Create", "WishList");
+      try {
+        var wishListDetail = await createWishListController.createWishList(userId, postId);
+        wishListId = wishListDetail.wishListId;
+        Get.snackbar("WishListID", wishListId);
+        Get.snackbar("Success", "WishList created successfully");
+      } catch (e) {
+        Get.snackbar("Error", "Failed to create WishList: $e");
+        return;
       }
-      productDetailController.productDetail.value!.isFavorated.value = !productDetailController.productDetail.value!.isFavorated.value;
+    } else {
+      try {
+        Get.snackbar("WishListId Delete", wishListId);
+        if (wishListId.isNotEmpty) {
+          await deleteWishlistController.deleteWishList(wishListId);
+          Get.snackbar("Success", "WishList deleted successfully");
+        } 
+        
+        if (wishListId.isEmpty) {
+          await deleteWishlistController.deleteWishList(productDetailController.productDetail.value!.wishListId);
+        }
+
+      } catch (e) {
+        Get.snackbar("Error", "Failed to delete WishList: $e");
+        return;
+      }
     }
+
+    productDetailController.productDetail.value!.isFavorated.value =
+        !productDetailController.productDetail.value!.isFavorated.value;
   }
 
   @override
@@ -142,8 +157,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                 productDetail.username)
                               GestureDetector(
                                 onTap: () {
-                                  createAndDeleteWishList(productDetail.id,
-                                      productDetail.wishListId);
+                                  createAndDeleteWishList(
+                                      productDetail.id,
+                                      userProfileController
+                                          .userProfile.value!.id);
                                 },
                                 child: Obx(() {
                                   return Container(
