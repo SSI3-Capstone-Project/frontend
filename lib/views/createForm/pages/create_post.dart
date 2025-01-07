@@ -379,31 +379,82 @@ class _CreatePostFormState extends State<CreatePostForm> {
   Widget _buildMediaPreview() {
     if (mediaFiles.isEmpty) return Container();
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: mediaFiles.map((file) {
-        bool isImage = file.path.endsWith('.jpg') || file.path.endsWith('.png');
-        return Stack(
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              child: isImage
-                  ? Image.file(file, fit: BoxFit.cover)
-                  : Icon(Icons.videocam, size: 50),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              child: GestureDetector(
-                onTap: () => setState(() => mediaFiles.remove(file)),
-                child: Icon(Icons.close, color: Colors.red),
+    return SizedBox(
+      height: 120, // กำหนดความสูงสำหรับ ReorderableListView
+      child: ReorderableListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: mediaFiles.length,
+        onReorder: (oldIndex, newIndex) {
+          // เงื่อนไขที่ไฟล์แรกต้องเป็นรูปภาพเสมอ
+          if (oldIndex == 0 || newIndex == 0) {
+            if (!mediaFiles.first.path.endsWith('.jpg') &&
+                !mediaFiles.first.path.endsWith('.jpeg') &&
+                !mediaFiles.first.path.endsWith('.png')) {
+              return;
+            }
+          }
+
+          setState(() {
+            if (newIndex > oldIndex) {
+              newIndex -= 1;
+            }
+            final File item = mediaFiles.removeAt(oldIndex);
+            mediaFiles.insert(newIndex, item);
+
+            // ตรวจสอบให้ไฟล์แรกยังคงเป็นรูปภาพ
+            if (!mediaFiles.first.path.endsWith('.jpg') &&
+                !mediaFiles.first.path.endsWith('.jpeg') &&
+                !mediaFiles.first.path.endsWith('.png')) {
+              final File firstImage = mediaFiles.firstWhere(
+                (file) =>
+                    file.path.endsWith('.jpg') ||
+                    file.path.endsWith('.jpeg') ||
+                    file.path.endsWith('.png'),
+                orElse: () => mediaFiles.first,
+              );
+              mediaFiles.remove(firstImage);
+              mediaFiles.insert(0, firstImage);
+            }
+          });
+        },
+        itemBuilder: (context, index) {
+          return Stack(
+            key: ValueKey(mediaFiles[index]),
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                margin: EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: mediaFiles[index].path.endsWith('.jpg') ||
+                        mediaFiles[index].path.endsWith('.jpeg') ||
+                        mediaFiles[index].path.endsWith('.png')
+                    ? Image.file(mediaFiles[index], fit: BoxFit.cover)
+                    : Icon(Icons.videocam, size: 50),
               ),
-            ),
-          ],
-        );
-      }).toList(),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      mediaFiles.removeAt(index);
+                    });
+                  },
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.close, color: Colors.white, size: 16),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
