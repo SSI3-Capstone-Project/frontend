@@ -50,6 +50,8 @@ class ProductController extends GetxController {
       isLoading(false);
     }
   }
+}
+
 
   // Future<void> updateProduct(
   //     String id, String title, String description) async {
@@ -79,4 +81,3 @@ class ProductController extends GetxController {
   //     isLoading(false);
   //   }
   // }
-}

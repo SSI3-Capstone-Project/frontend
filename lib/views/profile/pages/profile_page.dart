@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
+import 'package:mbea_ssi3_front/views/favoritePosts/pages/favorite_posts.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:mbea_ssi3_front/views/offer/pages/offer_detail.dart';
@@ -369,7 +370,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => EditProfilePage()),
+                                  builder: (context) =>
+                                      EditProfilePage(userProfile: user)),
                             );
                           },
                           child: Icon(
@@ -416,8 +418,8 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี"),
-            _buildBox("รายการโปรด", Icons.favorite, ""),
+            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี", user.id),
+            _buildBox("รายการโปรด", Icons.favorite, "", user.id),
           ],
         ),
         SizedBox(height: 10), // เว้นระยะห่างระหว่างแถว
@@ -425,18 +427,24 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("คะแนน", Icons.star, "${user.rating}/5"),
-            _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, ""),
+            _buildBox("คะแนน", Icons.star, "${user.rating}/5", user.id),
+            _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, "", user.id),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildBox(String label, IconData icon, String description) {
+  Widget _buildBox(String label, IconData icon, String description, String userId) {
     return GestureDetector(
         onTap: () {
-          print("$label tapped!");
+          if (label == "รายการโปรด") {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoritePosts(userId: userId),
+                ));
+          }
         },
         child: Container(
           width: 170,
