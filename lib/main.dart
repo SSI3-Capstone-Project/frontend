@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'My Title',
       theme: ThemeData(
+          fontFamily: 'Sarabun',
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity),
       home: Obx(() {
