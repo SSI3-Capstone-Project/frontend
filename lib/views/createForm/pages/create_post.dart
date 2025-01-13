@@ -89,20 +89,18 @@ class _CreatePostFormState extends State<CreatePostForm> {
         _isPickingMedia = true; // เริ่มเลือกสื่อ
       });
     }
+
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
       if (mounted) {
         setState(() {
-          List<File> videos =
-              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-          mediaFiles =
-              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          // เพิ่มวิดีโอใหม่ต่อท้ายรายการวิดีโอที่มีอยู่
           mediaFiles.add(File(pickedFile.path));
-          mediaFiles.addAll(videos);
         });
       }
     }
+
     if (mounted) {
       setState(() {
         _isPickingMedia = false; // จบการเลือกสื่อ

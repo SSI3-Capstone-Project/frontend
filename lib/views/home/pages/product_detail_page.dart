@@ -35,12 +35,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   int _currentPage = 0;
   UserProfile? user;
   var wishListId = "";
+  int selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    productDetailController.fetchProductDetail(widget.postId);
-    userProfileController.fetchUserProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      productDetailController.fetchProductDetail(widget.postId);
+      userProfileController.fetchUserProfile();
+    });
   }
 
   void createAndDeleteWishList(String postId, String userId) async {
@@ -49,7 +52,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         false) {
       Get.snackbar("Create", "WishList");
       try {
-        var wishListDetail = await createWishListController.createWishList(userId, postId);
+        var wishListDetail =
+            await createWishListController.createWishList(userId, postId);
         wishListId = wishListDetail.wishListId;
         Get.snackbar("WishListID", wishListId);
         Get.snackbar("Success", "WishList created successfully");
@@ -63,20 +67,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         if (wishListId.isNotEmpty) {
           await deleteWishlistController.deleteWishList(wishListId);
           Get.snackbar("Success", "WishList deleted successfully");
-        } 
-        
-        if (wishListId.isEmpty) {
-          await deleteWishlistController.deleteWishList(productDetailController.productDetail.value!.wishListId);
         }
 
+        if (wishListId.isEmpty) {
+          await deleteWishlistController.deleteWishList(
+              productDetailController.productDetail.value!.wishListId);
+        }
       } catch (e) {
         Get.snackbar("Error", "Failed to delete WishList: $e");
         return;
       }
     }
 
-    productDetailController.productDetail.value!.isFavorated.value =
-        !productDetailController.productDetail.value!.isFavorated.value;
+    Future.delayed(Duration.zero, () {
+      productDetailController.productDetail.value!.isFavorated.value =
+          !productDetailController.productDetail.value!.isFavorated.value;
+    });
   }
 
   @override
@@ -151,35 +157,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                 )
                               ],
                             ),
-                            // Favorite
-                            if (userProfileController
-                                    .userProfile.value?.username !=
-                                productDetail.username)
-                              GestureDetector(
-                                onTap: () {
-                                  createAndDeleteWishList(
-                                      productDetail.id,
-                                      userProfileController
-                                          .userProfile.value!.id);
-                                },
-                                child: Obx(() {
-                                  return Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: productDetail.isFavorated.value
-                                          ? Colors.pink.shade50
-                                          : Colors.grey.shade400,
-                                    ),
-                                    child: Icon(
-                                      Icons.favorite,
-                                      color: productDetail.isFavorated.value
-                                          ? Colors.pink
-                                          : Colors.black54,
-                                    ),
-                                  );
-                                }),
-                              ),
                             GestureDetector(
                               onTap: () {
                                 // widget.product.isFavorated =
@@ -195,164 +172,292 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       ),
                       const SizedBox(height: 15),
                       mediaContent(productDetail),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Wrap(
-                              alignment:
-                                  WrapAlignment.start, // จัดชิดซ้ายในแนวนอน
-                              runAlignment: WrapAlignment.start,
-                              spacing: 10, // ระยะห่างระหว่าง children ในแนวนอน
-                              runSpacing: 10, // ระยะห่างระหว่างบรรทัด
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   productDetail.title,
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 21,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 24,
                                   ),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(30)),
-                                    color: Constants.primaryColor,
-                                  ),
-                                  child: Text(
-                                    productDetail.subCollectionName,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                                // Favorite
+                                if (userProfileController
+                                        .userProfile.value?.username !=
+                                    productDetail.username)
+                                  Obx(() {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        createAndDeleteWishList(
+                                            productDetail.id,
+                                            userProfileController
+                                                .userProfile.value!.id);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Icon(
+                                          Icons.favorite,
+                                          size: 30,
+                                          color: productDetail.isFavorated.value
+                                              ? Constants.secondaryColor
+                                              : Color(0xFF9E9E9E),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  size: 22,
+                                  Icons.location_on_outlined,
+                                  color: Color(0xFF9E9E9E),
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  productDetail.location,
+                                  style: const TextStyle(
+                                    color: Color(0xFF9E9E9E),
+                                    fontSize: 12,
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 15),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 5),
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(30)),
+                                color: Constants.secondaryColor,
+                              ),
+                              child: Text(
+                                productDetail.subCollectionName,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 25),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        spreadRadius: 2,
-                                        blurRadius: 6,
-                                        offset: Offset(0, 0),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex = 0;
+                                    });
+                                  },
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'รายละเอียด',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: selectedIndex == 0
+                                              ? Constants.secondaryColor
+                                              : Colors.grey,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 4),
+                                        height: 2,
+                                        width: 190,
+                                        color: selectedIndex == 0
+                                            ? Constants.secondaryColor
+                                            : Colors.white,
                                       ),
                                     ],
                                   ),
-                                  child: Row(
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex = 1;
+                                    });
+                                  },
+                                  child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
-                                        size: 25,
-                                        Icons.location_on,
-                                        color: Colors.black54,
-                                      ),
-                                      SizedBox(width: 4),
                                       Text(
-                                        productDetail.location,
+                                        'ข้อเสนอที่คุณยื่น',
                                         style: TextStyle(
-                                          color: Colors.black87,
+                                          fontSize: 18,
+                                          color: selectedIndex == 1
+                                              ? Constants.secondaryColor
+                                              : Colors.grey,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 4),
+                                        height: 2,
+                                        width: 190,
+                                        color: selectedIndex == 1
+                                            ? Constants.secondaryColor
+                                            : Colors.white,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 25),
+                            if (selectedIndex == 0)
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  // Wrap(
+                                  //   spacing:
+                                  //       8, // ระยะห่างระหว่าง children ในแนวนอน
+                                  //   runSpacing: 10, // ระยะห่างระหว่างบรรทัด
+                                  //   children: [
+                                  //     const Text(
+                                  //       'สนใจแลก :',
+                                  //       style: TextStyle(
+                                  //         fontSize: 14,
+                                  //         color: Colors.black87,
+                                  //       ),
+                                  //     ),
+                                  //     Container(
+                                  //       padding: const EdgeInsets.symmetric(
+                                  //           vertical: 3, horizontal: 15),
+                                  //       decoration: BoxDecoration(
+                                  //         color: Constants.secondaryColor,
+                                  //         borderRadius: BorderRadius.circular(20),
+                                  //         boxShadow: [
+                                  //           BoxShadow(
+                                  //             color:
+                                  //                 Colors.black.withOpacity(0.1),
+                                  //             blurRadius: 4,
+                                  //             offset: Offset(0, 2),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //       child: Text(
+                                  //         productDetail.desiredItem,
+                                  //         style: const TextStyle(
+                                  //             color: Colors.white,
+                                  //             fontSize: 14,
+                                  //             fontWeight: FontWeight.bold),
+                                  //       ),
+                                  //     ),
+                                  //   ],
+                                  // ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'สนใจแลก :',
+                                        style: TextStyle(
                                           fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 3, horizontal: 15),
+                                        decoration: BoxDecoration(
+                                          color: Constants.secondaryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              blurRadius: 4,
+                                              offset: Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Text(
+                                          productDetail.desiredItem,
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-                            Wrap(
-                              alignment:
-                                  WrapAlignment.start, // จัดชิดซ้ายในแนวนอน
-                              runAlignment: WrapAlignment.start,
-                              spacing: 8, // ระยะห่างระหว่าง children ในแนวนอน
-                              runSpacing: 10, // ระยะห่างระหว่างบรรทัด
-                              children: [
-                                const Text(
-                                  'สนใจแลก :',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 3, horizontal: 15),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFE875C),
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 4,
-                                        offset: Offset(0, 2),
+                                  const SizedBox(height: 25),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                        child: Text(
+                                          productDetail.description,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                          softWrap:
+                                              true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                          overflow: TextOverflow
+                                              .visible, // แสดงข้อความทั้งหมด
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  child: Text(
-                                    productDetail.desiredItem,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
-                                  child: Text(
-                                    productDetail.description,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
+                                  const SizedBox(height: 25),
+                                  if (productDetail.flaw != null)
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'ตำหนิ : ${productDetail.flaw}',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Constants.secondaryColor,
+                                          ),
+                                          softWrap:
+                                              true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                      ],
                                     ),
-                                    softWrap:
-                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                    overflow: TextOverflow
-                                        .visible, // แสดงข้อความทั้งหมด
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-                            if (productDetail.flaw != null)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'ตำหนิ : ${productDetail.flaw}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Constants.secondaryColor,
-                                    ),
-                                    softWrap:
-                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                    overflow: TextOverflow.visible,
-                                  ),
+                                  const SizedBox(height: 25),
                                 ],
                               ),
-                            const SizedBox(height: 25),
+                            if (selectedIndex == 1)
+                              Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'ยังไม่มีข้อเสนอของคุณในโพสต์นี้',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey),
+                                    )
+                                  ],
+                                ),
+                              )
                           ],
                         ),
                       )
@@ -462,7 +567,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               width: _currentPage == index ? 20 : 8,
               margin: const EdgeInsets.only(right: 5.0),
               decoration: BoxDecoration(
-                color: Constants.primaryColor,
+                color: Constants.secondaryColor,
                 borderRadius: BorderRadius.circular(5),
               ),
             );

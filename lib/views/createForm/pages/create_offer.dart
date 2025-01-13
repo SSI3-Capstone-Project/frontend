@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/controller/send_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_offer_model.dart';
+import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 // import 'package:mbea_ssi3_front/common/constants.dart';
 
 class CreateOfferForm extends StatefulWidget {
@@ -51,6 +54,14 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
 
   bool _loadPage = false;
 
+  VideoPlayerController? _controller;
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickImage() async {
     if (mounted) {
       setState(() {
@@ -84,20 +95,18 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         _isPickingMedia = true; // เริ่มเลือกสื่อ
       });
     }
+
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
       if (mounted) {
         setState(() {
-          List<File> videos =
-              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-          mediaFiles =
-              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          // เพิ่มวิดีโอใหม่ต่อท้ายรายการวิดีโอที่มีอยู่
           mediaFiles.add(File(pickedFile.path));
-          mediaFiles.addAll(videos);
         });
       }
     }
+
     if (mounted) {
       setState(() {
         _isPickingMedia = false; // จบการเลือกสื่อ
@@ -386,32 +395,153 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   Widget _buildMediaPreview() {
     if (mediaFiles.isEmpty) return Container();
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: mediaFiles.map((file) {
-        bool isImage = file.path.endsWith('.jpg') || file.path.endsWith('.png');
-        return Stack(
-          children: [
-            Container(
-              width: widget.isSendOffer ? 80 : 100,
-              height: widget.isSendOffer ? 80 : 100,
-              child: isImage
-                  ? Image.file(file, fit: BoxFit.cover)
-                  : Icon(Icons.videocam, size: 50),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              child: GestureDetector(
-                onTap: () => setState(() => mediaFiles.remove(file)),
-                child: Icon(Icons.close, color: Colors.red),
+    return SizedBox(
+      height: 120, // กำหนดความสูงสำหรับ ReorderableListView
+      child: ReorderableListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: mediaFiles.length,
+        onReorder: (oldIndex, newIndex) {
+          setState(() {
+            if (newIndex > oldIndex) {
+              newIndex -= 1;
+            }
+            final File item = mediaFiles.removeAt(oldIndex);
+            mediaFiles.insert(newIndex, item);
+
+            // ตรวจสอบให้ไฟล์แรกเป็นรูปภาพเสมอ
+            if (!mediaFiles.first.path.endsWith('.jpg') &&
+                !mediaFiles.first.path.endsWith('.jpeg') &&
+                !mediaFiles.first.path.endsWith('.png')) {
+              final File firstImage = mediaFiles.firstWhere(
+                (file) =>
+                    file.path.endsWith('.jpg') ||
+                    file.path.endsWith('.jpeg') ||
+                    file.path.endsWith('.png'),
+                orElse: () => mediaFiles.first,
+              );
+              mediaFiles.remove(firstImage);
+              mediaFiles.insert(0, firstImage);
+            }
+
+            // ย้ายไฟล์วิดีโอทั้งหมดไปท้ายลิสต์
+            final videos =
+                mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+            mediaFiles.removeWhere((file) => file.path.endsWith('.mp4'));
+            mediaFiles.addAll(videos);
+          });
+        },
+        itemBuilder: (context, index) {
+          return Stack(
+            key: ValueKey(mediaFiles[index]),
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                margin: EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(8), // เพิ่มมุมมนให้รูปภาพและวิดีโอ
+                  child: mediaFiles[index].path.endsWith('.jpg') ||
+                          mediaFiles[index].path.endsWith('.jpeg') ||
+                          mediaFiles[index].path.endsWith('.png')
+                      ? Image.file(mediaFiles[index], fit: BoxFit.cover)
+                      : _buildVideoPreview(mediaFiles[index]),
+                ),
               ),
-            ),
-          ],
-        );
-      }).toList(),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      mediaFiles.removeAt(index);
+                    });
+                  },
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.close, color: Colors.white, size: 16),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
+  }
+
+  Widget _buildVideoPreview(File videoFile) {
+    return FutureBuilder<Uint8List?>(
+      future: VideoThumbnail.thumbnailData(
+        video: videoFile.path,
+        imageFormat: ImageFormat.JPEG,
+        maxHeight: 1500, // ลดความสูงของ thumbnail
+        quality: 100,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.data != null) {
+          return Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8), // เพิ่มมุมมนให้กับรูป
+                child: Image.memory(
+                  snapshot.data!,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FutureBuilder<Duration>(
+                future: _getVideoDuration(videoFile),
+                builder: (context, durationSnapshot) {
+                  if (durationSnapshot.connectionState ==
+                          ConnectionState.done &&
+                      durationSnapshot.data != null) {
+                    return Container(
+                      margin: EdgeInsets.all(4),
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _formatDuration(durationSnapshot.data!),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    );
+                  } else {
+                    return SizedBox(); // หากยังโหลดเวลาไม่เสร็จ จะไม่แสดงอะไร
+                  }
+                },
+              ),
+            ],
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
+  Future<Duration> _getVideoDuration(File videoFile) async {
+    final controller = VideoPlayerController.file(videoFile);
+    await controller.initialize();
+    final duration = controller.value.duration;
+    await controller.dispose(); // ปล่อยหน่วยความจำหลังใช้งาน
+    return duration;
+  }
+
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   bool _isPickingMedia = false;
