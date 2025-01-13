@@ -439,7 +439,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         ),
                                       ],
                                     ),
-                                  const SizedBox(height: 25),
+                                  const SizedBox(height: 100),
                                 ],
                               ),
                             if (selectedIndex == 1)
