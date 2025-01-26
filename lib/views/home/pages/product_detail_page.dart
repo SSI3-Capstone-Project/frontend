@@ -9,8 +9,13 @@ import 'package:mbea_ssi3_front/views/favoritePosts/controllers/delete_wishList_
 import 'package:mbea_ssi3_front/views/home/controllers/product_detail_controller.dart';
 import 'package:mbea_ssi3_front/views/home/models/product_detail_model.dart';
 import 'package:mbea_ssi3_front/views/home/pages/choose_offer_page.dart';
+import 'package:mbea_ssi3_front/views/home/pages/offer_detail.dart';
+import 'package:mbea_ssi3_front/views/post/controllers/post_offer_controller.dart';
+import 'package:mbea_ssi3_front/views/post/pages/post_offer_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:video_player/video_player.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -32,6 +37,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       Get.put(CreateWishListController());
   final DeleteWishlistController deleteWishlistController =
       Get.put(DeleteWishlistController());
+  final PostOfferController offerListController =
+      Get.put(PostOfferController());
   int _currentPage = 0;
   UserProfile? user;
   var wishListId = "";
@@ -114,6 +121,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ListView(
                 children: [
                   Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start, // จัดชิดซ้าย
                     children: [
                       const SizedBox(
@@ -176,6 +184,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -288,7 +297,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () {
+                                  onTap: () async {
+                                    await offerListController
+                                        .fetchOffers(productDetail.id);
                                     setState(() {
                                       selectedIndex = 1;
                                     });
@@ -297,7 +308,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        'ข้อเสนอที่คุณยื่น',
+                                        userProfileController.userProfile.value
+                                                    ?.username ==
+                                                productDetail.username
+                                            ? 'ข้อเสนอของโพสต์นี้'
+                                            : 'ข้อเสนอที่คุณยื่น',
                                         style: TextStyle(
                                           fontSize: 18,
                                           color: selectedIndex == 1
@@ -442,22 +457,56 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   const SizedBox(height: 100),
                                 ],
                               ),
+                            // if (selectedIndex == 1)
+                            // Padding(
+                            //   padding: EdgeInsets.only(top: 10),
+                            //   child: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.center,
+                            //     children: [
+                            //       Text(
+                            //         'ยังไม่มีข้อเสนอของคุณในโพสต์นี้',
+                            //         style: TextStyle(
+                            //             fontSize: 15,
+                            //             fontWeight: FontWeight.bold,
+                            //             color: Colors.grey),
+                            //       )
+                            //     ],
+                            //   ),
+                            // )
                             if (selectedIndex == 1)
-                              Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'ยังไม่มีข้อเสนอของคุณในโพสต์นี้',
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey),
-                                    )
-                                  ],
-                                ),
-                              )
+                              Obx(() {
+                                if (offerListController.isLoading.value) {
+                                  // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                if (!offerListController.offerList.isEmpty) {
+                                  // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+                                  return buildOfferList(
+                                      offerListController.offerList,
+                                      productDetail.id,
+                                      productDetail.title,
+                                      productDetail.username,
+                                      productDetail.userImageUrl);
+                                } else {
+                                  return Padding(
+                                    padding: EdgeInsets.only(top: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'ยังไม่มีข้อเสนอของคุณในโพสต์นี้',
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }
+                              })
                           ],
                         ),
                       )
@@ -513,6 +562,197 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           }
         }),
       ),
+    );
+  }
+
+  Widget buildOfferList(List<dynamic> items, String postId, String postName,
+      String username, String userImage) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await offerListController.fetchOffers(postId);
+      },
+      color: Colors.white,
+      backgroundColor: Constants.secondaryColor,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.6, // กำหนดความสูง
+        child: StaggeredGridView.countBuilder(
+          padding: const EdgeInsets.all(0),
+          crossAxisCount: 1,
+          mainAxisSpacing: 5,
+          crossAxisSpacing: 22,
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return GestureDetector(
+              onTap: () async {
+                // await offerDetailController.fetchOfferDetail(
+                //     widget.postId, item.id);
+                // _offerDetailDialog();
+              },
+              child: offerCard(item, username, userImage, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OfferDetailPage(
+                      postID: postId,
+                      postName: postName,
+                      offerID: item.id,
+                      username: username,
+                      userImage: userImage,
+                    ),
+                  ),
+                );
+              }),
+            );
+          },
+          staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
+        ),
+      ),
+    );
+  }
+
+  Widget offerCard(
+      dynamic item, String username, String userImage, VoidCallback onTap) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: onTap, // ฟังก์ชันที่เรียกเมื่อกด Card
+          borderRadius: BorderRadius.circular(16), // ให้เอฟเฟกต์กดดูเรียบเนียน
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2), // สีของเงา
+                  spreadRadius: 1, // การกระจายตัวของเงา
+                  blurRadius: 8, // ความเบลอของเงา
+                  offset: Offset(0, 0), // ทิศทางของเงา (x, y)
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundImage: NetworkImage(
+                                userImage), // ใส่ URL รูปภาพโปรไฟล์
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            item.userName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 5),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(30)),
+                          color: Constants.primaryColor,
+                        ),
+                        child: Text(
+                          item.subCollectionName.length > 10
+                              ? '${item.subCollectionName.substring(0, 10)}...'
+                              : item.subCollectionName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // Text color
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                  // Content
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Product Image
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          item.coverImage, // ใส่ URL รูปภาพสินค้า
+                          width: 82,
+                          height: 72,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      // Product Details
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  size: 15,
+                                  Icons.location_on_outlined,
+                                  color: Color(0xFF9E9E9E),
+                                ),
+                                SizedBox(width: 2),
+                                Text(
+                                  'บางรัก, สีลม',
+                                  style: const TextStyle(
+                                    color: Color(0xFF9E9E9E),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              item.description.length > 45
+                                  ? '${item.description.substring(0, 35)}...'
+                                  : item.description,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[800],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

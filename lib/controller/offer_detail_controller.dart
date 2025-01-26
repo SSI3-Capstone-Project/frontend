@@ -33,8 +33,8 @@ class OfferDetailController extends GetxController {
         isLoading(false);
         return true;
       } else {
-        Get.snackbar(
-            'Error', 'Failed to load offer detail: ${response.reasonPhrase}');
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        Get.snackbar('Error', 'Failed to load offer detail: ${jsonData}');
         isLoading(false);
         return false;
       }
