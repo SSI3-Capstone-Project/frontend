@@ -47,6 +47,7 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   # gallery_picker: ^0.5.1
   video_thumbnail: ^0.5.3
+  web_socket_channel: ^3.0.2
 
 
 dev_dependencies:
