@@ -93,10 +93,40 @@ class ChatController extends GetxController {
 
   // ฟังก์ชันปิดการเชื่อมต่อ WebSocket
   @override
-  void onClose() {
+  Future<void> onClose() async {
+    print('---------------------------------------------------------------');
+    print('Close websocket connection ');
+    print('---------------------------------------------------------------');
     if (isConnected.value) {
       channel.sink.close();
     }
     super.onClose();
+
+    // try {
+    //   if (tokenController.accessToken.value == null) {
+    //     return;
+    //   }
+    //   final token = tokenController.accessToken.value;
+    //   final response = await http.delete(
+    //     Uri.parse(
+    //         '${dotenv.env['API_URL']}/chatrooms/50f98d4a-3edf-4644-9893-5fc6fba37116/leave'),
+    //     headers: {
+    //       'Authorization': 'Bearer $token',
+    //       'Content-Type': 'application/json',
+    //     },
+    //   );
+    //   if (response.statusCode == 200) {
+    //     var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+    //     var result = jsonData['data'];
+    //     Get.snackbar('Success', 'Tooooooom');
+    //   } else {
+    //     var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+    //     print('Response: ${response.body}');
+
+    //     Get.snackbar('Error', 'Failed to Tooooooom ${jsonData}');
+    //   }
+    // } catch (e) {
+    //   Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+    // }
   }
 }

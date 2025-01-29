@@ -474,88 +474,99 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             //     ],
                             //   ),
                             // )
-                            if (selectedIndex == 1)
-                              Obx(() {
-                                if (offerListController.isLoading.value) {
-                                  // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
-                                  return Center(
-                                      child: CircularProgressIndicator());
-                                }
-                                if (!offerListController.offerList.isEmpty) {
-                                  // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
-                                  return Column(
-                                    children: [
-                                      buildOfferList(
-                                          offerListController.offerList,
-                                          productDetail.id,
-                                          productDetail.title,
-                                          productDetail.username,
-                                          productDetail.userImageUrl),
-                                      TextButton(
-                                        onPressed: () {
-                                          // เพิ่มโค้ดที่ต้องการทำงานเมื่อกดปุ่มที่นี่
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const OffersPage()),
-                                          );
-                                        },
-                                        child: Text(
-                                          "ดูข้อเสนอเพิ่มเติม", // ใส่ข้อความที่ต้องการแสดงบนปุ่ม
-                                          style: TextStyle(
-                                            fontSize: 14, // ขนาดตัวอักษร
-                                            fontWeight: FontWeight
-                                                .w500, // น้ำหนักตัวอักษร
-                                            color: Colors.white, // สีของข้อความ
-                                          ),
-                                        ),
-                                        style: TextButton.styleFrom(
-                                          backgroundColor: Constants
-                                              .primaryColor, // สีพื้นหลังของปุ่ม
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal:
-                                                30, // ระยะห่างด้านซ้ายและขวา
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                20), // มุมปุ่มโค้งมน
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 100,
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  return Padding(
-                                    padding: EdgeInsets.only(top: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          'ยังไม่มีข้อเสนอของคุณในโพสต์นี้',
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.grey),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }
-                              })
                           ],
                         ),
-                      )
+                      ),
+                      if (selectedIndex == 1)
+                        Obx(() {
+                          if (offerListController.isLoading.value) {
+                            // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          if (!offerListController.offerList.isEmpty) {
+                            // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+                            return Column(
+                              children: [
+                                buildOfferList(
+                                    offerListController.offerList,
+                                    productDetail.id,
+                                    productDetail.title,
+                                    productDetail.username,
+                                    productDetail.userImageUrl),
+                                TextButton(
+                                  onPressed: () {
+                                    // เพิ่มโค้ดที่ต้องการทำงานเมื่อกดปุ่มที่นี่
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OffersPage(
+                                                postId: productDetail.id,
+                                                postTitle: productDetail.title,
+                                                postImageURL:
+                                                    productDetail.coverImage,
+                                                postLocation:
+                                                    productDetail.location,
+                                                postSubCollectionName:
+                                                    productDetail
+                                                        .subCollectionName,
+                                                username:
+                                                    productDetail.username,
+                                                userImageURL:
+                                                    productDetail.userImageUrl,
+                                              )),
+                                    );
+                                  },
+                                  child: Text(
+                                    "ดูข้อเสนอเพิ่มเติม", // ใส่ข้อความที่ต้องการแสดงบนปุ่ม
+                                    style: TextStyle(
+                                      fontSize: 14, // ขนาดตัวอักษร
+                                      fontWeight:
+                                          FontWeight.w500, // น้ำหนักตัวอักษร
+                                      color: Colors.white, // สีของข้อความ
+                                    ),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Constants
+                                        .primaryColor, // สีพื้นหลังของปุ่ม
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 30, // ระยะห่างด้านซ้ายและขวา
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          20), // มุมปุ่มโค้งมน
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 100,
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'ยังไม่มีข้อเสนอของคุณในโพสต์นี้',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey),
+                                  )
+                                ],
+                              ),
+                            );
+                          }
+                        })
                     ],
                   ),
                 ],
               ),
               if (userProfileController.userProfile.value!.username !=
-                  productDetail.username)
+                      productDetail.username &&
+                  selectedIndex == 0)
                 Positioned(
                   right: 15, // ระยะห่างจากขอบขวา
                   bottom: 30, // ระยะห่างจากขอบล่าง
@@ -608,51 +619,44 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget buildOfferList(List<dynamic> items, String postId, String postName,
       String username, String userImage) {
     final limitedItems = items.take(3).toList();
-    return RefreshIndicator(
-      onRefresh: () async {
-        await offerListController.fetchOffers(postId);
-      },
-      color: Colors.white,
-      backgroundColor: Constants.secondaryColor,
-      child: Column(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.57, // กำหนดความสูง
-            child: StaggeredGridView.countBuilder(
-              padding: const EdgeInsets.all(5),
-              crossAxisCount: 1,
-              mainAxisSpacing: 5,
-              crossAxisSpacing: 22,
-              itemCount: limitedItems.length,
-              itemBuilder: (context, index) {
-                final item = limitedItems[index];
-                return GestureDetector(
-                  onTap: () async {
-                    // await offerDetailController.fetchOfferDetail(
-                    //     widget.postId, item.id);
-                    // _offerDetailDialog();
-                  },
-                  child: offerCard(item, username, userImage, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => OfferDetailPage(
-                          postID: postId,
-                          postName: postName,
-                          offerID: item.id,
-                          username: username,
-                          userImage: userImage,
-                        ),
+    return Column(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.57, // กำหนดความสูง
+          child: StaggeredGridView.countBuilder(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            crossAxisCount: 1,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 22,
+            itemCount: limitedItems.length,
+            itemBuilder: (context, index) {
+              final item = limitedItems[index];
+              return GestureDetector(
+                onTap: () async {
+                  // await offerDetailController.fetchOfferDetail(
+                  //     widget.postId, item.id);
+                  // _offerDetailDialog();
+                },
+                child: offerCard(item, username, userImage, () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OfferDetailPage(
+                        postID: postId,
+                        postName: postName,
+                        offerID: item.id,
+                        username: username,
+                        userImage: userImage,
                       ),
-                    );
-                  }),
-                );
-              },
-              staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
-            ),
+                    ),
+                  );
+                }),
+              );
+            },
+            staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
