@@ -3,7 +3,12 @@ import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 // import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart';
 import 'package:mbea_ssi3_front/model/offer_detail_model.dart';
+import 'package:mbea_ssi3_front/views/chat/controllers/create_chat_room_controller.dart';
+import 'package:mbea_ssi3_front/views/chat/pages/chat_room_page.dart';
+import 'package:mbea_ssi3_front/views/exchange/pages/exchange_page.dart';
+import 'package:mbea_ssi3_front/views/post/controllers/post_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/post_offer_detail_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:video_player/video_player.dart';
 
 class OfferDetailPage extends StatefulWidget {
@@ -27,8 +32,14 @@ class OfferDetailPage extends StatefulWidget {
 }
 
 class _OfferDetailsPageState extends State<OfferDetailPage> {
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController());
   final PostOfferDetailController offerDetailController =
       Get.put(PostOfferDetailController());
+  final PostOfferController offerListController =
+      Get.put(PostOfferController());
+  final CreateChatRoomController createChatRoomController =
+      Get.put(CreateChatRoomController());
   final PageController _pageController = PageController();
   Map<String, dynamic>? offerData;
   bool isLoading = true;
@@ -259,130 +270,303 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                     ],
                   ),
                 ]),
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: Offset(0, -2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // IconButton(
-                        //   padding: EdgeInsets.symmetric(horizontal: 40),
-                        //   icon: Icon(Icons.favorite_border),
-                        //   onPressed: () {
-                        //     // กดปุ่มโปรด
-                        //   },
-                        // ),
+                if (userProfileController.userProfile.value?.username !=
+                    widget.username)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: Offset(0, -2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // IconButton(
+                          //   padding: EdgeInsets.symmetric(horizontal: 40),
+                          //   icon: Icon(Icons.favorite_border),
+                          //   onPressed: () {
+                          //     // กดปุ่มโปรด
+                          //   },
+                          // ),
 
-                        // IconButton(
-                        //   padding: EdgeInsets.symmetric(horizontal: 40),
-                        //   icon: Icon(Icons.chat_bubble_outline),
-                        //   onPressed: () {
-                        //     // กดปุ่มแชท
-                        //   },
-                        // ),
-                        TextButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 30),
-                            ),
-                            onPressed: () {
-                              // กดตกลงแลกเปลี่ยน
-                            },
-                            child: Column(
-                              children: [
-                                Icon(Icons.delete_outline, color: Colors.black),
-                                Text(
-                                  'ทิ้งข้อเสนอนี้',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
+                          // IconButton(
+                          //   padding: EdgeInsets.symmetric(horizontal: 40),
+                          //   icon: Icon(Icons.chat_bubble_outline),
+                          //   onPressed: () {
+                          //     // กดปุ่มแชท
+                          //   },
+                          // ),
+                          TextButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
                                 ),
-                              ],
-                            )),
-                        TextButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 30),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 45),
-                            ),
-                            onPressed: () {
-                              // กดตกลงแลกเปลี่ยน
-                            },
-                            child: Column(
-                              children: [
-                                Icon(Icons.chat_outlined, color: Colors.black),
-                                Text(
-                                  'แชท',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                              onPressed: () async {
+                                deletePostOffer(widget.postID, widget.offerID);
+                              },
+                              child: Column(
+                                children: [
+                                  Icon(Icons.delete_outline,
+                                      color: Colors.black),
+                                  Text(
+                                    'ทิ้งข้อเสนอนี้',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                    ),
                                   ),
+                                ],
+                              )),
+                          TextButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
                                 ),
-                              ],
-                            )),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 45),
+                              ),
+                              onPressed: () async {
+                                var result = await createChatRoomController
+                                    .createChatRoom(
+                                        widget.postID, widget.offerID);
+                                if (result != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatRoom(
+                                        roomID: result,
+                                        anotherUsername: widget.username,
+                                        anotherUserImage: widget.userImage,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Column(
+                                children: [
+                                  Icon(Icons.chat_outlined,
+                                      color: Colors.black),
+                                  Text(
+                                    'แชท',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              )),
 
-                        // ปุ่มตรงกลาง
-                        ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Constants.secondaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
+                          // ปุ่มตรงกลาง
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Constants.secondaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 24),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 24),
-                            ),
-                            onPressed: () {
-                              // กดตกลงแลกเปลี่ยน
-                            },
-                            child: Row(
-                              children: [
-                                Icon(Icons.autorenew, color: Colors.white),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'ตกลงแลกเปลี่ยน',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ExchangePage(
+                                      postID: widget.postID,
+                                      offerID: widget.offerID,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            )),
-                      ],
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(Icons.autorenew, color: Colors.white),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    'ตกลงแลกเปลี่ยน',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                if (userProfileController.userProfile.value?.username ==
+                    widget.username)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(),
+                      decoration: BoxDecoration(
+                        color: Constants.secondaryColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: Offset(0, -2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 30),
+                              ),
+                              onPressed: () async {
+                                deletePostOffer(widget.postID, widget.offerID);
+                              },
+                              child: Column(
+                                children: [
+                                  Icon(Icons.cancel, color: Colors.white),
+                                  Text(
+                                    'ยกเลิกข้อเสนอ',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           } else {
             return Center(child: Text('No data available'));
           }
         })));
+  }
+
+  void deletePostOffer(String postID, String offerID) {
+    // การทำงานเมื่อกดปุ่มลบ
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Form(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 30),
+                            child: Text(
+                              'ยืนยันการยกเลิก',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                          Text(
+                            'คุณต้องการยกเลิกข้อเสนอนี้ใช่หรือไม่?',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.normal),
+                          ),
+                          const SizedBox(height: 30),
+                          _buildSubmitDeleteButton(postID, offerID),
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // ปุ่ม X ที่มุมขวาบน
+                  Positioned(
+                    right: 15,
+                    top: 15,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context); // ปิด Dialog
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Constants.secondaryColor),
+                        child: Icon(
+                          Icons.close,
+                          size: 21,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSubmitDeleteButton(String postID, String offerID) {
+    return Align(
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: 100,
+        child: ElevatedButton(
+          onPressed: () async {
+            offerDetailController.deleteOfferInPost(
+                widget.postID, widget.offerID);
+            await offerListController.fetchOffers(widget.postID);
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Constants.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 10),
+          ),
+          child: Text(
+            'ยื่นยัน',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget mediaContent(OfferDetail offerDetail) {

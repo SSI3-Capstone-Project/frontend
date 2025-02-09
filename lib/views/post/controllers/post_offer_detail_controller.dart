@@ -40,9 +40,53 @@ class PostOfferDetailController extends GetxController {
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar('Error',
+          'An error occurred: ${e.toString()} in PostOfferDetailController');
       isLoading(false);
       return false;
+    }
+  }
+
+  Future<void> deleteOfferInPost(String postId, String offerId) async {
+    try {
+      isLoading(true);
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading(false);
+        return;
+      }
+      final token = tokenController.accessToken.value;
+      final response = await http.patch(
+        Uri.parse('${dotenv.env['API_URL']}/posts/$postId/offers/$offerId'),
+        headers: {
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
+        },
+      );
+      if (response.statusCode == 200) {
+        // Ensure decoding with UTF-8
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData.toString());
+        Get.snackbar('สำเร็จ', 'ลบข้อเสนอดังกล่าวออกจากโพสต์แล้ว');
+        isLoading(false);
+      } else if (response.statusCode == 403) {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData.toString());
+        Get.snackbar(
+            'แจ้งเตือน', 'คุณไม่มีสิทธิในการลบข้อเสนอดังกล่าวออกจากโพสต์');
+        isLoading(false);
+      } else {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData.toString());
+        Get.snackbar(
+            'แจ้งเตือน', 'เกิดข้อผิดพลาดในการลบข้อเสนอดังกล่าวออกจากโพสต์');
+        isLoading(false);
+      }
+    } catch (e) {
+      Get.snackbar('Error',
+          'An error occurred: ${e.toString()} in PostOfferDetailController');
+      isLoading(false);
+    } finally {
+      isLoading(false);
     }
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
-import 'package:mbea_ssi3_front/controller/websocket_controller.dart';
+import 'package:mbea_ssi3_front/views/chat/controllers/websocket_controller.dart';
 import 'package:mbea_ssi3_front/views/home/pages/offer_detail_page.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/post_offer_controller.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
@@ -37,6 +37,8 @@ class _OffersPageState extends State<OffersPage> {
       Get.put(PostOfferController());
   final ChatController chatController = Get.put(ChatController());
   final TextEditingController messageController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
+  RxString searchQuery = ''.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +63,12 @@ class _OffersPageState extends State<OffersPage> {
                 return Center(child: CircularProgressIndicator());
               }
               if (!offerListController.offerList.isEmpty) {
+                final filteredOffers =
+                    offerListController.offerList.where((offer) {
+                  final query = searchQuery.value.toLowerCase();
+                  return offer.userName.toLowerCase().contains(query) ||
+                      offer.title.toLowerCase().contains(query);
+                }).toList();
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -147,7 +155,7 @@ class _OffersPageState extends State<OffersPage> {
                                                       ),
                                                       SizedBox(width: 2),
                                                       Text(
-                                                        'บางรัก, สีลม',
+                                                        widget.postLocation,
                                                         style: const TextStyle(
                                                           color:
                                                               Color(0xFF9E9E9E),
@@ -204,7 +212,7 @@ class _OffersPageState extends State<OffersPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: searchField(),
                     ),
-                    buildOfferList(offerListController.offerList, widget.postId,
+                    buildOfferList(filteredOffers, widget.postId,
                         widget.postTitle, widget.username, widget.userImageURL),
                   ],
                 );
@@ -262,8 +270,8 @@ class _OffersPageState extends State<OffersPage> {
                           postID: postId,
                           postName: postName,
                           offerID: item.id,
-                          username: username,
-                          userImage: userImage,
+                          username: item.userName,
+                          userImage: item.imageURL,
                         ),
                       ),
                     );
@@ -315,7 +323,7 @@ class _OffersPageState extends State<OffersPage> {
                           CircleAvatar(
                             radius: 15,
                             backgroundImage: NetworkImage(
-                                userImage), // ใส่ URL รูปภาพโปรไฟล์
+                                item.imageURL), // ใส่ URL รูปภาพโปรไฟล์
                           ),
                           SizedBox(width: 10),
                           Text(
@@ -389,7 +397,7 @@ class _OffersPageState extends State<OffersPage> {
                                 ),
                                 SizedBox(width: 2),
                                 Text(
-                                  'บางรัก, สีลม',
+                                  item.location,
                                   style: const TextStyle(
                                     color: Color(0xFF9E9E9E),
                                     fontSize: 12,
@@ -424,45 +432,28 @@ class _OffersPageState extends State<OffersPage> {
   }
 
   Widget searchField() {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2), // สีของเงา
-              spreadRadius: 0, // การกระจายตัวของเงา
-              blurRadius: 5, // ความเบลอของเงา
-              offset: Offset(0, 0), // ทิศทางของเงา (x, y)
-            ),
-          ],
-          borderRadius: BorderRadius.circular(15), // ขอบโค้ง
+    return TextField(
+      controller: searchController,
+      onChanged: (value) => searchQuery.value = value,
+      decoration: InputDecoration(
+        hintText: 'ค้นหาด้วยชื่อผู้ใช้หรือชื่อข้อเสนอ',
+        hintStyle: TextStyle(color: Colors.grey[600]),
+        prefixIcon: const Icon(
+          Icons.search,
+          size: 25,
+          color: Colors.grey,
         ),
-        child: TextField(
-          decoration: InputDecoration(
-            hintText: 'ค้นหา',
-            hintStyle: TextStyle(color: Colors.grey[600]),
-            prefixIcon: const Icon(
-              Icons.search,
-              size: 25,
-              color: Colors.grey,
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey.shade300,
-              ),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey.shade300,
-              ),
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );

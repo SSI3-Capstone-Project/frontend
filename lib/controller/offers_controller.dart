@@ -52,7 +52,8 @@ class OffersController extends GetxController {
         isLoading(false);
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar(
+          'Error', 'An error occurred: ${e.toString()} in OffersController');
       isLoading(false);
     } finally {
       isLoading(false);

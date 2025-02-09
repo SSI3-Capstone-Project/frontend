@@ -117,7 +117,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
         key: _formKey,
         child: ListView(
           children: [
-            SizedBox(height: 15),
+            SizedBox(height: 16),
             _buildTextFormField(
               controller: _productNameController,
               label: 'ชื่อสินค้า',

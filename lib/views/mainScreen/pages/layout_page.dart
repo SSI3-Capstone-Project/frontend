@@ -8,7 +8,8 @@ import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
-import 'package:mbea_ssi3_front/views/chat/chat_page.dart';
+import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart';
+import 'package:mbea_ssi3_front/views/chat/pages/chat_page.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_controller.dart';
 import 'package:mbea_ssi3_front/views/home/pages/home_page.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_page.dart';
@@ -31,6 +32,7 @@ class _RootPageState extends State<RootPage> {
   final PostsController postController = Get.put(PostsController());
   final OffersController offerController = Get.put(OffersController());
   final BrandController brandController = Get.put(BrandController());
+  final ChatRoomController chatRoomController = Get.put(ChatRoomController());
   final ProvinceController provinceController = Get.put(ProvinceController());
   int _bottomNavIndex = 0;
 
@@ -60,6 +62,7 @@ class _RootPageState extends State<RootPage> {
       // await tokenController.loadTokens();
       await productController.fetchProducts();
       await userProfileController.fetchUserProfile();
+      await chatRoomController.fetchChatRooms();
       brandController.fetchBrands();
       provinceController.fetchProvince();
     });

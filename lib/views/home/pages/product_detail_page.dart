@@ -340,43 +340,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  // Wrap(
-                                  //   spacing:
-                                  //       8, // ระยะห่างระหว่าง children ในแนวนอน
-                                  //   runSpacing: 10, // ระยะห่างระหว่างบรรทัด
-                                  //   children: [
-                                  //     const Text(
-                                  //       'สนใจแลก :',
-                                  //       style: TextStyle(
-                                  //         fontSize: 14,
-                                  //         color: Colors.black87,
-                                  //       ),
-                                  //     ),
-                                  //     Container(
-                                  //       padding: const EdgeInsets.symmetric(
-                                  //           vertical: 3, horizontal: 15),
-                                  //       decoration: BoxDecoration(
-                                  //         color: Constants.secondaryColor,
-                                  //         borderRadius: BorderRadius.circular(20),
-                                  //         boxShadow: [
-                                  //           BoxShadow(
-                                  //             color:
-                                  //                 Colors.black.withOpacity(0.1),
-                                  //             blurRadius: 4,
-                                  //             offset: Offset(0, 2),
-                                  //           ),
-                                  //         ],
-                                  //       ),
-                                  //       child: Text(
-                                  //         productDetail.desiredItem,
-                                  //         style: const TextStyle(
-                                  //             color: Colors.white,
-                                  //             fontSize: 14,
-                                  //             fontWeight: FontWeight.bold),
-                                  //       ),
-                                  //     ),
-                                  //   ],
-                                  // ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
@@ -493,6 +456,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     productDetail.title,
                                     productDetail.username,
                                     productDetail.userImageUrl),
+                                SizedBox(
+                                  height: 15,
+                                ),
                                 TextButton(
                                   onPressed: () {
                                     // เพิ่มโค้ดที่ต้องการทำงานเมื่อกดปุ่มที่นี่
@@ -538,7 +504,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   ),
                                 ),
                                 SizedBox(
-                                  height: 100,
+                                  height: 50,
                                 ),
                               ],
                             );
@@ -619,16 +585,23 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Widget buildOfferList(List<dynamic> items, String postId, String postName,
       String username, String userImage) {
     final limitedItems = items.take(3).toList();
-    return Column(
-      children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.57, // กำหนดความสูง
-          child: StaggeredGridView.countBuilder(
+    return RefreshIndicator(
+      onRefresh: () async {
+        await offerListController.fetchOffers(postId);
+      },
+      color: Colors.white,
+      backgroundColor: Constants.secondaryColor,
+      child: Column(
+        children: [
+          StaggeredGridView.countBuilder(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             crossAxisCount: 1,
             mainAxisSpacing: 5,
             crossAxisSpacing: 22,
             itemCount: limitedItems.length,
+            shrinkWrap: true, // ปรับขนาดให้พอดีกับจำนวนของรายการ
+            physics:
+                const NeverScrollableScrollPhysics(), // ปิดการเลื่อนแยกจากหน้าหลัก
             itemBuilder: (context, index) {
               final item = limitedItems[index];
               return GestureDetector(
@@ -645,8 +618,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         postID: postId,
                         postName: postName,
                         offerID: item.id,
-                        username: username,
-                        userImage: userImage,
+                        username: item.userName,
+                        userImage: item.imageURL,
                       ),
                     ),
                   );
@@ -655,8 +628,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             },
             staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -697,7 +670,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           CircleAvatar(
                             radius: 15,
                             backgroundImage: NetworkImage(
-                                userImage), // ใส่ URL รูปภาพโปรไฟล์
+                                item.imageURL), // ใส่ URL รูปภาพโปรไฟล์
                           ),
                           SizedBox(width: 10),
                           Text(
@@ -771,7 +744,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                 ),
                                 SizedBox(width: 2),
                                 Text(
-                                  'บางรัก, สีลม',
+                                  item.location,
                                   style: const TextStyle(
                                     color: Color(0xFF9E9E9E),
                                     fontSize: 12,

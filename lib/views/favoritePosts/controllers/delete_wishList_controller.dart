@@ -13,7 +13,7 @@ class DeleteWishlistController {
     try {
       final token = tokenController.accessToken.value;
 
-      var response = await http.delete(
+      var response = await http.patch(
         Uri.parse('${dotenv.env['API_URL']}/wishlists/$wishListId'),
         headers: {
           'Authorization': 'Bearer $token',

@@ -4,15 +4,25 @@ import 'package:mbea_ssi3_front/controller/post_detail_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/model/post_detail_model.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/views/home/pages/offer_detail_page.dart';
+import 'package:mbea_ssi3_front/views/home/pages/offers_page.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/delete_post_controller.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/post_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/post/pages/post_edit.dart';
 import 'package:mbea_ssi3_front/views/post/pages/post_offer_page.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
+import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:video_player/video_player.dart';
 
 class PostDetailPage extends StatefulWidget {
   final String postId;
-  const PostDetailPage({super.key, required this.postId});
+  final String username;
+  final String userImageUrl;
+  const PostDetailPage(
+      {super.key,
+      required this.postId,
+      required this.username,
+      required this.userImageUrl});
 
   @override
   State<PostDetailPage> createState() => _PostDetailPageState();
@@ -20,7 +30,8 @@ class PostDetailPage extends StatefulWidget {
 
 class _PostDetailPageState extends State<PostDetailPage> {
   final PostsController postController = Get.put(PostsController());
-  final PostOfferController offerController = Get.put(PostOfferController());
+  final PostOfferController offerListController =
+      Get.put(PostOfferController());
   final PostDetailController postDetailController =
       Get.put(PostDetailController());
   final PostDeleteController postDeleteController =
@@ -28,6 +39,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   bool isActiveDetail = true;
+  int selectedIndex = 0;
 
   @override
   void initState() {
@@ -39,6 +51,18 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: const Text(
+          'โพสต์',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         bottom: false,
         child: Obx(() {
@@ -49,222 +73,335 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
           var postDetail = postDetailController.postDetail.value;
           if (postDetail != null) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start, // จัดชิดซ้าย
+            return Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: _buildTabContainer(),
-                ),
-                if (isActiveDetail)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 25),
-                      mediaContent(postDetail),
-                      const SizedBox(height: 25),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Column(
+                ListView(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start, // จัดชิดซ้าย
+                      children: [
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Wrap(
-                              alignment:
-                                  WrapAlignment.start, // จัดชิดซ้ายในแนวนอน
-                              runAlignment: WrapAlignment.start,
-                              spacing: 10, // ระยะห่างระหว่าง children ในแนวนอน
-                              runSpacing: 10, // ระยะห่างระหว่างบรรทัด
-                              children: [
-                                Text(
-                                  postDetail.title,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 21),
-                                  softWrap:
-                                      true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                  overflow: TextOverflow.visible,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(30)),
-                                    color: Constants.primaryColor,
-                                  ),
-                                  child: Text(
-                                    postDetail.subCollectionName,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 15),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        spreadRadius: 2,
-                                        blurRadius: 6,
-                                        offset: Offset(0, 0),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
+                            const SizedBox(height: 25),
+                            mediaContent(postDetail),
+                            const SizedBox(height: 25),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Icon(
-                                        size: 25,
-                                        Icons.location_on,
-                                        color: Colors.black54,
-                                      ),
-                                      SizedBox(width: 4),
                                       Text(
-                                        postDetail.location,
-                                        style: TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: 14,
+                                        postDetail.title,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 24,
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-                            Wrap(
-                              alignment:
-                                  WrapAlignment.start, // จัดชิดซ้ายในแนวนอน
-                              runAlignment: WrapAlignment.start,
-                              spacing: 8, // ระยะห่างระหว่าง children ในแนวนอน
-                              runSpacing: 10,
-                              children: [
-                                const Text(
-                                  'สนใจแลก :',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 3, horizontal: 15),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFE875C),
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 4,
-                                        offset: Offset(0, 2),
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(
+                                        size: 22,
+                                        Icons.location_on_outlined,
+                                        color: Color(0xFF9E9E9E),
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        postDetail.location,
+                                        style: const TextStyle(
+                                          color: Color(0xFF9E9E9E),
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  child: Text(
-                                    postDetail.desiredItem,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
-                                  child: Text(
-                                    postDetail.description,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                    softWrap:
-                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                    overflow: TextOverflow
-                                        .visible, // แสดงข้อความทั้งหมด
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-                            if (postDetail.flaw != null)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'ตำหนิ : ${postDetail.flaw}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                  const SizedBox(height: 15),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(30)),
                                       color: Constants.secondaryColor,
                                     ),
-                                    softWrap:
-                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                    overflow: TextOverflow.visible,
+                                    child: Text(
+                                      postDetail.subCollectionName,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
+                                  const SizedBox(height: 25),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedIndex = 0;
+                                          });
+                                        },
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              'รายละเอียด',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: selectedIndex == 0
+                                                    ? Constants.secondaryColor
+                                                    : Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.only(top: 4),
+                                              height: 2,
+                                              width: 190,
+                                              color: selectedIndex == 0
+                                                  ? Constants.secondaryColor
+                                                  : Colors.white,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          await offerListController
+                                              .fetchOffers(postDetail.id);
+                                          setState(() {
+                                            selectedIndex = 1;
+                                          });
+                                        },
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              'ข้อเสนอของโพสต์นี้',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: selectedIndex == 1
+                                                    ? Constants.secondaryColor
+                                                    : Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Container(
+                                              margin:
+                                                  const EdgeInsets.only(top: 4),
+                                              height: 2,
+                                              width: 190,
+                                              color: selectedIndex == 1
+                                                  ? Constants.secondaryColor
+                                                  : Colors.white,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 25),
+                                  if (selectedIndex == 0)
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            const Text(
+                                              'สนใจแลก :',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 8,
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 3,
+                                                      horizontal: 15),
+                                              decoration: BoxDecoration(
+                                                color: Constants.secondaryColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.1),
+                                                    blurRadius: 4,
+                                                    offset: Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Text(
+                                                postDetail.desiredItem,
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 25),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                              child: Text(
+                                                postDetail.description,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                                softWrap:
+                                                    true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                overflow: TextOverflow
+                                                    .visible, // แสดงข้อความทั้งหมด
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 25),
+                                        if (postDetail.flaw != null)
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'ตำหนิ : ${postDetail.flaw}',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      Constants.secondaryColor,
+                                                ),
+                                                softWrap:
+                                                    true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                                overflow: TextOverflow.visible,
+                                              ),
+                                            ],
+                                          ),
+                                      ],
+                                    ),
                                 ],
                               ),
-                            const SizedBox(height: 25),
+                            ),
+                            // const SizedBox(height: 30),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                if (!isActiveDetail)
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: PostOfferPage(
-                      postId: widget.postId,
+                        if (selectedIndex == 1)
+                          Obx(() {
+                            if (offerListController.isLoading.value) {
+                              // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+                              return Center(child: CircularProgressIndicator());
+                            }
+                            if (!offerListController.offerList.isEmpty) {
+                              // แสดง CircularProgressIndicator หากกำลังโหลดข้อมูล
+                              return Column(
+                                children: [
+                                  buildOfferList(
+                                      offerListController.offerList,
+                                      postDetail.id,
+                                      postDetail.title,
+                                      widget.username,
+                                      widget.userImageUrl),
+                                  TextButton(
+                                    onPressed: () {
+                                      // เพิ่มโค้ดที่ต้องการทำงานเมื่อกดปุ่มที่นี่
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => OffersPage(
+                                                  postId: postDetail.id,
+                                                  postTitle: postDetail.title,
+                                                  postImageURL:
+                                                      postDetail.coverImage,
+                                                  postLocation:
+                                                      postDetail.location,
+                                                  postSubCollectionName:
+                                                      postDetail
+                                                          .subCollectionName,
+                                                  username: widget.username,
+                                                  userImageURL:
+                                                      widget.userImageUrl,
+                                                )),
+                                      );
+                                    },
+                                    child: Text(
+                                      "ดูข้อเสนอเพิ่มเติม", // ใส่ข้อความที่ต้องการแสดงบนปุ่ม
+                                      style: TextStyle(
+                                        fontSize: 14, // ขนาดตัวอักษร
+                                        fontWeight:
+                                            FontWeight.w500, // น้ำหนักตัวอักษร
+                                        color: Colors.white, // สีของข้อความ
+                                      ),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Constants
+                                          .primaryColor, // สีพื้นหลังของปุ่ม
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal:
+                                            30, // ระยะห่างด้านซ้ายและขวา
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            20), // มุมปุ่มโค้งมน
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 100,
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'ยังไม่มีข้อเสนอของคุณในโพสต์นี้',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey),
+                                    )
+                                  ],
+                                ),
+                              );
+                            }
+                          })
+                      ],
                     ),
-                  ))
-
-                // DraggableScrollableSheet(
-                //   initialChildSize: 0.28,
-                //   minChildSize: 0.28,
-                //   maxChildSize: 0.9,
-                //   builder: (context, scrollController) {
-                //     return Container(
-                //       padding: const EdgeInsets.only(top: 28),
-                //       decoration: BoxDecoration(
-                //         boxShadow: [
-                //           BoxShadow(
-                //             color: Colors.grey.withOpacity(0.5),
-                //             spreadRadius: 0.5,
-                //             blurRadius: 6,
-                //             offset: const Offset(0, 0),
-                //           ),
-                //         ],
-                //         borderRadius: const BorderRadius.only(
-                //           topLeft: Radius.circular(30),
-                //           topRight: Radius.circular(30),
-                //         ),
-                //         color: Colors.white,
-                //       ),
-                //       child: productDetails(scrollController, postDetail),
-                //     );
-                //   },
-                // ),
+                  ],
+                ),
               ],
             );
           } else {
@@ -275,83 +412,279 @@ class _PostDetailPageState extends State<PostDetailPage> {
     );
   }
 
-  Widget _buildTabContainer() {
-    return Container(
-      // margin: EdgeInsets.symmetric(horizontal: 20.0),
-      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+  Widget buildOfferList(List<dynamic> items, String postId, String postName,
+      String username, String userImage) {
+    final limitedItems = items.take(3).toList();
+    return RefreshIndicator(
+      onRefresh: () async {
+        await offerListController.fetchOffers(postId);
+      },
+      color: Colors.white,
+      backgroundColor: Constants.secondaryColor,
+      child: Column(
         children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () async => {
-                  await postController.fetchPosts(),
-                  Navigator.pop(context),
-                },
-                child: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 25,
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              _buildTabItem('รายละเอียด', isActiveDetail, () {
-                setState(() {
-                  isActiveDetail = true;
-                });
-              }),
-            ],
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.57, // กำหนดความสูง
+            child: StaggeredGridView.countBuilder(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              crossAxisCount: 1,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 22,
+              itemCount: limitedItems.length,
+              itemBuilder: (context, index) {
+                final item = limitedItems[index];
+                return GestureDetector(
+                  onTap: () async {
+                    // await offerDetailController.fetchOfferDetail(
+                    //     widget.postId, item.id);
+                    // _offerDetailDialog();
+                  },
+                  child: offerCard(item, username, userImage, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OfferDetailPage(
+                          postID: postId,
+                          postName: postName,
+                          offerID: item.id,
+                          username: item.userName,
+                          userImage: item.imageURL,
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              },
+              staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
+            ),
           ),
-          _buildTabItem('ข้อเสนอ', !isActiveDetail, () async {
-            await offerController.fetchOffers(widget.postId);
-            setState(() {
-              isActiveDetail = false;
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => PostOfferPage(),
-              //   ),
-              // );
-            });
-          }),
         ],
       ),
     );
   }
 
-  Widget _buildTabItem(String label, bool isSelected, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: isSelected ? Constants.secondaryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  Widget offerCard(
+      dynamic item, String username, String userImage, VoidCallback onTap) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: onTap, // ฟังก์ชันที่เรียกเมื่อกด Card
+          borderRadius: BorderRadius.circular(16), // ให้เอฟเฟกต์กดดูเรียบเนียน
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2), // สีของเงา
+                  spreadRadius: 2, // การกระจายตัวของเงา
+                  blurRadius: 4, // ความเบลอของเงา
+                  offset: Offset(0, 0), // ทิศทางของเงา (x, y)
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundImage: NetworkImage(
+                                item.imageURL), // ใส่ URL รูปภาพโปรไฟล์
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            item.userName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 5),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(30)),
+                          color: Constants.primaryColor,
+                        ),
+                        child: Text(
+                          item.subCollectionName.length > 10
+                              ? '${item.subCollectionName.substring(0, 10)}...'
+                              : item.subCollectionName,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // Text color
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                  // Content
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Product Image
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          item.coverImage, // ใส่ URL รูปภาพสินค้า
+                          width: 82,
+                          height: 72,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      // Product Details
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  size: 15,
+                                  Icons.location_on_outlined,
+                                  color: Color(0xFF9E9E9E),
+                                ),
+                                SizedBox(width: 2),
+                                Text(
+                                  'บางรัก, สีลม',
+                                  style: const TextStyle(
+                                    color: Color(0xFF9E9E9E),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              item.description.length > 45
+                                  ? '${item.description.substring(0, 35)}...'
+                                  : item.description,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[800],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
+
+  // Widget _buildTabContainer() {
+  //   return Container(
+  //     // margin: EdgeInsets.symmetric(horizontal: 20.0),
+  //     padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(15),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.3),
+  //           spreadRadius: 2,
+  //           blurRadius: 6,
+  //           offset: Offset(0, 3),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             GestureDetector(
+  //               onTap: () async => {
+  //                 await postController.fetchPosts(),
+  //                 Navigator.pop(context),
+  //               },
+  //               child: const Icon(
+  //                 Icons.arrow_back_ios,
+  //                 size: 25,
+  //               ),
+  //             ),
+  //             SizedBox(
+  //               width: 20,
+  //             ),
+  //             _buildTabItem('รายละเอียด', isActiveDetail, () {
+  //               setState(() {
+  //                 isActiveDetail = true;
+  //               });
+  //             }),
+  //           ],
+  //         ),
+  //         _buildTabItem('ข้อเสนอ', !isActiveDetail, () async {
+  //           await offerController.fetchOffers(widget.postId);
+  //           setState(() {
+  //             isActiveDetail = false;
+  //             // Navigator.push(
+  //             //   context,
+  //             //   MaterialPageRoute(
+  //             //     builder: (context) => PostOfferPage(),
+  //             //   ),
+  //             // );
+  //           });
+  //         }),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildTabItem(String label, bool isSelected, VoidCallback onTap) {
+  //   return InkWell(
+  //     onTap: onTap,
+  //     child: Container(
+  //       padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+  //       decoration: BoxDecoration(
+  //         color: isSelected ? Constants.secondaryColor : Colors.transparent,
+  //         borderRadius: BorderRadius.circular(15.0),
+  //       ),
+  //       child: Text(
+  //         label,
+  //         style: TextStyle(
+  //           color: isSelected ? Colors.white : Colors.black,
+  //           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget mediaContent(PostDetail postDetail) {
     final mediaItems = [
@@ -410,7 +743,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   width: _currentPage == index ? 20 : 8,
                   margin: const EdgeInsets.only(right: 5.0),
                   decoration: BoxDecoration(
-                    color: Constants.primaryColor,
+                    color: Constants.secondaryColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
                 );
@@ -469,170 +802,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
       ],
     );
   }
-
-  // Widget productDetails(
-  //     ScrollController scrollController, PostDetail postDetail) {
-  //   return ListView(
-  //     controller: scrollController,
-  //     physics: const BouncingScrollPhysics(),
-  //     children: [
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           SizedBox(
-  //             width: 150,
-  //             child: Divider(
-  //               color: Colors.black.withOpacity(0.7),
-  //               thickness: 3,
-  //             ),
-  //           ),
-  //           SizedBox(width: 10),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 25),
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Text(
-  //             postDetail.title,
-  //             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 25),
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.start,
-  //         children: [
-  //           Container(
-  //             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-  //             decoration: BoxDecoration(
-  //               borderRadius: const BorderRadius.only(
-  //                 topRight: Radius.circular(30),
-  //                 bottomRight: Radius.circular(30),
-  //               ),
-  //               color: Constants.primaryColor,
-  //             ),
-  //             child: Text(
-  //               postDetail.subCollectionName,
-  //               style: const TextStyle(
-  //                 fontSize: 16,
-  //                 fontWeight: FontWeight.bold,
-  //                 color: Colors.white,
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 25),
-  //       Padding(
-  //         padding: const EdgeInsets.only(left: 18),
-  //         child: Row(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             const Text(
-  //               'สนใจแลก :',
-  //               style: TextStyle(
-  //                 fontSize: 16,
-  //                 color: Colors.black87,
-  //               ),
-  //             ),
-  //             const SizedBox(width: 8),
-  //             GestureDetector(
-  //               onTap: () {
-  //                 // Add button tap functionality here
-  //                 print("Button tapped");
-  //               },
-  //               child: Container(
-  //                 padding:
-  //                     const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-  //                 decoration: BoxDecoration(
-  //                   color: const Color(0xFFFE875C),
-  //                   borderRadius: BorderRadius.circular(20),
-  //                   boxShadow: [
-  //                     BoxShadow(
-  //                       color: Colors.black.withOpacity(0.1),
-  //                       blurRadius: 4,
-  //                       offset: Offset(0, 2),
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 child: Text(
-  //                   postDetail.desiredItem,
-  //                   style: const TextStyle(
-  //                     color: Colors.white,
-  //                     fontSize: 16,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       const SizedBox(height: 25),
-  //       Padding(
-  //         padding: const EdgeInsets.only(left: 18),
-  //         child: Text(
-  //           postDetail.description,
-  //           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-  //         ),
-  //       ),
-  //       const SizedBox(height: 25),
-  //       if (postDetail.flaw != null)
-  //         Padding(
-  //           padding: const EdgeInsets.only(left: 18),
-  //           child: Text(
-  //             'ตำหนิ : ${postDetail.flaw}',
-  //             style: TextStyle(
-  //               fontSize: 16,
-  //               fontWeight: FontWeight.bold,
-  //               color: Constants.secondaryColor,
-  //             ),
-  //           ),
-  //         ),
-  //       const SizedBox(height: 25),
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.end,
-  //         children: [
-  //           Padding(
-  //             padding: const EdgeInsets.symmetric(horizontal: 18),
-  //             child: Container(
-  //               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-  //               decoration: BoxDecoration(
-  //                 color: Colors.white,
-  //                 borderRadius: BorderRadius.circular(20),
-  //                 boxShadow: [
-  //                   BoxShadow(
-  //                     color: Colors.black.withOpacity(0.1),
-  //                     spreadRadius: 2,
-  //                     blurRadius: 6,
-  //                     offset: Offset(0, 0),
-  //                   ),
-  //                 ],
-  //               ),
-  //               child: Row(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: [
-  //                   Icon(
-  //                     Icons.location_on,
-  //                     color: Colors.black54,
-  //                   ),
-  //                   SizedBox(width: 4),
-  //                   Text(
-  //                     postDetail.location,
-  //                     style: TextStyle(
-  //                       color: Colors.black87,
-  //                       fontSize: 16,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ],
-  //   );
-  // }
 
   void deletePost(String id) {
     // การทำงานเมื่อกดปุ่มลบ

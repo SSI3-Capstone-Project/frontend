@@ -12,18 +12,20 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final LoginController _loginController = Get.put(LoginController());
+  final LoginController _loginController = Get.isRegistered<LoginController>()
+      ? Get.find<LoginController>()
+      : Get.put(LoginController(), permanent: true);
 
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   // ใช้เพื่อทำการล้างหรือปล่อยหน่วยความจำ
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _usernameController.dispose();
+  //   _passwordController.dispose();
+  //   super.dispose();
+  // }
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -38,14 +40,15 @@ class _LoginPageState extends State<LoginPage> {
         _passwordController.text,
       );
 
-      if (!_loginController.isLoading.value) {
-        Navigator.of(context).pop();
-      }
+      Future.delayed(Duration.zero, () {
+        if (!_loginController.isLoading.value) {
+          Get.back(); // ปิด Dialog loading
+        }
 
-      if (result) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const RootPage()));
-      }
+        if (result) {
+          Get.offAll(() => const RootPage()); // เปลี่ยนหน้าโดยล้าง Stack
+        }
+      });
     }
   }
 

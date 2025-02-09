@@ -44,7 +44,8 @@ class ProvinceController extends GetxController {
         isLoading(false);
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(
+          'Error', 'An error occurred: ${e.toString()} in ProvinceController');
       isLoading(false);
     } finally {
       isLoading(false);

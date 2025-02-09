@@ -71,7 +71,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (!postController.postList.isEmpty) {
                         return _buildStaggeredGrid(
                           postController.postList,
-                          (post) => PostDetailPage(postId: post.id),
+                          (post) => PostDetailPage(
+                            postId: post.id,
+                            username: userProfile.username,
+                            userImageUrl: userProfile.imageUrl.toString(),
+                          ),
                         );
                       } else {
                         return const Align(
@@ -418,7 +422,8 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี", user.id),
+            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี",
+                user.id),
             _buildBox("รายการโปรด", Icons.favorite, "", user.id),
           ],
         ),
@@ -435,7 +440,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildBox(String label, IconData icon, String description, String userId) {
+  Widget _buildBox(
+      String label, IconData icon, String description, String userId) {
     return GestureDetector(
         onTap: () {
           if (label == "รายการโปรด") {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
@@ -231,6 +232,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               case "ออกจากระบบ":
                 Get.snackbar('ออกจากระบบ', 'คุณได้ออกจากระบบแล้ว');
                 await tokenController.deleteTokens();
+                Phoenix.rebirth(context);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (_) => LoginPage()),

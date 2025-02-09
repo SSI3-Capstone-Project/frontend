@@ -122,7 +122,6 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       return Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 1, vertical: 0),
           children: [
             SizedBox(height: 16),
             _buildTextFormField(

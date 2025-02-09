@@ -51,7 +51,7 @@ class GetWishListsController extends GetxController {
             'Error', 'Failed to load wish lists: ${response.statusCode}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'An error occurred: $e in GetWishListsController');
       print("Error: $e");
     } finally {
       isLoading.value = false;

@@ -34,7 +34,8 @@ class ProductDetailController extends GetxController {
             'Error', 'Failed to load product detail: ${response.reasonPhrase}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar('Error',
+          'An error occurred: ${e.toString()} in ProductDetailController');
     } finally {
       isLoading(false);
     }

@@ -35,6 +35,18 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: const Text(
+          'ข้อเสนอ',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         bottom: false,
         child: Obx(() {
@@ -47,62 +59,123 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
           if (offerDetail != null) {
             return Stack(
               children: [
-                Column(
+                ListView(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 18),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () async => {
-                              await offerController.fetchOffers(),
-                              Navigator.pop(context, true),
-                            },
-                            child: const Icon(Icons.arrow_back, size: 30),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start, // จัดชิดซ้าย
+                      children: [
+                        const SizedBox(height: 25),
+                        mediaContent(offerDetail),
+                        const SizedBox(height: 25),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    offerDetail.title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    size: 22,
+                                    Icons.location_on_outlined,
+                                    color: Color(0xFF9E9E9E),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    offerDetail.location,
+                                    style: const TextStyle(
+                                      color: Color(0xFF9E9E9E),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 15),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(30)),
+                                  color: Constants.primaryColor,
+                                ),
+                                child: Text(
+                                  offerDetail.subCollectionName,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                        child: Text(
+                                          offerDetail.description,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                          softWrap:
+                                              true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                          overflow: TextOverflow
+                                              .visible, // แสดงข้อความทั้งหมด
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 25),
+                                  if (offerDetail.flaw != null)
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'ตำหนิ : ${offerDetail.flaw}',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Constants.secondaryColor,
+                                          ),
+                                          softWrap:
+                                              true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    mediaContent(offerDetail),
-                    const SizedBox(height: 30),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 45),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
-                ),
-                DraggableScrollableSheet(
-                  initialChildSize: 0.28,
-                  minChildSize: 0.28,
-                  maxChildSize: 0.9,
-                  builder: (context, scrollController) {
-                    return Container(
-                      padding: const EdgeInsets.only(top: 28),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 0.5,
-                            blurRadius: 6,
-                            offset: const Offset(0, 0),
-                          ),
-                        ],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
                         ),
-                        color: Colors.white,
-                      ),
-                      child: productDetails(scrollController, offerDetail),
-                    );
-                  },
-                ),
+                      ],
+                    )
+                  ],
+                )
               ],
             );
           } else {
@@ -119,266 +192,112 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
       ...offerDetail.offerVideos.map((vid) => vid.videoUrl),
     ];
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
       children: [
-        Center(
-          child: SizedBox(
-            width: 335,
-            height: 350,
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: mediaItems.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                final mediaItem = mediaItems[index];
-                if (mediaItem.endsWith('.jpg') || mediaItem.endsWith('.png')) {
-                  return Hero(
-                    tag: mediaItem,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: Image.network(
-                          mediaItem,
-                          width: 320,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  );
-                } else {
-                  return VideoPlayerWidget(videoUrl: mediaItem);
-                }
-              },
-            ),
-          ),
-        ),
-        const SizedBox(height: 15),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(mediaItems.length, (index) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: 10.0,
-              width: _currentPage == index ? 20 : 8,
-              margin: const EdgeInsets.only(right: 5.0),
-              decoration: BoxDecoration(
-                color: Constants.primaryColor,
-                borderRadius: BorderRadius.circular(5),
-              ),
-            );
-          }),
-        ),
-        const SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            GestureDetector(
-              onTap: () async {
-                // Navigate to EditPostForm and pass the post details
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        EditOfferForm(offerDetail: offerDetail),
+            Center(
+              child: SizedBox(
+                width: 420,
+                height: 300,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: mediaItems.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    final mediaItem = mediaItems[index];
+                    if (mediaItem.endsWith('.jpg') ||
+                        mediaItem.endsWith('.png')) {
+                      return Hero(
+                        tag: mediaItem,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
+                          child: ClipRRect(
+                            child: Image.network(
+                              mediaItem,
+                              width: 320,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return VideoPlayerWidget(videoUrl: mediaItem);
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(mediaItems.length, (index) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: 10.0,
+                  width: _currentPage == index ? 20 : 8,
+                  margin: const EdgeInsets.only(right: 5.0),
+                  decoration: BoxDecoration(
+                    color: Constants.primaryColor,
+                    borderRadius: BorderRadius.circular(5),
                   ),
                 );
-
-                if (result == true) {
-                  // ดึงข้อมูลใหม่
-                  offerDetailController.fetchOfferDetail(widget.offerId);
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              }),
+            ),
+          ],
+        ),
+        Positioned(
+          top: 10,
+          right: 10,
+          child: Row(
+            children: [
+              Container(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF3AB0F8), Color(0xFF3176B1)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 3,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+                  shape: BoxShape.circle,
+                  color: Colors.black.withOpacity(0.3),
                 ),
-                child: const Text(
-                  'แก้ไขข้อเสนอ',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 30),
-            GestureDetector(
-              onTap: () async {
-                deleteOffer(widget.offerId);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFE875C), Color(0xFFE4593F)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 3,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Text(
-                  'ลบข้อเสนอ',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget productDetails(
-      ScrollController scrollController, OfferDetail offerDetail) {
-    return ListView(
-      controller: scrollController,
-      physics: const BouncingScrollPhysics(),
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 150,
-              child: Divider(
-                color: Colors.black.withOpacity(0.7),
-                thickness: 3,
-              ),
-            ),
-            SizedBox(width: 10),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              offerDetail.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-              softWrap: true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-              overflow: TextOverflow.visible,
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-                color: Constants.primaryColor,
-              ),
-              child: Text(
-                offerDetail.subCollectionName,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                softWrap: true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                overflow: TextOverflow.visible,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Padding(
-          padding: const EdgeInsets.only(left: 18),
-          child: Text(
-            offerDetail.description,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-          ),
-        ),
-        const SizedBox(height: 25),
-        if (offerDetail.flaw != null)
-          Padding(
-            padding: const EdgeInsets.only(left: 18),
-            child: Text(
-              'ตำหนิ : ${offerDetail.flaw}',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Constants.secondaryColor,
-              ),
-              softWrap: true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-              overflow: TextOverflow.visible,
-            ),
-          ),
-        const SizedBox(height: 25),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                      offset: Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.black54,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      offerDetail.location,
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
+                child: IconButton(
+                  onPressed: () async {
+                    // Navigate to EditPostForm และรอผลลัพธ์
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EditOfferForm(offerDetail: offerDetail),
                       ),
-                    ),
-                  ],
+                    );
+
+                    // ตรวจสอบว่าโพสต์มีการอัปเดตหรือไม่
+                    if (result == true) {
+                      // ดึงข้อมูลใหม่
+                      offerDetailController.fetchOfferDetail(widget.offerId);
+                    }
+                    print('แก้ไข');
+                  },
+                  icon: Icon(Icons.edit, color: Colors.white),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withOpacity(0.3),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    deleteOffer(widget.offerId);
+                    print('ลบ');
+                  },
+                  icon: Icon(Icons.delete, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

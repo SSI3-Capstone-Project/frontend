@@ -48,7 +48,7 @@ class UserProfileController extends GetxController {
         isLoading.value = false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'An error occurred: $e in UserProfileController');
       isLoading.value = false;
     } finally {
       isLoading.value = false;

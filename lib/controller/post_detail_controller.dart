@@ -39,7 +39,8 @@ class PostDetailController extends GetxController {
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar('Error',
+          'An error occurred: ${e.toString()} in PostDetailController');
       isLoading(false);
       return false;
     }

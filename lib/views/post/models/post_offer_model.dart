@@ -6,6 +6,7 @@ class PostOffers {
   String coverImage;
   String userName;
   String imageURL;
+  String location;
 
   PostOffers({
     required this.id,
@@ -15,6 +16,7 @@ class PostOffers {
     required this.coverImage,
     required this.userName,
     required this.imageURL,
+    required this.location,
   });
 
   // ฟังก์ชันแปลง JSON เป็น Model
@@ -27,6 +29,7 @@ class PostOffers {
       coverImage: json['cover_image'],
       userName: json['username'],
       imageURL: json['image_url'],
+      location: json['location'],
     );
   }
 
@@ -40,6 +43,7 @@ class PostOffers {
       'cover_image': coverImage,
       'username': userName,
       'image_url': imageURL,
+      'location': location,
     };
   }
 }

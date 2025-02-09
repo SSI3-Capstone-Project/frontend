@@ -45,7 +45,8 @@ class PostOfferController extends GetxController {
         isLoading(false);
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar(
+          'Error', 'An error occurred: ${e.toString()} in PostOfferController');
       isLoading(false);
     } finally {
       isLoading(false);

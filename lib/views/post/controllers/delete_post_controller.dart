@@ -16,7 +16,7 @@ class PostDeleteController extends GetxController {
     }
     try {
       final token = tokenController.accessToken.value;
-      final response = await http.delete(
+      final response = await http.patch(
         Uri.parse('${dotenv.env['API_URL']}/posts/$postId'),
         headers: {
           'Authorization': 'Bearer $token', // แนบ Bearer Token

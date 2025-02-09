@@ -93,7 +93,7 @@ class UpdateProfileController extends GetxController {
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar('Error', 'An error occurred: $e in UpdateProfileController');
     }
   }
 }
