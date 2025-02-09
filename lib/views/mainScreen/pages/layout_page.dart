@@ -48,7 +48,7 @@ class _RootPageState extends State<RootPage> {
   List<IconData> iconList = [
     Icons.home,
     Icons.chat,
-    Icons.notifications,
+    Icons.autorenew,
     Icons.person
   ];
 
