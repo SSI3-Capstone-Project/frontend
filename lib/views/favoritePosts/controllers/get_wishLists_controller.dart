@@ -12,7 +12,8 @@ class GetWishListsController extends GetxController {
   var isLoading = false.obs;
 
   Future<void> getWishLists() async {
-    if (tokenController.accessToken.value == null || tokenController.accessToken.value!.isEmpty) {
+    if (tokenController.accessToken.value == null ||
+        tokenController.accessToken.value!.isEmpty) {
       Get.snackbar('Error', 'No access token');
       return;
     }
@@ -38,19 +39,23 @@ class GetWishListsController extends GetxController {
       if (response.statusCode == 200) {
         var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
-        if (decodedResponse is Map<String, dynamic> && decodedResponse.containsKey('data')) {
+        if (decodedResponse is Map<String, dynamic> &&
+            decodedResponse.containsKey('data')) {
           var dataList = decodedResponse['data'];
 
           if (dataList is List) {
-            wishLists.assignAll(dataList.map((e) => WishListModel.fromJson(e)).toList());
+            wishLists.assignAll(
+                dataList.map((e) => WishListModel.fromJson(e)).toList());
           } else {
-            Get.snackbar('Error', 'Unexpected data format');
+            wishLists([]);
+            // Get.snackbar('Error', 'Unexpected data format');
           }
         } else {
           Get.snackbar('Error', 'Response does not contain expected data key');
         }
       } else {
-        Get.snackbar('Error', 'Failed to load wish lists: ${response.statusCode}');
+        Get.snackbar(
+            'Error', 'Failed to load wish lists: ${response.statusCode}');
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
