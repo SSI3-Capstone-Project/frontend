@@ -17,11 +17,7 @@ class _FavoritePostsState extends State<FavoritePosts> {
   @override
   void initState() {
     super.initState();
-    if (widget.userId.isNotEmpty) {
-      getWishListsController.getWishLists(widget.userId);
-    } else {
-      Get.snackbar('Error', 'User ID is empty');
-    }
+    getWishListsController.getWishLists();
   }
 
   @override
@@ -52,8 +48,7 @@ class _FavoritePostsState extends State<FavoritePosts> {
               itemBuilder: (context, index) {
                 final wishList = getWishListsController.wishLists[index];
                 return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

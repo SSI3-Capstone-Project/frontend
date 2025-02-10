@@ -11,25 +11,24 @@ class GetWishListsController extends GetxController {
   var wishLists = <WishListModel>[].obs;
   var isLoading = false.obs;
 
-  Future<void> getWishLists(String userId) async {
+  Future<void> getWishLists() async {
+    if (tokenController.accessToken.value == null || tokenController.accessToken.value!.isEmpty) {
+      Get.snackbar('Error', 'No access token');
+      return;
+    }
+
     isLoading.value = true;
-    Get.snackbar("UserID", userId);
 
     try {
-      if (tokenController.accessToken.value == null) {
-        isLoading.value = false;
-        Get.snackbar('Error', 'No access token');
-        return;
-      }
+      final token = tokenController.accessToken.value!;
+      final apiUrl = '${dotenv.env['API_URL']}/wishlists';
 
-      final token = tokenController.accessToken.value;
-      final apiUrl = '${dotenv.env['API_URL']}/wishlists/$userId';
-      print("API URL: $apiUrl");
+      print("Fetching wish lists from: $apiUrl");
 
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
-          'Authorization': 'Bearer $token', // แนบ Bearer Token
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -37,22 +36,25 @@ class GetWishListsController extends GetxController {
       print("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(utf8.decode(response.bodyBytes));
+        var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
-        // ตรวจสอบประเภทของ data
-        if (data is List) {
-          wishLists.value = data.map((e) => WishListModel.fromJson(e)).toList();
+        if (decodedResponse is Map<String, dynamic> && decodedResponse.containsKey('data')) {
+          var dataList = decodedResponse['data'];
+
+          if (dataList is List) {
+            wishLists.assignAll(dataList.map((e) => WishListModel.fromJson(e)).toList());
+          } else {
+            Get.snackbar('Error', 'Unexpected data format');
+          }
         } else {
-          Get.snackbar('Error', 'Unexpected data format: Not a List');
-          print("Unexpected data format: $data");
+          Get.snackbar('Error', 'Response does not contain expected data key');
         }
       } else {
-        Get.snackbar(
-            'Error', 'Failed to load wish lists: ${response.statusCode}');
+        Get.snackbar('Error', 'Failed to load wish lists: ${response.statusCode}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e in GetWishListsController');
-      print("Error: $e");
+      Get.snackbar('Error', 'An error occurred: $e');
+      print("Error in GetWishListsController: $e");
     } finally {
       isLoading.value = false;
     }
