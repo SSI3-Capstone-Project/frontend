@@ -6,8 +6,6 @@ class ChatRooms {
   final String username;
   final int unreadMessageCount;
   final DateTime? lastMessageSendAt; // เปลี่ยนเป็น nullable
-  final String postID;
-  final String offerID;
 
   ChatRooms({
     required this.id,
@@ -17,8 +15,6 @@ class ChatRooms {
     required this.username,
     required this.unreadMessageCount,
     this.lastMessageSendAt, // เปลี่ยนเป็น nullable
-    required this.postID,
-    required this.offerID,
   });
 
   factory ChatRooms.fromJson(Map<String, dynamic> json) {
@@ -33,8 +29,6 @@ class ChatRooms {
           ? DateTime.tryParse(
               json['last_message_send_at']) // ใช้ tryParse เพื่อกัน error
           : null, // กำหนดค่า null ถ้าไม่มีข้อมูล
-      postID: json['post_id'] as String,
-      offerID: json['offer_id'] as String,
     );
   }
 }

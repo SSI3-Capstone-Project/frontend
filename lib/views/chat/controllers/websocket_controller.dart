@@ -11,11 +11,16 @@ import 'package:mbea_ssi3_front/views/chat/models/message_model.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as ws_status;
+import 'package:http_parser/http_parser.dart';
 
 class ChatController extends GetxController {
   final tokenController = Get.find<TokenController>();
   var isLoading = false.obs;
   var chatRoomID = ''.obs;
+  var postOfferID = ''.obs;
+  var postID = ''.obs;
+  var offerID = ''.obs;
+  var isExchanged = false.obs;
   var chatRooms = <ChatRoom>[].obs;
   WebSocketChannel? _channel;
 
@@ -75,7 +80,7 @@ class ChatController extends GetxController {
                 // กรณีที่ JSON เป็น Message เดี่ยว
                 final newMessage = Message(
                   content: messageData['message'],
-                  type: "text", // ตั้งค่า type เป็น default
+                  type: messageData['type'], // ตั้งค่า type เป็น default
                   sendAt: DateTime.parse(messageData['timestamp']),
                   username:
                       jsonData['username'], // ตั้งค่า username เป็น default
@@ -136,6 +141,7 @@ class ChatController extends GetxController {
 
     final data = jsonEncode({
       "message": message,
+      "type": 'text',
       "timestamp": DateTime.now().toIso8601String(),
     });
 
@@ -174,6 +180,62 @@ class ChatController extends GetxController {
     }
   }
 
+  /// ฟังก์ชันส่งข้อความผ่าน WebSocket
+  Future<bool> sendImage(File imageFile, String roomID) async {
+    if (_channel == null || !isWebSocketConnected.value) {
+      print("WebSocket ไม่ได้เชื่อมต่อ ไม่สามารถส่งไฟล์ได้");
+      return false;
+    }
+
+    try {
+      if (tokenController.accessToken.value == null) {
+        print("ไม่มี access token");
+        return false;
+      }
+
+      final token = tokenController.accessToken.value;
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${dotenv.env['API_URL']}/chatrooms/$roomID/messages'),
+      );
+      request.headers['Authorization'] = 'Bearer $token';
+
+      String mimeType = 'image/png';
+
+      // เพิ่มไฟล์ภาพ
+      request.files.add(await http.MultipartFile.fromPath(
+        'file',
+        imageFile.path,
+        contentType: MediaType.parse(mimeType),
+      ));
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        print("อัปโหลดรูปภาพสำเร็จ!");
+        final jsonData = jsonDecode(response.body);
+
+        final data = jsonEncode({
+          "message": jsonData['data']['content'],
+          "type": 'file',
+          "timestamp": DateTime.now().toIso8601String(),
+        });
+
+        _channel!.sink.add(data);
+        return true;
+      } else {
+        Get.snackbar(
+            'แจ้งเตือน', 'เกิดข้อผิดพลาดในการเก็บข้อมูลของรูปที่ส่งไป');
+        print("เกิดข้อผิดพลาด: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("Exception: $e ใน ChatController");
+      return false;
+    }
+  }
+
   /// ปิด WebSocket เมื่อไม่ใช้งาน
   void closeChatRoom() {
     chatRooms.clear();
@@ -201,7 +263,7 @@ class ChatController extends GetxController {
     try {
       final token = tokenController.accessToken.value!;
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/chatrooms/$roomID/messages'),
+        Uri.parse('${dotenv.env['API_URL']}/chatrooms/$roomID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -210,14 +272,22 @@ class ChatController extends GetxController {
 
       if (response.statusCode == 200) {
         try {
-          final jsonData = jsonDecode(response.body);
-          print('-------------------------object-------------------------');
-
-          print(jsonData);
+          var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+          // final jsonData = jsonDecode(response.body);
 
           if (jsonData is Map<String, dynamic> &&
               jsonData.containsKey('data')) {
-            List<dynamic> rawData = jsonData['data'];
+            postOfferID(jsonData['data']['post_offer_id']);
+            postID(jsonData['data']['post_id']);
+            offerID(jsonData['data']['offer_id']);
+            isExchanged(jsonData['data']['is_exchanged']);
+            print(
+                '-------------------------post and offer-------------------------');
+            print(postOfferID);
+            print(postID);
+            print(offerID);
+            print(isExchanged.toString());
+            List<dynamic> rawData = jsonData['data']['messages_by_date'];
             List<ChatRoom> chatList =
                 rawData.map((item) => ChatRoom.fromJson(item)).toList();
             chatRooms.assignAll(chatList);
@@ -256,7 +326,8 @@ class ChatController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        // final jsonData = jsonDecode(response.body);
         print(jsonData.toString());
         isLoading(false);
         // Get.snackbar("สำเร็จ", "อัพเดทสถานะข้อความล่าสุดภายในห้องแชทแล้ว");

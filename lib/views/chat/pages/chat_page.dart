@@ -100,7 +100,7 @@ class _ChatPageState extends State<ChatPage> {
           Container(
             color: Colors.white,
             child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.73, // กำหนดความสูง
+              height: MediaQuery.of(context).size.height * 0.72, // กำหนดความสูง
               child: StaggeredGridView.countBuilder(
                 padding: const EdgeInsets.all(15),
                 crossAxisCount: 1,
@@ -184,7 +184,10 @@ class _ChatPageState extends State<ChatPage> {
                   Row(
                     children: [
                       Text(
-                        item.postTitle,
+                        // item.postTitle,
+                        item.postTitle.length > 15
+                            ? '${item.postTitle.substring(0, 15)}...'
+                            : item.postTitle,
                         style: TextStyle(
                             color: Constants.secondaryColor, fontSize: 12),
                       ),
@@ -192,7 +195,9 @@ class _ChatPageState extends State<ChatPage> {
                       Icon(Icons.swap_horiz, size: 16, color: Colors.grey),
                       SizedBox(width: 5),
                       Text(
-                        item.offerTitle,
+                        item.offerTitle.length > 15
+                            ? '${item.offerTitle.substring(0, 15)}...'
+                            : item.offerTitle,
                         style: TextStyle(
                             color: Constants.primaryColor, fontSize: 12),
                       ),

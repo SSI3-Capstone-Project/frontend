@@ -40,13 +40,13 @@ class CreateChatRoomController extends GetxController {
         return result['id'];
       } else if (response.statusCode == 409) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-        var result = jsonData['message'];
+        var result = jsonData['data'];
         print(
-            '----------------------------------create here----------------------------------------------------');
+            '----------------------------------create here 2----------------------------------------------------');
         print(jsonData.toString());
-        Get.snackbar('แจ้งเตือน', 'ห้องสนทนาพร้อมใช้งานแล้ว');
+        // Get.snackbar('แจ้งเตือน', 'ห้องสนทนาพร้อมใช้งานแล้ว');
         isLoading(false);
-        return null;
+        return result['id'];
         // result['id'];
       } else {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));

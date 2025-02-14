@@ -51,6 +51,10 @@ dependencies:
   google_maps_flutter: ^2.10.0
   flutter_phoenix: ^1.1.1
   intl: ^0.20.2
+  flutter_google_places_hoc081098: ^2.0.0
+  google_maps_flutter_web: ^0.5.10
+  google_api_headers: ^4.3.5
+  flutter_svg: ^2.0.17
 
 
 dev_dependencies:
@@ -80,6 +84,7 @@ flutter:
     - assets/images/
     - .env
     - assets/fonts/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

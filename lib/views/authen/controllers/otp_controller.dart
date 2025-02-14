@@ -54,6 +54,10 @@ class OTPController extends GetxController {
           isLoading.value = false;
           return false;
         }
+      } else if (response.statusCode == 409) {
+        Get.snackbar('แจ้งเตือน', 'อีเมลนี้ถูกลงทะเบียนไว้แล้ว');
+        isLoading.value = false;
+        return false;
       } else {
         Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการส่งรหัส OTP');
         isLoading.value = false;
@@ -114,6 +118,10 @@ class OTPController extends GetxController {
           isLoading.value = false;
           return false;
         }
+      } else if (response.statusCode == 409) {
+        Get.snackbar('แจ้งเตือน', 'อีเมลนี้ถูกลงทะเบียนไว้แล้ว');
+        isLoading.value = false;
+        return false;
       } else {
         Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการส่งรหัส OTP ใหม่');
         isLoading.value = false;

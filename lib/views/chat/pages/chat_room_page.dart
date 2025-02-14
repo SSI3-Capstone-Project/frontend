@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart';
 import 'package:mbea_ssi3_front/views/chat/controllers/websocket_controller.dart';
 import 'package:mbea_ssi3_front/views/chat/models/message_model.dart';
+import 'package:mbea_ssi3_front/views/exchange/pages/exchange_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -134,7 +138,17 @@ class _ChatRoomState extends State<ChatRoom> {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExchangePage(
+                          postID: chatController.postID.value,
+                          offerID: chatController.offerID.value,
+                        ),
+                      ),
+                    );
+                  },
                   child: Container(
                     decoration: BoxDecoration(
                       color: Constants.primaryColor, // พื้นหลังสีฟ้า
@@ -240,14 +254,27 @@ class _ChatRoomState extends State<ChatRoom> {
           crossAxisAlignment:
               isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(
-              message.content,
-              style: TextStyle(color: isMe ? Colors.white : Colors.black),
-            ),
+            if (message.type == 'file') // ถ้ามีรูปภาพ
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  message.content,
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            if (message.type == 'text') // ถ้ามีข้อความ
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(
+                  message.content,
+                  style: TextStyle(color: isMe ? Colors.white : Colors.black),
+                ),
+              ),
             const SizedBox(height: 5),
             Text(
-              DateFormat('HH:mm')
-                  .format(message.sendAt.toLocal()), // เวลา HH:MM
+              DateFormat('HH:mm').format(message.sendAt.toLocal()),
               style: TextStyle(
                   fontSize: 12, color: isMe ? Colors.white : Colors.black),
             ),
@@ -270,8 +297,18 @@ class _ChatRoomState extends State<ChatRoom> {
       ),
       child: Row(
         children: [
-          IconButton(icon: const Icon(Icons.camera_alt), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.image), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.camera_alt),
+            onPressed: () async {
+              await pickImageAndSend(ImageSource.camera, widget.roomID);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.image),
+            onPressed: () async {
+              await pickImageAndSend(ImageSource.gallery, widget.roomID);
+            },
+          ),
           Expanded(
             child: TextField(
               controller: messageController,
@@ -307,6 +344,66 @@ class _ChatRoomState extends State<ChatRoom> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> pickImageAndSend(ImageSource source, String roomID) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image == null) return; // หากผู้ใช้ไม่เลือกไฟล์ ให้หยุดทำงาน
+
+    File imageFile = File(image.path);
+
+    // แสดง Dialog ให้ผู้ใช้กดยืนยันก่อนส่งรูป
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.file(imageFile,
+                    width: 300, height: 300, fit: BoxFit.cover),
+              ),
+            ],
+          ),
+          actions: [
+            Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context); // ปิด Dialog
+                  bool success =
+                      await chatController.sendImage(imageFile, roomID);
+                  if (success) {
+                    print("📷 รูปภาพถูกส่งสำเร็จ!");
+                  } else {
+                    print("⚠️ เกิดข้อผิดพลาดในการอัปโหลดรูป");
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Constants.primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.send, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('ส่งรูปภาพ'),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

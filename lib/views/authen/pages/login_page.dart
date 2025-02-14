@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'เข้าสู่ระบบ',
+          'เข้าสู่ระบบ.',
           style: TextStyle(
               color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
         ),

@@ -55,265 +55,266 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          title: Column(
-            children: [
-              const Text(
-                'ข้อเสนอของโพสต์',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                widget.postName,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              )
-            ],
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
-            onPressed: () => Navigator.pop(context),
-          ),
+        title: Column(
+          children: [
+            const Text(
+              'ข้อเสนอของโพสต์',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              widget.postName,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            )
+          ],
         ),
-        body: SafeArea(child: Obx(() {
-          if (offerDetailController.isLoading.value) {
-            return Center(child: CircularProgressIndicator());
-          }
-          var offerDetail = offerDetailController.offerDetail.value;
-          if (offerDetail != null) {
-            return Stack(
-              children: [
-                ListView(children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start, // จัดชิดซ้าย
-                    children: [
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Align(
-                                    alignment: Alignment.topRight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50),
-                                        color: Colors.white,
-                                      ),
-                                      child: CircleAvatar(
-                                        radius: 20,
-                                        backgroundImage:
-                                            NetworkImage(widget.userImage),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  widget.username,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                  ),
-                                )
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(30)),
-                                    color: Constants.primaryColor,
-                                  ),
-                                  child: Text(
-                                    'ข้อเสนอ',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    // widget.product.isFavorated =
-                                    //     !widget.product.isFavorated;
-                                  },
-                                  child: Icon(
-                                    Icons.more_horiz,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      mediaContent(offerDetail),
-                      const SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              offerDetail.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 24,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Icon(
-                                  size: 22,
-                                  Icons.location_on_outlined,
-                                  color: Color(0xFF9E9E9E),
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  offerDetail.location,
-                                  style: const TextStyle(
-                                    color: Color(0xFF9E9E9E),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 15),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 5),
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(30)),
-                                color: Constants.primaryColor,
-                              ),
-                              child: Text(
-                                offerDetail.subCollectionName,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
-                                  child: Text(
-                                    offerDetail.description,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                    softWrap:
-                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                    overflow: TextOverflow
-                                        .visible, // แสดงข้อความทั้งหมด
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 25),
-                            if (offerDetail.flaw != null)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'ตำหนิ : ${offerDetail.flaw}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Constants.secondaryColor,
-                                    ),
-                                    softWrap:
-                                        true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-                if (userProfileController.userProfile.value?.username !=
-                    widget.username)
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: Offset(0, -2),
-                          ),
-                        ],
-                      ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SafeArea(child: Obx(() {
+        if (offerDetailController.isLoading.value) {
+          return Center(child: CircularProgressIndicator());
+        }
+        var offerDetail = offerDetailController.offerDetail.value;
+        if (offerDetail != null) {
+          return Stack(
+            children: [
+              ListView(children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start, // จัดชิดซ้าย
+                  children: [
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // IconButton(
-                          //   padding: EdgeInsets.symmetric(horizontal: 40),
-                          //   icon: Icon(Icons.favorite_border),
-                          //   onPressed: () {
-                          //     // กดปุ่มโปรด
-                          //   },
-                          // ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.white,
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage:
+                                          NetworkImage(widget.userImage),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                widget.username,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 5),
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(30)),
+                                  color: Constants.primaryColor,
+                                ),
+                                child: Text(
+                                  'ข้อเสนอ',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  // widget.product.isFavorated =
+                                  //     !widget.product.isFavorated;
+                                },
+                                child: Icon(
+                                  Icons.more_horiz,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    mediaContent(offerDetail),
+                    const SizedBox(height: 15),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            offerDetail.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                size: 22,
+                                Icons.location_on_outlined,
+                                color: Color(0xFF9E9E9E),
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                offerDetail.location,
+                                style: const TextStyle(
+                                  color: Color(0xFF9E9E9E),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 15),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 5),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
+                              color: Constants.primaryColor,
+                            ),
+                            child: Text(
+                              offerDetail.subCollectionName,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                child: Text(
+                                  offerDetail.description,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                  softWrap:
+                                      true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                  overflow: TextOverflow
+                                      .visible, // แสดงข้อความทั้งหมด
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 25),
+                          if (offerDetail.flaw != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'ตำหนิ : ${offerDetail.flaw}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Constants.secondaryColor,
+                                  ),
+                                  softWrap:
+                                      true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                  overflow: TextOverflow.visible,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ]),
+              if (userProfileController.userProfile.value?.username !=
+                  widget.username)
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // IconButton(
+                        //   padding: EdgeInsets.symmetric(horizontal: 40),
+                        //   icon: Icon(Icons.favorite_border),
+                        //   onPressed: () {
+                        //     // กดปุ่มโปรด
+                        //   },
+                        // ),
 
-                          // IconButton(
-                          //   padding: EdgeInsets.symmetric(horizontal: 40),
-                          //   icon: Icon(Icons.chat_bubble_outline),
-                          //   onPressed: () {
-                          //     // กดปุ่มแชท
-                          //   },
-                          // ),
-                          TextButton(
+                        // IconButton(
+                        //   padding: EdgeInsets.symmetric(horizontal: 40),
+                        //   icon: Icon(Icons.chat_bubble_outline),
+                        //   onPressed: () {
+                        //     // กดปุ่มแชท
+                        //   },
+                        // ),
+                        Expanded(
+                          child: TextButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
+                                backgroundColor: Constants.secondaryColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(0),
                                 ),
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 30),
+                                  vertical: 10,
+                                ),
                               ),
                               onPressed: () async {
                                 deletePostOffer(widget.postID, widget.offerID);
@@ -332,7 +333,9 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                                   ),
                                 ],
                               )),
-                          TextButton(
+                        ),
+                        Expanded(
+                          child: TextButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
@@ -372,103 +375,105 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                                   ),
                                 ],
                               )),
+                        ),
 
-                          // ปุ่มตรงกลาง
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Constants.secondaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 24),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ExchangePage(
-                                      postID: widget.postID,
-                                      offerID: widget.offerID,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                children: [
-                                  Icon(Icons.autorenew, color: Colors.white),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    'ตกลงแลกเปลี่ยน',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              )),
-                        ],
-                      ),
+                        // ปุ่มตรงกลาง
+                        // ElevatedButton(
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: Constants.secondaryColor,
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(0),
+                        //       ),
+                        //       padding: const EdgeInsets.symmetric(
+                        //           vertical: 25, horizontal: 24),
+                        //     ),
+                        //     onPressed: () {
+                        //       Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //           builder: (context) => ExchangePage(
+                        //             postID: widget.postID,
+                        //             offerID: widget.offerID,
+                        //           ),
+                        //         ),
+                        //       );
+                        //     },
+                        //     child: Row(
+                        //       children: [
+                        //         Icon(Icons.autorenew, color: Colors.white),
+                        //         SizedBox(
+                        //           width: 5,
+                        //         ),
+                        //         Text(
+                        //           'ตกลงแลกเปลี่ยน',
+                        //           style: const TextStyle(
+                        //             fontSize: 14,
+                        //             fontWeight: FontWeight.w500,
+                        //             color: Colors.white,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     )),
+                      ],
                     ),
                   ),
-                if (userProfileController.userProfile.value?.username ==
-                    widget.username)
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(),
-                      decoration: BoxDecoration(
-                        color: Constants.secondaryColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: Offset(0, -2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 30),
+                ),
+              if (userProfileController.userProfile.value?.username ==
+                  widget.username)
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(),
+                    decoration: BoxDecoration(
+                      color: Constants.secondaryColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0),
                               ),
-                              onPressed: () async {
-                                deletePostOffer(widget.postID, widget.offerID);
-                              },
-                              child: Column(
-                                children: [
-                                  Icon(Icons.cancel, color: Colors.white),
-                                  Text(
-                                    'ยกเลิกข้อเสนอ',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                    ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 30),
+                            ),
+                            onPressed: () async {
+                              deletePostOffer(widget.postID, widget.offerID);
+                            },
+                            child: Column(
+                              children: [
+                                Icon(Icons.cancel, color: Colors.white),
+                                Text(
+                                  'ยกเลิกข้อเสนอ',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
                                   ),
-                                ],
-                              )),
-                        ],
-                      ),
+                                ),
+                              ],
+                            )),
+                      ],
                     ),
                   ),
-              ],
-            );
-          } else {
-            return Center(child: Text('No data available'));
-          }
-        })));
+                ),
+            ],
+          );
+        } else {
+          return Center(child: Text('No data available'));
+        }
+      })),
+    );
   }
 
   void deletePostOffer(String postID, String offerID) {

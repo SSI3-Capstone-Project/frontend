@@ -354,6 +354,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         width: 8,
                                       ),
                                       Container(
+                                        width: 300,
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 3, horizontal: 15),
                                         decoration: BoxDecoration(
@@ -369,14 +370,29 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                             ),
                                           ],
                                         ),
-                                        child: Text(
-                                          productDetail.desiredItem,
-                                          style: const TextStyle(
+                                        // child: Text(
+                                        //   productDetail.desiredItem,
+                                        //   style: const TextStyle(
+                                        //       color: Colors.white,
+                                        //       fontSize: 14,
+                                        //       fontWeight: FontWeight.bold),
+                                        // ),
+                                        child: Expanded(
+                                          // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                          child: Text(
+                                            productDetail.desiredItem,
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 14,
-                                              fontWeight: FontWeight.bold),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            softWrap:
+                                                true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                            overflow: TextOverflow
+                                                .visible, // แสดงข้อความทั้งหมด
+                                          ),
                                         ),
-                                      ),
+                                      )
                                     ],
                                   ),
                                   const SizedBox(height: 25),

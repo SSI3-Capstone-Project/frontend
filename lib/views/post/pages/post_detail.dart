@@ -238,6 +238,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                               width: 8,
                                             ),
                                             Container(
+                                              width: 300,
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       vertical: 3,
@@ -331,50 +332,51 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                       postDetail.title,
                                       widget.username,
                                       widget.userImageUrl),
-                                  TextButton(
-                                    onPressed: () {
-                                      // เพิ่มโค้ดที่ต้องการทำงานเมื่อกดปุ่มที่นี่
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => OffersPage(
-                                                  postId: postDetail.id,
-                                                  postTitle: postDetail.title,
-                                                  postImageURL:
-                                                      postDetail.coverImage,
-                                                  postLocation:
-                                                      postDetail.location,
-                                                  postSubCollectionName:
-                                                      postDetail
-                                                          .subCollectionName,
-                                                  username: widget.username,
-                                                  userImageURL:
-                                                      widget.userImageUrl,
-                                                )),
-                                      );
-                                    },
-                                    child: Text(
-                                      "ดูข้อเสนอเพิ่มเติม", // ใส่ข้อความที่ต้องการแสดงบนปุ่ม
-                                      style: TextStyle(
-                                        fontSize: 14, // ขนาดตัวอักษร
-                                        fontWeight:
-                                            FontWeight.w500, // น้ำหนักตัวอักษร
-                                        color: Colors.white, // สีของข้อความ
+                                  if (offerListController.offerList.length > 3)
+                                    TextButton(
+                                      onPressed: () {
+                                        // เพิ่มโค้ดที่ต้องการทำงานเมื่อกดปุ่มที่นี่
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => OffersPage(
+                                                    postId: postDetail.id,
+                                                    postTitle: postDetail.title,
+                                                    postImageURL:
+                                                        postDetail.coverImage,
+                                                    postLocation:
+                                                        postDetail.location,
+                                                    postSubCollectionName:
+                                                        postDetail
+                                                            .subCollectionName,
+                                                    username: widget.username,
+                                                    userImageURL:
+                                                        widget.userImageUrl,
+                                                  )),
+                                        );
+                                      },
+                                      child: Text(
+                                        "ดูข้อเสนอเพิ่มเติม", // ใส่ข้อความที่ต้องการแสดงบนปุ่ม
+                                        style: TextStyle(
+                                          fontSize: 14, // ขนาดตัวอักษร
+                                          fontWeight: FontWeight
+                                              .w500, // น้ำหนักตัวอักษร
+                                          color: Colors.white, // สีของข้อความ
+                                        ),
+                                      ),
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: Constants
+                                            .primaryColor, // สีพื้นหลังของปุ่ม
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal:
+                                              30, // ระยะห่างด้านซ้ายและขวา
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              20), // มุมปุ่มโค้งมน
+                                        ),
                                       ),
                                     ),
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: Constants
-                                          .primaryColor, // สีพื้นหลังของปุ่ม
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            30, // ระยะห่างด้านซ้ายและขวา
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            20), // มุมปุ่มโค้งมน
-                                      ),
-                                    ),
-                                  ),
                                   SizedBox(
                                     height: 100,
                                   ),

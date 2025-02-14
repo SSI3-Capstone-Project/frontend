@@ -30,7 +30,7 @@ class _ExchangePageState extends State<ExchangePage> {
   final TextEditingController offerPriceController = TextEditingController();
   final RxString selectedPriceDifference = 'ไม่มี'.obs;
   final RxString selectedExchangeFormat = 'นัดรับ'.obs;
-  final RxString selectedPayer = 'user1'.obs;
+  final RxString selectedPayer = 'post'.obs;
   int _postCurrentPage = 0;
   int _offerCurrentPage = 0;
   int _exchangeStage = 0;
@@ -65,237 +65,258 @@ class _ExchangePageState extends State<ExchangePage> {
         ),
       ),
       body: SafeArea(
-          bottom: false,
+          // bottom: false,
           child: Obx(() {
-            if (productDetailController.isLoading.value) {
-              return Center(child: CircularProgressIndicator());
-            }
-            var postDetail = productDetailController.postDetail.value;
-            var offerDetail = productDetailController.offerDetail.value;
-            if (postDetail != null && offerDetail != null) {
-              return Stack(
+        if (productDetailController.isLoading.value) {
+          return Center(child: CircularProgressIndicator());
+        }
+        var postDetail = productDetailController.postDetail.value;
+        var offerDetail = productDetailController.offerDetail.value;
+        if (postDetail != null && offerDetail != null) {
+          return Stack(
+            children: [
+              ListView(
                 children: [
-                  ListView(
-                    children: [
-                      if (_exchangeStage == 0)
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            productDetail(postDetail, 'post'),
-                            Center(
-                              child: Text(
-                                '-' * dashCount, // ทำซ้ำ "-" ตามที่คำนวณได้
-                                style:
-                                    TextStyle(fontSize: 14, color: Colors.grey),
-                              ),
-                            ),
-                            productDetail(offerDetail, 'offer'),
-                            SizedBox(
-                              height: 80,
-                            )
-                          ],
+                  if (_exchangeStage == 0)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        productDetail(postDetail, 'post'),
+                        Center(
+                          child: Text(
+                            '-' * dashCount, // ทำซ้ำ "-" ตามที่คำนวณได้
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
                         ),
-                      if (_exchangeStage == 1)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(height: 20),
-                              Text(
-                                "ในการแลกเปลี่ยนสินค้า มีสินไหมที่ต้องชำระค่าราคาส่วนต่างของราคาหรือไม่?",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 13, color: Colors.black87),
-                              ),
-                              SizedBox(height: 24),
-                              Obx(() => Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      _buildPriceDifferenceOptionButton("มี",
-                                          selectedPriceDifference.value == "มี",
-                                          () {
-                                        selectedPriceDifference.value = "มี";
-                                      }),
-                                      SizedBox(width: 12),
-                                      _buildPriceDifferenceOptionButton(
-                                          "ไม่มี",
-                                          selectedPriceDifference.value ==
-                                              "ไม่มี", () {
-                                        selectedPriceDifference.value = "ไม่มี";
-                                      }),
-                                    ],
-                                  )),
-                              SizedBox(height: 50),
-                              if (selectedPriceDifference.value == "มี")
-                                Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 24),
-                                      child: Text(
-                                        "กรุณากรอกราคาส่วนต่างสินค้า หากมีราคาที่ต้องจ่ายเพิ่ม",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.black87),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    Obx(() => Column(
-                                          children: [
-                                            _buildPayerOption(
-                                                postDetail.username,
-                                                postDetail.userImage,
-                                                "user1",
-                                                postPriceController),
-                                            const SizedBox(height: 12),
-                                            _buildPayerOption(
-                                                offerDetail.username,
-                                                offerDetail.userImage,
-                                                "user2",
-                                                offerPriceController),
-                                          ],
-                                        )),
-                                  ],
+                        productDetail(offerDetail, 'offer'),
+                        SizedBox(
+                          height: 80,
+                        )
+                      ],
+                    ),
+                  if (_exchangeStage == 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 20),
+                          Text(
+                            "ในการแลกเปลี่ยนสินค้า มีสินไหมที่ต้องชำระค่าราคาส่วนต่างของราคาหรือไม่?",
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(fontSize: 13, color: Colors.black87),
+                          ),
+                          SizedBox(height: 24),
+                          Obx(() => Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildPriceDifferenceOptionButton("มี",
+                                      selectedPriceDifference.value == "มี",
+                                      () {
+                                    selectedPriceDifference.value = "มี";
+                                  }),
+                                  SizedBox(width: 12),
+                                  _buildPriceDifferenceOptionButton("ไม่มี",
+                                      selectedPriceDifference.value == "ไม่มี",
+                                      () {
+                                    selectedPriceDifference.value = "ไม่มี";
+                                  }),
+                                ],
+                              )),
+                          SizedBox(height: 50),
+                          if (selectedPriceDifference.value == "มี")
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 24),
+                                  child: Text(
+                                    "กรุณากรอกราคาส่วนต่างสินค้า หากมีราคาที่ต้องจ่ายเพิ่ม",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.black87),
+                                  ),
                                 ),
-                            ],
-                          ),
-                        ),
-                      if (_exchangeStage == 2)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(height: 20),
-                              Obx(() => Column(
-                                    children: [
-                                      _buildOptionButton(
-                                          "นัดรับ",
-                                          Icons.location_on,
-                                          selectedExchangeFormat.value ==
-                                              "นัดรับ", () {
-                                        selectedExchangeFormat.value = "นัดรับ";
-                                      }),
-                                      SizedBox(height: 12),
-                                      _buildOptionButton(
-                                          "ขนส่งด้วยไปรษณีย์และตัวกลาง",
-                                          Icons.local_shipping,
-                                          selectedExchangeFormat.value ==
-                                              "ขนส่ง", () {
-                                        selectedExchangeFormat.value = "ขนส่ง";
-                                      }),
-                                    ],
-                                  )),
-                              SizedBox(height: 50),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white, // พื้นหลังขาวเหมือนในภาพ
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: Offset(0, -2),
-                          ),
+                                const SizedBox(height: 20),
+                                Obx(() => Column(
+                                      children: [
+                                        _buildPayerOption(
+                                            postDetail.username,
+                                            postDetail.userImage,
+                                            "post",
+                                            postPriceController),
+                                        const SizedBox(height: 12),
+                                        _buildPayerOption(
+                                            offerDetail.username,
+                                            offerDetail.userImage,
+                                            "offer",
+                                            offerPriceController),
+                                      ],
+                                    )),
+                              ],
+                            ),
                         ],
                       ),
-                      child: Row(
+                    ),
+                  if (_exchangeStage == 2)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // ปุ่มย้อนกลับ (สีเทา)
-                          Expanded(
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 20),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(0),
-                                    bottomLeft: Radius.circular(0),
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {
-                                if (_exchangeStage == 0) {
-                                  Navigator.pop(context);
-                                } else {
-                                  setState(() {
-                                    _exchangeStage = _exchangeStage - 1;
-                                  });
-                                }
-                              },
-                              child: Text(
-                                'ย้อนกลับ',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black54, // สีเทา
-                                ),
+                          SizedBox(height: 20),
+                          Obx(() => Column(
+                                children: [
+                                  _buildOptionButton(
+                                      "นัดรับ",
+                                      Icons.location_on,
+                                      selectedExchangeFormat.value == "นัดรับ",
+                                      () {
+                                    selectedExchangeFormat.value = "นัดรับ";
+                                  }),
+                                  SizedBox(height: 12),
+                                  _buildOptionButton(
+                                      "ขนส่งด้วยไปรษณีย์และตัวกลาง",
+                                      Icons.local_shipping,
+                                      selectedExchangeFormat.value == "ขนส่ง",
+                                      () {
+                                    selectedExchangeFormat.value = "ขนส่ง";
+                                  }),
+                                ],
+                              )),
+                          SizedBox(height: 50),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              Positioned(
+                right: 0,
+                bottom: 0,
+                left: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white, // พื้นหลังขาวเหมือนในภาพ
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // ปุ่มย้อนกลับ (สีเทา)
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(0),
+                                bottomLeft: Radius.circular(0),
                               ),
                             ),
                           ),
-                          // ปุ่มต่อไป (สีส้ม)
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 20),
-                                backgroundColor:
-                                    Constants.secondaryColor, // สีส้ม
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(0),
-                                    bottomRight: Radius.circular(0),
-                                  ),
-                                ),
+                          onPressed: () {
+                            if (_exchangeStage == 0) {
+                              Navigator.pop(context);
+                            } else {
+                              setState(() {
+                                _exchangeStage = _exchangeStage - 1;
+                              });
+                            }
+                          },
+                          child: Text(
+                            'ย้อนกลับ',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black54, // สีเทา
+                            ),
+                          ),
+                        ),
+                      ),
+                      // ปุ่มต่อไป (สีส้ม)
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            backgroundColor: Constants.secondaryColor, // สีส้ม
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(0),
+                                bottomRight: Radius.circular(0),
                               ),
-                              onPressed: () {
-                                if (_exchangeStage == 2) {
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_exchangeStage == 2) {
+                              if (selectedExchangeFormat.value == 'นัดรับ') {
+                                if (selectedPriceDifference.value == 'มี') {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => MeetUpPage(
                                         currentStep: 1,
+                                        payer: selectedPayer.value == 'post'
+                                            ? Payer.post
+                                            : Payer.offer,
+                                        priceDifference:
+                                            selectedPayer.value == 'post'
+                                                ? int.tryParse(
+                                                    postPriceController.text
+                                                        .toString())
+                                                : int.tryParse(
+                                                    offerPriceController.text),
+                                        postID: widget.postID,
+                                        offerID: widget.offerID,
                                       ),
                                     ),
                                   );
                                 } else {
-                                  setState(() {
-                                    _exchangeStage = _exchangeStage + 1;
-                                  });
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MeetUpPage(
+                                        currentStep: 1,
+                                        postID: widget.postID,
+                                        offerID: widget.offerID,
+                                      ),
+                                    ),
+                                  );
                                 }
-                              },
-                              child: Text(
-                                'ต่อไป',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              }
+                            } else {
+                              setState(() {
+                                _exchangeStage = _exchangeStage + 1;
+                              });
+                            }
+                          },
+                          child: Text(
+                            'ต่อไป',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  )
-                ],
-              );
-            } else {
-              return Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
-            }
-          })),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          );
+        } else {
+          return Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
+        }
+      })),
     );
   }
 
@@ -305,7 +326,7 @@ class _ExchangePageState extends State<ExchangePage> {
     return GestureDetector(
       onTap: () {
         selectedPayer.value = key;
-        if (key == "user1") {
+        if (key == "post") {
           postPriceController.text = "0"; // ตั้งค่าเริ่มต้น
           offerPriceController.text = "0"; // ทำให้ user2 เป็น 0 ตลอด
         } else {
