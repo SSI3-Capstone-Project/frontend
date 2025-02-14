@@ -7,7 +7,7 @@ import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
-import 'package:mbea_ssi3_front/views/alert/alert_page.dart';
+import 'package:mbea_ssi3_front/views/exchangeList/pages/exchange_list.dart';
 import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart';
 import 'package:mbea_ssi3_front/views/chat/pages/chat_page.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_controller.dart';
@@ -40,7 +40,7 @@ class _RootPageState extends State<RootPage> {
   List<Widget> pages = const [
     HomePage(),
     ChatPage(),
-    AlertPage(),
+    ExchangeList(),
     ProfilePage()
   ];
 
@@ -53,7 +53,7 @@ class _RootPageState extends State<RootPage> {
   ];
 
   //List of the pages titles
-  List<String> titleList = ['Home', 'Chat', 'Alert', 'Profile'];
+  List<String> titleList = ['Home', 'Chat', 'Exchange', 'Profile'];
 
   @override
   void initState() {
