@@ -97,20 +97,136 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
         itemCount: exchangeListController.exchangeList.length,
         itemBuilder: (context, index) {
           final ExchangeListModel exchange = exchangeListController.exchangeList[index];
-          return Card(
+
+          return Container(
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: ListTile(
-              leading: Image.network(exchange.imageUrl),
-              title: Text("Exchange ID: ${exchange.id}"),
-              subtitle: Text("User: ${exchange.username}"),
-              trailing: Text("${exchange.postPriceDiff} / ${exchange.offerPriceDiff}"),
-              onTap: () {},
+            decoration: BoxDecoration(
+              color: Colors.white, // พื้นหลังสีขาว
+              borderRadius: BorderRadius.circular(12), // ขอบโค้งมน
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1), // เงาสีดำจาง ๆ
+                  spreadRadius: 1, // กระจายเงาออกเล็กน้อย
+                  blurRadius: 6, // ทำให้เงาดูนุ่มนวล
+                  offset: const Offset(0, 4), // เงาตกลงด้านล่าง
+                ),
+              ],
+            ),
+            child: Card(
+              color: Colors.transparent, // ให้ Card ไม่มีสี (ใช้สีจาก Container แทน)
+              elevation: 0, // ปิดเงาของ Card เอง
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12), // ขอบโค้งมนให้ตรงกับ Container
+              ),
+              clipBehavior: Clip.hardEdge, // ป้องกันเนื้อหาล้นขอบ
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // ฝั่งซ้าย (Other user)
+                    Expanded(
+                      child: Row(
+                        children: [
+                          ClipOval(
+                            child: Image.network(
+                              exchange.otherImageUrl,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                exchange.otherUsername,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                exchange.isPostOwner ? exchange.offerTitle : exchange.postTitle,
+                                style: TextStyle(fontSize: 14, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    getStatusIcon(exchange.status),
+
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                "ฉัน",
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                exchange.isPostOwner ? exchange.postTitle : exchange.offerTitle,
+                                style: TextStyle(fontSize: 14, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                          SizedBox(width: 8),
+                          ClipOval(
+                            child: Image.network(
+                              exchange.ownImageUrl,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         },
       );
+
     });
   }
+
+  Widget getStatusIcon(String status) {
+    IconData iconData;
+    Color iconColor;
+
+    switch (status) {
+      case "inprogress":
+        iconData = Icons.swap_horiz_sharp; // กำลังแลกเปลี่ยน
+        iconColor = Constants.primaryColor;
+        break;
+      case "confirmed":
+        iconData = Icons.done_all_outlined; // ยืนยันแลกเปลี่ยนแล้ว
+        iconColor = Constants.primaryColor;
+        break;
+      case "completed":
+        iconData = Icons.check_circle_outline; // แลกเปลี่ยนสำเร็จ
+        iconColor = Colors.green;
+        break;
+      case "cancelled":
+        iconData = Icons.cancel_outlined; // ยกเลิกการแลกเปลี่ยน
+        iconColor = Colors.red;
+        break;
+      default:
+        iconData = Icons.swap_horiz_sharp; // ค่าเริ่มต้น (การแลกเปลี่ยนทั้งหมด)
+        iconColor = Colors.grey;
+    }
+
+    return Icon(iconData, color: iconColor, size: 24);
+  }
+
 
   @override
   void dispose() {
