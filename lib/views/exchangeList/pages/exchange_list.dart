@@ -120,7 +120,7 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
               ),
               clipBehavior: Clip.hardEdge, // ป้องกันเนื้อหาล้นขอบ
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
