@@ -76,7 +76,14 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
         body: TabBarView(
           controller: _tabController,
           children: List.generate(statusList.length, (index) {
-            return _buildExchangeList();
+            return RefreshIndicator(
+              color: Colors.white,
+              backgroundColor: Constants.secondaryColor,
+              onRefresh: () async {
+                _fetchExchangesForTab(index); // รีเฟรชข้อมูลของแท็บที่กำลังแสดง
+              },
+              child: _buildExchangeList(),
+            );
           }),
         ),
       ),
@@ -125,7 +132,8 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // ฝั่งซ้าย (Other user)
-                    Expanded(
+                    Flexible(
+                      flex: 2,
                       child: Row(
                         children: [
                           ClipOval(
@@ -136,20 +144,26 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
                               fit: BoxFit.cover,
                             ),
                           ),
-                          SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                exchange.otherUsername,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                exchange.isPostOwner ? exchange.offerTitle : exchange.postTitle,
-                                style: TextStyle(fontSize: 14, color: Colors.grey),
-                              ),
-                            ],
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  exchange.otherUsername,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  exchange.isPostOwner ? exchange.offerTitle : exchange.postTitle,
+                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -157,25 +171,30 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
 
                     getStatusIcon(exchange.status),
 
-                    Expanded(
+                    Flexible(
+                      flex: 2,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "ฉัน",
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                exchange.isPostOwner ? exchange.postTitle : exchange.offerTitle,
-                                style: TextStyle(fontSize: 14, color: Colors.grey),
-                              ),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                const Text(
+                                  "ฉัน",
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  exchange.isPostOwner ? exchange.postTitle : exchange.offerTitle,
+                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           ClipOval(
                             child: Image.network(
                               exchange.ownImageUrl,
@@ -194,7 +213,6 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
           );
         },
       );
-
     });
   }
 
@@ -224,7 +242,10 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
         iconColor = Colors.grey;
     }
 
-    return Icon(iconData, color: iconColor, size: 24);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15), // เพิ่มระยะห่างจากขวา
+      child: Icon(iconData, color: iconColor, size: 24),
+    );
   }
 
 
