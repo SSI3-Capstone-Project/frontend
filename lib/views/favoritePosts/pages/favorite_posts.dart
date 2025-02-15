@@ -4,6 +4,9 @@ import 'package:mbea_ssi3_front/views/favoritePosts/controllers/get_wishLists_co
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
+import '../../../common/constants.dart';
+import '../../home/pages/product_detail_page.dart';
+
 class FavoritePosts extends StatefulWidget {
   final String userId;
   const FavoritePosts({super.key, required this.userId});
@@ -51,7 +54,7 @@ class _FavoritePostsState extends State<FavoritePosts> {
                   await getWishListsController.getWishLists();
                 },
                 color: Colors.white,
-                backgroundColor: Colors.blue,
+                backgroundColor: Constants.secondaryColor,
                 child: StaggeredGridView.countBuilder(
                   padding: const EdgeInsets.all(5),
                   crossAxisCount: 4,
@@ -61,7 +64,14 @@ class _FavoritePostsState extends State<FavoritePosts> {
                   itemBuilder: (context, index) {
                     final wishList = getWishListsController.wishLists[index];
                     return GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProductDetailPage(
+                                  postId: wishList.postId,
+                                )));
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
@@ -141,7 +151,7 @@ class _FavoritePostsState extends State<FavoritePosts> {
                                         const SizedBox(width: 8),
                                         Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.blue,
+                                            color: Constants.primaryColor,
                                             borderRadius: BorderRadius.circular(8),
                                           ),
                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
