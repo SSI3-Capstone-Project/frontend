@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/views/favoritePosts/pages/favorite_posts.dart';
@@ -19,6 +20,8 @@ import 'package:mbea_ssi3_front/views/address/controllers/address_controller.dar
 // import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
+
+import '../../../model/offers_model.dart';
 // import 'package:dropdown_button2/dropdown_button2.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -88,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         return Center(child: CircularProgressIndicator());
                       }
                       if (!offerController.offerList.isEmpty) {
-                        return _buildStaggeredGrid(
+                        return _buildOfferList(
                           offerController.offerList,
                           (offer) => OfferDetailPage(offerId: offer.id),
                         );
@@ -152,6 +155,144 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget _buildOfferList(List<Offers> items, Widget Function(Offers) detailPageBuilder) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await offerController.fetchOffers();
+      },
+      color: Colors.white,
+      backgroundColor: Constants.secondaryColor,
+      child: ListView.builder(
+        shrinkWrap: true, // ให้ขนาดพอดีกับจำนวน item
+        padding: const EdgeInsets.all(5),
+        physics: const AlwaysScrollableScrollPhysics(), // ทำให้เลื่อนและรีเฟรชได้
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => detailPageBuilder(item),
+                ),
+              );
+            },
+            child: _offerCard(item),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _offerCard(Offers item) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: .5,
+                  blurRadius: 6,
+                  offset: const Offset(0, 0),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Content
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Product Image
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          item.coverImage,
+                          width: 82,
+                          height: 72,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      // Product Details
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Title & SubCollection in the same row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    item.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(Radius.circular(30)),
+                                    color: Constants.primaryColor,
+                                  ),
+                                  child: Text(
+                                    item.subCollectionName.length > 10
+                                        ? '${item.subCollectionName.substring(0, 10)}...'
+                                        : item.subCollectionName,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              item.description.length > 45
+                                  ? '${item.description.substring(0, 35)}...'
+                                  : item.description,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[800],
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildGridItem(dynamic item) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
@@ -208,7 +349,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.blue, // Background color
+                          color: Constants.primaryColor, // Background color
                           borderRadius:
                               BorderRadius.circular(8), // Border radius
                         ),
