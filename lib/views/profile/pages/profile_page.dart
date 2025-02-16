@@ -187,7 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _offerCard(Offers item) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 5),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
