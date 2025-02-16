@@ -164,7 +164,7 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Constants.secondaryColor,
       child: ListView.builder(
         shrinkWrap: true, // ให้ขนาดพอดีกับจำนวน item
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         physics: const AlwaysScrollableScrollPhysics(), // ทำให้เลื่อนและรีเฟรชได้
         itemCount: items.length,
         itemBuilder: (context, index) {
@@ -187,7 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _offerCard(Offers item) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 7),
+      margin: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
