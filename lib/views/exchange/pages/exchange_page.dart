@@ -255,7 +255,30 @@ class _ExchangePageState extends State<ExchangePage> {
                             ),
                           ),
                           onPressed: () {
-                            if (_exchangeStage == 2) {
+                            if (_exchangeStage == 1) {
+                              print(
+                                  '-----------------Debugs------------------');
+                              print(postPriceController);
+                              print(postPriceController.text.toString());
+                              if (selectedPriceDifference.value == 'มี') {
+                                if ((int.parse(postPriceController.text) == 0 ||
+                                        postPriceController.text == '') &&
+                                    (int.parse(offerPriceController.text) ==
+                                            0 ||
+                                        offerPriceController.text == '')) {
+                                  Get.snackbar('แจ้งเตือน',
+                                      'ถ้าการแลกเปลี่ยนของคุณมีค่าส่วนต่างต้องระบุค่าส่วนต่าง\nขั้นต่ำคือ 1 บาท');
+                                } else {
+                                  setState(() {
+                                    _exchangeStage = _exchangeStage + 1;
+                                  });
+                                }
+                              } else {
+                                setState(() {
+                                  _exchangeStage = _exchangeStage + 1;
+                                });
+                              }
+                            } else if (_exchangeStage == 2) {
                               if (selectedExchangeFormat.value == 'นัดรับ') {
                                 if (selectedPriceDifference.value == 'มี') {
                                   Navigator.push(
@@ -263,6 +286,7 @@ class _ExchangePageState extends State<ExchangePage> {
                                     MaterialPageRoute(
                                       builder: (context) => MeetUpPage(
                                         currentStep: 1,
+                                        user: Payer.post,
                                         payer: selectedPayer.value == 'post'
                                             ? Payer.post
                                             : Payer.offer,
@@ -284,6 +308,7 @@ class _ExchangePageState extends State<ExchangePage> {
                                     MaterialPageRoute(
                                       builder: (context) => MeetUpPage(
                                         currentStep: 1,
+                                        user: Payer.post,
                                         postID: widget.postID,
                                         offerID: widget.offerID,
                                       ),

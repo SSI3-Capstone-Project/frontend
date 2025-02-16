@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart';
+import 'package:mbea_ssi3_front/views/chat/controllers/websocket_controller.dart';
 import 'package:mbea_ssi3_front/views/chat/pages/chat_room_page.dart';
+import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_product_detail_controller.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 
@@ -15,6 +17,9 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final ExchangeProductDetailController productDetailController =
+      Get.put(ExchangeProductDetailController());
+  final ChatController chatController = Get.put(ChatController());
   final ChatRoomController chatRoomController = Get.put(ChatRoomController());
   final TextEditingController searchController = TextEditingController();
   RxString searchQuery = ''.obs;
@@ -100,7 +105,7 @@ class _ChatPageState extends State<ChatPage> {
           Container(
             color: Colors.white,
             child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.72, // กำหนดความสูง
+              height: MediaQuery.of(context).size.height * 0.71, // กำหนดความสูง
               child: StaggeredGridView.countBuilder(
                 padding: const EdgeInsets.all(15),
                 crossAxisCount: 1,
@@ -115,7 +120,11 @@ class _ChatPageState extends State<ChatPage> {
                       //     widget.postId, item.id);
                       // _offerDetailDialog();
                     },
-                    child: chatRoomCard(item, () {
+                    child: chatRoomCard(item, () async {
+                      await chatController.fetchMessages(item.id.toString());
+                      await productDetailController.fetchPostAndOfferDetail(
+                          chatController.postID.value,
+                          chatController.offerID.value);
                       Navigator.push(
                         context,
                         MaterialPageRoute(

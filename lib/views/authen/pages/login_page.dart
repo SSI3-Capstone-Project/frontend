@@ -29,26 +29,27 @@ class _LoginPageState extends State<LoginPage> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      Get.dialog(
-        const Center(child: CircularProgressIndicator()),
-        barrierDismissible: false,
-      );
+      // Get.dialog(
+      //   const Center(child: CircularProgressIndicator()),
+      //   barrierDismissible: false,
+      // );
 
-      // เรียกใช้เมธอด login ของ LoginController
-      var result = await _loginController.login(
-        _usernameController.text,
-        _passwordController.text,
-      );
+      try {
+        var result = await _loginController.login(
+          _usernameController.text,
+          _passwordController.text,
+        );
 
-      Future.delayed(Duration.zero, () {
-        if (!_loginController.isLoading.value) {
-          Get.back(); // ปิด Dialog loading
-        }
+        // ปิด Dialog loading หลังจาก login เสร็จ
+        // Get.back();
 
         if (result) {
-          Get.offAll(() => const RootPage()); // เปลี่ยนหน้าโดยล้าง Stack
+          Get.offAll(() => const RootPage());
         }
-      });
+      } catch (e) {
+        // Get.back(); // ปิด Dialog loading ในกรณีเกิดข้อผิดพลาด
+        Get.snackbar("เกิดข้อผิดพลาด", "ไม่สามารถเข้าสู่ระบบได้");
+      }
     }
   }
 

@@ -47,6 +47,8 @@ class LoginController extends GetxController {
       Get.snackbar('Error', 'An error occurred. Please try again.');
       isLoading.value = false;
       return false;
+    } finally {
+      isLoading.value = false;
     }
   }
 }

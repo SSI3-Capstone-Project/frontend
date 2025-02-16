@@ -27,6 +27,8 @@ class ChatRoomController extends GetxController {
       );
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print('---------------------Debug chat room-------------------------');
+        print(jsonData.toString());
         if (jsonData['status'] == 200) {
           var chatRoomData = jsonData['data'];
           if (chatRoomData != null &&
@@ -41,7 +43,7 @@ class ChatRoomController extends GetxController {
             isLoading(false);
           }
         } else {
-          Get.snackbar('Error', 'ไม่สามารถดึงข้อมูลห้องแชท');
+          Get.snackbar('แจ้งเตือน', 'ไม่สามารถดึงข้อมูลห้องแชท');
           isLoading(false);
         }
       }

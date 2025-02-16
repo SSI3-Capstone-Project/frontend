@@ -7,7 +7,10 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart';
 import 'package:mbea_ssi3_front/views/chat/controllers/websocket_controller.dart';
 import 'package:mbea_ssi3_front/views/chat/models/message_model.dart';
+import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.dart';
+import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_product_detail_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/pages/exchange_page.dart';
+import 'package:mbea_ssi3_front/views/exchange/pages/meet_up_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -28,6 +31,9 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
+  final ExchangeController exchangeController = Get.put(ExchangeController());
+  final ExchangeProductDetailController productDetailController =
+      Get.put(ExchangeProductDetailController());
   final ChatRoomController chatRoomController = Get.put(ChatRoomController());
   final ChatController chatController = Get.put(ChatController());
   final UserProfileController userProfileController =
@@ -77,8 +83,12 @@ class _ChatRoomState extends State<ChatRoom> {
                 style:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             const SizedBox(width: 10),
-            const Text("• กำลังพุดคุย",
-                style: TextStyle(
+            Text(
+                productDetailController.postDetail.value?.username ==
+                        widget.anotherUsername
+                    ? "• เจ้าของโพสต์"
+                    : "• เจ้าของข้อเสนอ",
+                style: const TextStyle(
                     fontSize: 10,
                     color: Color(0xFF5BD207),
                     fontWeight: FontWeight.bold)),
@@ -102,113 +112,185 @@ class _ChatRoomState extends State<ChatRoom> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(bottom: 15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20), // มุมซ้ายบนโค้ง 30px
-                bottomRight: Radius.circular(20), // มุมขวาล่างโค้ง 30px
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20), // มุมซ้ายบนโค้ง 30px
+                  bottomRight: Radius.circular(20), // มุมขวาล่างโค้ง 30px
+                ),
+                color: Color.fromARGB(125, 242, 242, 242),
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey.shade300),
+                ),
               ),
-              color: Color.fromARGB(125, 242, 242, 242),
-              border: Border(
-                bottom: BorderSide(color: Colors.grey.shade300),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      leaveChatRoom();
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Constants.secondaryColor, // พื้นหลังสีฟ้า
+                        borderRadius:
+                            BorderRadius.circular(10), // ขอบมน 20px ทุกมุม
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 45, vertical: 10),
+                      child: Text("ลบห้องแชท",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      exchangeController.exchange.value = null;
+                      await chatController.fetchMessages(widget.roomID);
+                      if (chatController.isExchanged.value) {
+                        await exchangeController.fetchExchangeDetails(
+                            chatController.exchangeID.value);
+                      }
+                      if (productDetailController.postDetail.value != null &&
+                          productDetailController.postDetail.value?.username ==
+                              widget.anotherUsername) {
+                        // เราเป็นเจ้าของ Offer
+                        if (chatController.isExchanged.value) {
+                          if (exchangeController
+                                  .exchange.value?.exchangeStage ==
+                              4) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MeetUpPage(
+                                  exchangeID: chatController.exchangeID.value,
+                                  currentStep: 3,
+                                  user: Payer.offer,
+                                  postID: chatController.postID.value,
+                                  offerID: chatController.offerID.value,
+                                ),
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MeetUpPage(
+                                  exchangeID: chatController.exchangeID.value,
+                                  currentStep: 1,
+                                  user: Payer.offer,
+                                  postID: chatController.postID.value,
+                                  offerID: chatController.offerID.value,
+                                ),
+                              ),
+                            );
+                          }
+                        } else {
+                          Get.snackbar("แจ้งเตือน",
+                              "กรุณาแจ้งให้เจ้าของโพสต์เป็นผู้เริ่มสร้างการแลกเปลี่ยน");
+                        }
+                      } else {
+                        // เราเป็นเจ้าของ Post
+                        if (chatController.isExchanged.value) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MeetUpPage(
+                                exchangeID: chatController.exchangeID.value,
+                                currentStep: 2,
+                                user: Payer.post,
+                                postID: chatController.postID.value,
+                                offerID: chatController.offerID.value,
+                              ),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ExchangePage(
+                                postID: chatController.postID.value,
+                                offerID: chatController.offerID.value,
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Constants.primaryColor, // พื้นหลังสีฟ้า
+                        borderRadius:
+                            BorderRadius.circular(10), // ขอบมน 20px ทุกมุม
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      child: Text(
+                          chatController.isExchanged.value ||
+                                  productDetailController
+                                          .postDetail.value?.username ==
+                                      widget.anotherUsername
+                              ? "ยืนยันการแลกเปลี่ยน"
+                              : "สร้างการแลกเปลี่ยน",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    leaveChatRoom();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Constants.secondaryColor, // พื้นหลังสีฟ้า
-                      borderRadius:
-                          BorderRadius.circular(10), // ขอบมน 20px ทุกมุม
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                    child: Text("ปฏิเสธการแลกเปลี่ยน",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ExchangePage(
-                          postID: chatController.postID.value,
-                          offerID: chatController.offerID.value,
-                        ),
-                      ),
+            Expanded(
+              child: Obx(() {
+                var allMessages = chatController.chatRooms
+                    .expand((room) => room.messages)
+                    .toList();
+
+                // เรียงตามเวลา (จากเก่าไปใหม่)
+                allMessages.sort((a, b) => a.sendAt.compareTo(b.sendAt));
+
+                // กลับลำดับข้อความให้ใหม่อยู่ล่างสุด
+                allMessages = allMessages.reversed.toList();
+
+                return ListView.builder(
+                  reverse: true, // ทำให้ ListView กลับหัว
+                  itemCount: allMessages.length,
+                  itemBuilder: (context, index) {
+                    final message = allMessages[index];
+                    bool isMe = message.username ==
+                        userProfileController.userProfile.value!.username;
+                    String messageDate = DateFormat('yyyy-MM-dd')
+                        .format(message.sendAt.toLocal());
+
+                    // ปรับเงื่อนไขแสดงวันที่ โดยเทียบกับข้อความถัดไป
+                    bool showDateHeader = index == allMessages.length - 1 ||
+                        DateFormat('yyyy-MM-dd').format(
+                                allMessages[index + 1].sendAt.toLocal()) !=
+                            messageDate;
+
+                    return Column(
+                      children: [
+                        if (showDateHeader) _buildDateHeader(message.sendAt),
+                        _buildMessageBubble(message, isMe),
+                        SizedBox(
+                          height: 10,
+                        )
+                      ],
                     );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Constants.primaryColor, // พื้นหลังสีฟ้า
-                      borderRadius:
-                          BorderRadius.circular(10), // ขอบมน 20px ทุกมุม
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Text("ยืนยันแลกเปลี่ยน",
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ],
+                );
+              }),
             ),
-          ),
-          Expanded(
-            child: Obx(() {
-              var allMessages = chatController.chatRooms
-                  .expand((room) => room.messages)
-                  .toList();
-
-              // เรียงตามเวลา (จากเก่าไปใหม่)
-              allMessages.sort((a, b) => a.sendAt.compareTo(b.sendAt));
-
-              // กลับลำดับข้อความให้ใหม่อยู่ล่างสุด
-              allMessages = allMessages.reversed.toList();
-
-              return ListView.builder(
-                reverse: true, // ทำให้ ListView กลับหัว
-                itemCount: allMessages.length,
-                itemBuilder: (context, index) {
-                  final message = allMessages[index];
-                  bool isMe = message.username ==
-                      userProfileController.userProfile.value!.username;
-                  String messageDate =
-                      DateFormat('yyyy-MM-dd').format(message.sendAt.toLocal());
-
-                  // ปรับเงื่อนไขแสดงวันที่ โดยเทียบกับข้อความถัดไป
-                  bool showDateHeader = index == allMessages.length - 1 ||
-                      DateFormat('yyyy-MM-dd').format(
-                              allMessages[index + 1].sendAt.toLocal()) !=
-                          messageDate;
-
-                  return Column(
-                    children: [
-                      if (showDateHeader) _buildDateHeader(message.sendAt),
-                      _buildMessageBubble(message, isMe),
-                      SizedBox(
-                        height: 10,
-                      )
-                    ],
-                  );
-                },
-              );
-            }),
-          ),
-          _buildMessageInput(),
-        ],
+            _buildMessageInput(),
+          ],
+        ),
       ),
     );
   }

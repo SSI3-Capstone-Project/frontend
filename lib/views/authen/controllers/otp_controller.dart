@@ -65,10 +65,7 @@ class OTPController extends GetxController {
       }
     } catch (e) {
       // Handle error
-      print(
-          '-----------------------------------------------------------------');
-      print(e);
-      Get.snackbar('Error', 'An error occurred. Please try again.');
+      Get.snackbar('Error', 'An error occurred. Please try again. $e');
       isLoading.value = false;
       return false;
     }

@@ -14,6 +14,10 @@ class ExchangeProductDetailController extends GetxController {
 
   Future<bool> fetchPostAndOfferDetail(String postID, String offerID) async {
     try {
+      print(
+          '--------------------------post offer id--------------------------------');
+      print(postID);
+      print(offerID);
       isLoading(true);
       if (tokenController.accessToken.value == null) {
         // Get.snackbar('Error', 'No access token found.');

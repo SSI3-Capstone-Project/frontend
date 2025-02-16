@@ -21,6 +21,7 @@ class ChatController extends GetxController {
   var postID = ''.obs;
   var offerID = ''.obs;
   var isExchanged = false.obs;
+  var exchangeID = ''.obs;
   var chatRooms = <ChatRoom>[].obs;
   WebSocketChannel? _channel;
 
@@ -53,7 +54,9 @@ class ChatController extends GetxController {
       return;
     }
 
-    final wsUrl = 'ws://10.0.2.2:8080/ws/$roomID';
+    final wsUrl = '${dotenv.env['WS_URL']}/ws/$roomID';
+    print('---------------------------Print Url-----------------------------');
+    print(wsUrl);
 
     try {
       // ✅ ใช้ WebSocket.connect() พร้อมส่ง Headers
@@ -281,12 +284,14 @@ class ChatController extends GetxController {
             postID(jsonData['data']['post_id']);
             offerID(jsonData['data']['offer_id']);
             isExchanged(jsonData['data']['is_exchanged']);
+            exchangeID(jsonData['data']['exchange_id']);
             print(
                 '-------------------------post and offer-------------------------');
             print(postOfferID);
             print(postID);
             print(offerID);
             print(isExchanged.toString());
+            print(exchangeID);
             List<dynamic> rawData = jsonData['data']['messages_by_date'];
             List<ChatRoom> chatList =
                 rawData.map((item) => ChatRoom.fromJson(item)).toList();
