@@ -63,11 +63,11 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
                 overlayColor: MaterialStateProperty.all(Colors.transparent),
                 tabAlignment: TabAlignment.start,
                 tabs: const [
-                  Tab(text: "ทั้งหมด"),
-                  Tab(text: "กำลังแลกเปลี่ยน"),
-                  Tab(text: "ยืนยัน"),
-                  Tab(text: "สำเร็จ"),
-                  Tab(text: "ยกเลิก"),
+                  Tab(text: "รายการทั้งหมด"),
+                  Tab(text: "แลกเปลี่ยนอยู่"),
+                  Tab(text: "ยืนยันนัดหมายแล้ว"),
+                  Tab(text: "แลกเปลี่ยนสำเร็จ"),
+                  Tab(text: "ยกเลิกแลกเปลี่ยน"),
                 ],
               ),
             ),
@@ -226,7 +226,7 @@ class _ExchangeListState extends State<ExchangeList> with SingleTickerProviderSt
         iconColor = Constants.primaryColor;
         break;
       case "confirmed":
-        iconData = Icons.done_all_outlined; // ยืนยันแลกเปลี่ยนแล้ว
+        iconData = Icons.location_on_outlined; // ยืนยันแลกเปลี่ยนแล้ว
         iconColor = Constants.primaryColor;
         break;
       case "completed":
