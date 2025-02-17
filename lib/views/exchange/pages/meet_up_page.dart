@@ -1067,10 +1067,10 @@ class _MeetUpPageState extends State<MeetUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
-                    'assets/icons/icon.svg',
-                    color: Constants.primaryColor,
-                    width: 70,
-                    height: 70,
+                    'assets/icons/check_icon.svg',
+                    color: Color(0xFF5BD207),
+                    width: 60,
+                    height: 60,
                   ),
                 ],
               ),
@@ -1081,7 +1081,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
                 'การแลกเปลี่ยนเสร็จสิ้น ขอบคุณที่ใช้บริการ',
                 style: TextStyle(
                     fontSize: 16,
-                    color: Constants.primaryColor,
+                    color: Color(0xFF5BD207),
                     fontWeight: FontWeight.w500),
               ),
               SizedBox(
@@ -1091,14 +1091,14 @@ class _MeetUpPageState extends State<MeetUpPage> {
                 'กรุณาตรวจสอบสินค้า',
                 style: TextStyle(
                     fontSize: 12,
-                    color: Constants.primaryColor,
+                    color: Color(0xFF5BD207),
                     fontWeight: FontWeight.w500),
               ),
               Text(
                 'ว่าคุณได้รับสินค้าถูกต้องตามข้อตกลง',
                 style: TextStyle(
                     fontSize: 12,
-                    color: Constants.primaryColor,
+                    color: Color(0xFF5BD207),
                     fontWeight: FontWeight.w500),
               ),
               SizedBox(
