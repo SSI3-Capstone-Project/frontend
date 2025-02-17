@@ -21,7 +21,6 @@ class DeleteWishlistController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        Get.snackbar("สำเร็จ", "ลบ wish list แล้ว");
         return true;
       } else {
         print('Error: ${response.statusCode}, Body: ${response.body}');

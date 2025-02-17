@@ -9,6 +9,8 @@ import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../model/offers_model.dart';
+
 class ChooseOfferPage extends StatefulWidget {
   final String postId;
   const ChooseOfferPage({super.key, required this.postId});
@@ -87,142 +89,129 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
       },
       color: Colors.white,
       backgroundColor: Constants.secondaryColor,
-      child: StaggeredGridView.countBuilder(
+      child: ListView.builder(
         padding: const EdgeInsets.all(5),
-        crossAxisCount: 4,
-        mainAxisSpacing: 22,
-        crossAxisSpacing: 22,
+        physics: const AlwaysScrollableScrollPhysics(),
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
           return GestureDetector(
             onTap: () async {
-              // final result = await Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => detailPageBuilder(item),
-              //   ),
-              // );
-
-              // if (result == true) {
-              //   // ดึงข้อมูลใหม่
-              //   await offerController.fetchOffers();
-              // }
               await offerDetailController.fetchOfferDetail(item.id);
               _offerDetailDialog();
             },
-            child: _buildGridItem(item),
+            child: _offerCard(item), // ใช้ _offerCard() แทน
           );
         },
-        staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
       ),
     );
   }
 
-  Widget _buildGridItem(dynamic item) {
+  Widget _buildOfferList(dynamic item) {
+    return GestureDetector(
+      onTap: () async {
+        await offerDetailController.fetchOfferDetail(item.id);
+        _offerDetailDialog();
+      },
+      child: _offerCard(item),
+    );
+  }
+
+  Widget _offerCard(dynamic item) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.5),
-            spreadRadius: .5,
+            spreadRadius: 0.5,
             blurRadius: 6,
             offset: const Offset(0, 0),
           ),
         ],
-        color: Colors.white,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 20,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: const BorderRadius.all(
-                        Radius.elliptical(100, 25),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15),
-                  ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Content
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Product Image
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
                   child: Image.network(
                     item.coverImage,
-                    fit: BoxFit.fill,
+                    width: 82,
+                    height: 72,
+                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                SizedBox(width: 10),
+                // Product Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.blue, // Background color
-                          borderRadius:
-                              BorderRadius.circular(8), // Border radius
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4), // Padding
-                        child: Text(
-                          item.subCollectionName.length > 10
-                              ? '${item.subCollectionName.substring(0, 10)}...'
-                              : item.subCollectionName,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white, // Text color
+                      // Title & SubCollection in the same row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
+                          SizedBox(width: 10),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              color: Constants.primaryColor,
+                            ),
+                            child: Text(
+                              item.subCollectionName.length > 10
+                                  ? '${item.subCollectionName.substring(0, 10)}...'
+                                  : item.subCollectionName,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        item.description.length > 45
+                            ? '${item.description.substring(0, 35)}...'
+                            : item.description,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[800],
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              item.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 17,
-              ),
+              ],
             ),
-          ),
-          const SizedBox(height: 5),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              item.description.length > 40
-                  ? '${item.description.substring(0, 40)}...'
-                  : item.description,
-              style: const TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
