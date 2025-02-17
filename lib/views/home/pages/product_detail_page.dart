@@ -19,6 +19,8 @@ import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../favoritePosts/controllers/get_wishLists_controller.dart';
+
 class ProductDetailPage extends StatefulWidget {
   final String postId;
   const ProductDetailPage({super.key, required this.postId});
@@ -40,6 +42,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       Get.put(DeleteWishlistController());
   final PostOfferController offerListController =
       Get.put(PostOfferController());
+  final GetWishListsController getWishListsController = Get.put(GetWishListsController());
   int _currentPage = 0;
   UserProfile? user;
   var wishListId = "";
@@ -99,7 +102,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () async {
+            await getWishListsController.getWishLists();
+            Navigator.pop(context);
+            },
         ),
       ),
       body: SafeArea(

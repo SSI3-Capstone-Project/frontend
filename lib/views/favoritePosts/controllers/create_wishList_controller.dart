@@ -32,7 +32,6 @@ class CreateWishListController extends GetxController {
         WishListDetail wishList = WishListDetail.fromJson(
             jsonData['wish_list_detail']); // อ้างอิงฟิลด์ที่ถูกต้อง
 
-        Get.snackbar("สำเร็จ", "สร้าง wish list แล้ว");
         return wishList;
       } else {
         var responseBody = await response.stream.bytesToString();
