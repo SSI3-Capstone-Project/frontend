@@ -55,28 +55,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   void createAndDeleteWishList(String postId, String userId) async {
-    Get.snackbar("Id", userId);
     if (productDetailController.productDetail.value!.isFavorated.value ==
         false) {
-      Get.snackbar("Create", "WishList");
       try {
         var wishListDetail =
             await createWishListController.createWishList(userId, postId);
         wishListId = wishListDetail.wishListId;
-        Get.snackbar("WishListID", wishListId);
-        Get.snackbar("Success", "WishList created successfully");
       } catch (e) {
         Get.snackbar("Error", "Failed to create WishList: $e");
         return;
       }
     } else {
       try {
-        Get.snackbar("WishListId Delete", wishListId);
         if (wishListId.isNotEmpty) {
           await deleteWishlistController.deleteWishList(wishListId);
-          Get.snackbar("Success", "WishList deleted successfully");
         }
-
         if (wishListId.isEmpty) {
           await deleteWishlistController.deleteWishList(
               productDetailController.productDetail.value!.wishListId);

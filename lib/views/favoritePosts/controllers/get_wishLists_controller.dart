@@ -14,7 +14,6 @@ class GetWishListsController extends GetxController {
   Future<void> getWishLists() async {
     if (tokenController.accessToken.value == null ||
         tokenController.accessToken.value!.isEmpty) {
-      Get.snackbar('Error', 'No access token');
       return;
     }
 
@@ -48,7 +47,6 @@ class GetWishListsController extends GetxController {
                 dataList.map((e) => WishListModel.fromJson(e)).toList());
           } else {
             wishLists([]);
-            // Get.snackbar('Error', 'Unexpected data format');
           }
         } else {
           Get.snackbar('Error', 'Response does not contain expected data key');
