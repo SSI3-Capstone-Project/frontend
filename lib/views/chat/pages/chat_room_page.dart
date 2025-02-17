@@ -198,18 +198,35 @@ class _ChatRoomState extends State<ChatRoom> {
                       } else {
                         // เราเป็นเจ้าของ Post
                         if (chatController.isExchanged.value) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MeetUpPage(
-                                exchangeID: chatController.exchangeID.value,
-                                currentStep: 2,
-                                user: Payer.post,
-                                postID: chatController.postID.value,
-                                offerID: chatController.offerID.value,
+                          if (exchangeController.exchange.value != null &&
+                              exchangeController.exchange.value?.status ==
+                                  'confirmed') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MeetUpPage(
+                                  exchangeID: chatController.exchangeID.value,
+                                  currentStep: 3,
+                                  user: Payer.post,
+                                  postID: chatController.postID.value,
+                                  offerID: chatController.offerID.value,
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MeetUpPage(
+                                  exchangeID: chatController.exchangeID.value,
+                                  currentStep: 2,
+                                  user: Payer.post,
+                                  postID: chatController.postID.value,
+                                  offerID: chatController.offerID.value,
+                                ),
+                              ),
+                            );
+                          }
                         } else {
                           Navigator.push(
                             context,

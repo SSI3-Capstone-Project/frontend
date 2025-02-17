@@ -79,8 +79,8 @@ class MeetUpExchangeController extends GetxController {
         return null;
       }
     } catch (e) {
-      Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in ExchangeController');
+      Get.snackbar('Error',
+          'An error occurred: ${e.toString()} in MeetUpExchangeController');
       isLoading(false);
       return null;
     }

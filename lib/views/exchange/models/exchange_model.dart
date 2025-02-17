@@ -5,6 +5,7 @@ class ExchangeModel {
   String postId;
   String offerId;
   String exchangeType;
+  String status;
   double? postPriceDiff;
   double? offerPriceDiff;
   String createdAt;
@@ -22,6 +23,7 @@ class ExchangeModel {
     required this.postId,
     required this.offerId,
     required this.exchangeType,
+    required this.status,
     this.postPriceDiff,
     this.offerPriceDiff,
     required this.createdAt,
@@ -41,6 +43,7 @@ class ExchangeModel {
       postId: json['post_id'],
       offerId: json['offer_id'],
       exchangeType: json['exchange_type'],
+      status: json['status'],
       postPriceDiff: json['post_price_diff'] != null
           ? (json['post_price_diff'] as num).toDouble()
           : null,
@@ -66,6 +69,8 @@ class MeetingPoint {
   double longitude;
   String location;
   String scheduledTime;
+  String? postUserCheckinTime;
+  String? offerUserCheckinTime;
 
   MeetingPoint({
     required this.id,
@@ -73,6 +78,8 @@ class MeetingPoint {
     required this.longitude,
     required this.location,
     required this.scheduledTime,
+    this.postUserCheckinTime,
+    this.offerUserCheckinTime,
   });
 
   factory MeetingPoint.fromJson(Map<String, dynamic> json) {
@@ -82,6 +89,8 @@ class MeetingPoint {
       longitude: (json['longtitude']).toDouble(),
       location: json['location'],
       scheduledTime: json['scheduled_time'],
+      postUserCheckinTime: json['post_user_checkin_time'],
+      offerUserCheckinTime: json['offer_user_checkin_time'],
     );
   }
 }

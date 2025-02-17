@@ -54,7 +54,7 @@ class ChatController extends GetxController {
       return;
     }
 
-    final wsUrl = '${dotenv.env['WS_URL']}/ws/$roomID';
+    final wsUrl = '${dotenv.env['WS_URL']}/ssi3-socket/$roomID';
     print('---------------------------Print Url-----------------------------');
     print(wsUrl);
 
