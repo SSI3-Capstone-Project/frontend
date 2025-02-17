@@ -1,0 +1,2 @@
+C:/Users/pupha/Desktop/'/Flutter/MBEA/frontend/android/app/.cxx/RelWithDebInfo/4b3gy572/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/pupha/Desktop/'/Flutter/MBEA/frontend/android/app/.cxx/RelWithDebInfo/4b3gy572/x86_64/CMakeFiles/rebuild_cache.dir
