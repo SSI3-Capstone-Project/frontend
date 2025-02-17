@@ -119,7 +119,7 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
 
   Widget _offerCard(dynamic item) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
