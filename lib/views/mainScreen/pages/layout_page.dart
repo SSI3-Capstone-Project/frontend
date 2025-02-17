@@ -34,6 +34,7 @@ class _RootPageState extends State<RootPage> {
   final BrandController brandController = Get.put(BrandController());
   final ChatRoomController chatRoomController = Get.put(ChatRoomController());
   final ProvinceController provinceController = Get.put(ProvinceController());
+
   int _bottomNavIndex = 0;
 
   //List of the pages
@@ -126,6 +127,9 @@ class _RootPageState extends State<RootPage> {
           });
           if (index == 0) {
             await productController.fetchProducts();
+          }
+          if (index == 1) {
+            await chatRoomController.fetchChatRooms();
           }
           if (index == 3) {
             await postController.fetchPosts();

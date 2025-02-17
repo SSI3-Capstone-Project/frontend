@@ -231,21 +231,22 @@ class _ChatPageState extends State<ChatPage> {
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 SizedBox(height: 6),
-                Container(
-                  padding: EdgeInsets.all(9),
-                  decoration: BoxDecoration(
-                    color: Constants.secondaryColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    item.unreadMessageCount.toString(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
+                if (item.unreadMessageCount.toString() != '0')
+                  Container(
+                    padding: EdgeInsets.all(9),
+                    decoration: BoxDecoration(
+                      color: Constants.secondaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      item.unreadMessageCount.toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ],
