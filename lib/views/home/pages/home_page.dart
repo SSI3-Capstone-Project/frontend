@@ -196,8 +196,8 @@ class _HomePageState extends State<HomePage> {
                                             const SizedBox(width: 8),
                                             Container(
                                               decoration: BoxDecoration(
-                                                color: Colors
-                                                    .blue, // Background color
+                                                color: Constants
+                                                    .secondaryColor, // Background color
                                                 borderRadius:
                                                     BorderRadius.circular(
                                                         8), // Border radius

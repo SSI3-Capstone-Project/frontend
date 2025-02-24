@@ -198,7 +198,7 @@ class _ChatPageState extends State<ChatPage> {
                             ? '${item.postTitle.substring(0, 15)}...'
                             : item.postTitle,
                         style: TextStyle(
-                            color: Constants.secondaryColor, fontSize: 12),
+                            color: Constants.secondaryColor, fontSize: 11),
                       ),
                       SizedBox(width: 5),
                       Icon(Icons.swap_horiz, size: 16, color: Colors.grey),
@@ -208,7 +208,7 @@ class _ChatPageState extends State<ChatPage> {
                             ? '${item.offerTitle.substring(0, 15)}...'
                             : item.offerTitle,
                         style: TextStyle(
-                            color: Constants.primaryColor, fontSize: 12),
+                            color: Constants.primaryColor, fontSize: 11),
                       ),
                       SizedBox(width: 10),
                       Icon(Icons.assignment_outlined,

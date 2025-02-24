@@ -88,9 +88,9 @@ class _ChatRoomState extends State<ChatRoom> {
                         widget.anotherUsername
                     ? "• เจ้าของโพสต์"
                     : "• เจ้าของข้อเสนอ",
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 10,
-                    color: Color(0xFF5BD207),
+                    color: Colors.grey[600],
                     fontWeight: FontWeight.bold)),
           ],
         ),

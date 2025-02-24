@@ -12,6 +12,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as ws_status;
 import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 class ChatController extends GetxController {
   final tokenController = Get.find<TokenController>();
@@ -54,7 +55,7 @@ class ChatController extends GetxController {
       return;
     }
 
-    final wsUrl = '${dotenv.env['WS_URL']}/ssi3-socket/$roomID';
+    final wsUrl = '${dotenv.env['WS_URL']}/$roomID';
     print('---------------------------Print Url-----------------------------');
     print(wsUrl);
 
@@ -174,6 +175,7 @@ class ChatController extends GetxController {
       } else {
         Get.snackbar(
             'แจ้งเตือน', 'เกิดข้อผิดพลาดในการเก็บข้อมูลของข้อความที่ส่งไป');
+        Get.snackbar('แจ้งเตือน', response.body);
         print("Error: ${response.body}");
         return false;
       }
@@ -197,13 +199,29 @@ class ChatController extends GetxController {
       }
 
       final token = tokenController.accessToken.value;
+
+      // ดึง MIME type ของไฟล์
+      String? mimeType = lookupMimeType(imageFile.path);
+
+      // ตรวจสอบว่าไฟล์เป็นประเภทที่รองรับหรือไม่
+      const allowedMimeTypes = {
+        "image/jpeg": true,
+        "image/jpg": true,
+        "image/png": true,
+        "image/gif": true,
+      };
+
+      if (mimeType == null || !allowedMimeTypes.containsKey(mimeType)) {
+        print("ประเภทไฟล์ไม่รองรับ: $mimeType");
+        Get.snackbar('แจ้งเตือน', 'ประเภทไฟล์ไม่รองรับ');
+        return false;
+      }
+
       var request = http.MultipartRequest(
         'POST',
         Uri.parse('${dotenv.env['API_URL']}/chatrooms/$roomID/messages'),
       );
       request.headers['Authorization'] = 'Bearer $token';
-
-      String mimeType = 'image/png';
 
       // เพิ่มไฟล์ภาพ
       request.files.add(await http.MultipartFile.fromPath(
@@ -230,6 +248,7 @@ class ChatController extends GetxController {
       } else {
         Get.snackbar(
             'แจ้งเตือน', 'เกิดข้อผิดพลาดในการเก็บข้อมูลของรูปที่ส่งไป');
+        Get.snackbar('แจ้งเตือน', response.body);
         print("เกิดข้อผิดพลาด: ${response.body}");
         return false;
       }
@@ -369,6 +388,8 @@ class ChatController extends GetxController {
         print(jsonData.toString());
         isLoading(false);
         // Get.snackbar("สำเร็จ", "อัพเดทสถานะข้อความล่าสุดภายในห้องแชทแล้ว");
+      } else if (response.statusCode == 403) {
+        Get.snackbar("แจ้งเตือน", "ไม่สามารถปิดห้องแชทได้ในขณะนี้");
       } else {
         Get.snackbar("แจ้งเตือน",
             "เกิดข้อผิดพลาในปิดห้องแชทนี้ (${response.statusCode})");

@@ -39,7 +39,7 @@ class ChatRoomController extends GetxController {
             isLoading(false);
           } else {
             chatRoomList.clear();
-            Get.snackbar('แจ้งเตือน', 'ยังไม่แชทสำหรับสนทนา');
+            // Get.snackbar('แจ้งเตือน', 'ยังไม่แชทสำหรับสนทนา');
             isLoading(false);
           }
         } else {

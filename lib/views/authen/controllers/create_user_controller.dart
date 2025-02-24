@@ -95,9 +95,8 @@ class UserCreationController extends GetxController {
         return false;
       } else {
         var errorData = await response.stream.bytesToString();
-        print(
-            'Failed to create post: ${response.statusCode}, Error: $errorData');
-        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการสมัครสมาชิค');
+
+        Get.snackbar('แจ้งเตือน', errorData);
         isLoading.value = false;
         return false;
       }

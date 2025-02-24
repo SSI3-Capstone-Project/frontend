@@ -10,9 +10,11 @@ import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/meet_up_exchange_controller.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 enum Payer { post, offer }
 
@@ -39,6 +41,7 @@ class MeetUpPage extends StatefulWidget {
 }
 
 class _MeetUpPageState extends State<MeetUpPage> {
+  final ChatRoomController chatRoomController = Get.put(ChatRoomController());
   final ExchangeController exchangeController = Get.put(ExchangeController());
   final MeetUpExchangeController meetUpExchangeController =
       Get.put(MeetUpExchangeController());
@@ -74,6 +77,38 @@ class _MeetUpPageState extends State<MeetUpPage> {
         formattedOffset;
   }
 
+  DateTime parseDateTimeWithOffset(String dateTimeString) {
+    // กรณีที่เป็น UTC (ลงท้ายด้วย 'Z')
+    if (dateTimeString.endsWith('Z')) {
+      return DateTime.parse(dateTimeString);
+    }
+
+    // กรณีที่เป็น offset (+/-hh:mm)
+    final regex = RegExp(r"(.+)([+-]\d{2}:\d{2})$");
+    final match = regex.firstMatch(dateTimeString);
+
+    if (match == null) {
+      throw FormatException("Invalid date format", dateTimeString);
+    }
+
+    final dateTimePart = match.group(1)!;
+    final offsetPart = match.group(2)!;
+
+    // แปลงวันที่เป็น DateTime
+    final dateTime = DateFormat("yyyy-MM-dd'T'HH:mm:ss").parseUtc(dateTimePart);
+
+    // แปลง offset เป็น Duration
+    final offsetSign = offsetPart.startsWith('-') ? -1 : 1;
+    final offsetParts = offsetPart.substring(1).split(':');
+    final offsetDuration = Duration(
+      hours: int.parse(offsetParts[0]) * offsetSign,
+      minutes: int.parse(offsetParts[1]) * offsetSign,
+    );
+
+    // ปรับเวลาให้เป็น UTC
+    return dateTime.subtract(offsetDuration);
+  }
+
   String formatTimeOfDay(TimeOfDay time) {
     final now = DateTime.now();
     final dateTime =
@@ -81,7 +116,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
     return DateFormat('HH:mm น.').format(dateTime);
   }
 
-  Future<bool> isWithin500Meters(LatLng? selectedLocation) async {
+  Future<bool> isWithin200Meters(LatLng? selectedLocation) async {
     if (selectedLocation == null) return false;
 
     // ดึงตำแหน่งปัจจุบัน
@@ -98,14 +133,17 @@ class _MeetUpPageState extends State<MeetUpPage> {
     );
 
     // ตรวจสอบระยะห่าง
-    return distanceInMeters <= 500;
+    return distanceInMeters <= 200;
   }
 
-  bool isFutureAtLeastOneDay(DateTime dateTime) {
+  bool isFuture(DateTime dateTime) {
     final now = DateTime.now();
-    final tomorrow = now.add(Duration(days: 1));
+    return dateTime.isAfter(now);
+  }
 
-    return dateTime.isAfter(tomorrow);
+  bool isPast(DateTime dateTime) {
+    final now = DateTime.now();
+    return dateTime.isBefore(now);
   }
 
   Future<void> fetchExchangeDetails(String exchangeID) async {
@@ -331,15 +369,29 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                 chooseDateTime(),
                                 SizedBox(height: 15),
                                 if (_currentStage == 3)
-                                  Center(
-                                    child: Text(
-                                      "กรุณาเช็คอินตามวันเวลาและสถานที่\nนัดหมาย หากไม่เช็คอิน อาจถูกปรับ",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Constants.secondaryColor,
+                                  Column(
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          "กรุณาเช็คอินตามวันเวลาและสถานที่นัดหมาย",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Constants.secondaryColor,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      Center(
+                                        child: Text(
+                                          "ภายในระยะ 100 เมตร หากไม่เช็คอิน อาจถูกปรับ",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Constants.secondaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 SizedBox(height: 15),
                                 chooseLocation(),
@@ -374,6 +426,40 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                           0) >
                                       2)
                                     statusCard(false),
+                                  if ((exchangeController
+                                              .exchange.value?.exchangeStage ??
+                                          0) >
+                                      2)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 15),
+                                      child: ElevatedButton.icon(
+                                        onPressed: () {
+                                          setState(() {
+                                            _currentStage =
+                                                (_currentStage! + 1);
+                                          });
+                                        },
+                                        label: Text("ขั้นตอนถัดไป",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)),
+                                        icon: Icon(Icons.arrow_forward,
+                                            color: Colors.white),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Constants
+                                              .primaryColor, // สีพื้นหลัง
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                15), // ขอบมน 15
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 5), // ปรับขนาดปุ่ม
+                                        ),
+                                      ),
+                                    )
                                 ],
                               );
                             }),
@@ -418,9 +504,13 @@ class _MeetUpPageState extends State<MeetUpPage> {
             ),
             onPressed: () async {
               // TODO: ใส่ฟังก์ชันยกเลิกนัดหมาย
-              await exchangeController.updateExchangeStatus(
+              var result = await exchangeController.updateExchangeStatus(
                   exchangeID!, 'cancelled');
               await exchangeController.fetchExchangeDetails(exchangeID!);
+              if (result) {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              }
               print("ยกเลิกนัดหมาย");
             },
             child: const Text(
@@ -454,20 +544,35 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                 null
                         ? null
                         : () async {
-                            await exchangeController.updateExchangeStatus(
-                                exchangeID!, 'checkin');
-                            await exchangeController
-                                .fetchExchangeDetails(exchangeID!);
+                            // await exchangeController.updateExchangeStatus(
+                            //     exchangeID!, 'checkin');
+                            // await exchangeController
+                            //     .fetchExchangeDetails(exchangeID!);
 
                             // print("เช็คอินสำเร็จ");
-                            // await Geolocator.requestPermission();
-                            // var checkDistance =
-                            //     await isWithin500Meters(selectedLocation);
-                            // if (checkDistance) {
-                            //   Get.snackbar('ได้', 'เช็คอินได้');
-                            // } else {
-                            //   Get.snackbar('ไม่ได้', 'เช็คอินไม่ได้');
-                            // }
+                            await Geolocator.requestPermission();
+                            var checkDistance =
+                                await isWithin200Meters(selectedLocation);
+
+                            if (exchangeController.exchange.value?.meetingPoint
+                                        .scheduledTime !=
+                                    null &&
+                                isPast(parseDateTimeWithOffset(
+                                    exchangeController.exchange.value!
+                                        .meetingPoint.scheduledTime))) {
+                              if (checkDistance) {
+                                await exchangeController.updateExchangeStatus(
+                                    exchangeID!, 'checkin');
+                                await exchangeController
+                                    .fetchExchangeDetails(exchangeID!);
+                              } else {
+                                Get.snackbar('แจ้งเตือน',
+                                    'คุณไม่ได้อยู่ในระยะเช็คอินที่กำหนด');
+                              }
+                            } else {
+                              Get.snackbar('แจ้งเตือน',
+                                  'คุณไม่สามารถเช็คอินได้ก่อนเวลานัดหมาย');
+                            }
                           },
                 child: const Text(
                   "เช็คอิน",
@@ -569,13 +674,18 @@ class _MeetUpPageState extends State<MeetUpPage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 30),
                             child: Text(
-                              'ยืนยันการปฏิเสธ',
+                              'ปฏิเสธนัดหมาย',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.normal),
                             ),
                           ),
                           Text(
-                            'คุณต้องการปฏิเสธวันเวลา และสถานที่นัดหมายนี้หรือไม่?',
+                            'คุณต้องการปฏิเสธ',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.normal),
+                          ),
+                          Text(
+                            'วันเวลา และสถานที่นัดหมายนี้หรือไม่?',
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.normal),
                           ),
@@ -659,57 +769,57 @@ class _MeetUpPageState extends State<MeetUpPage> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed:
-                (exchangeController.exchange.value?.exchangeStage ?? 0) >= 2
-                    ? null
-                    : () async {
-                        // TODO: ใส่ฟังก์ชันเช็คอิน
+            onPressed: (exchangeController.exchange.value?.exchangeStage ??
+                        0) >=
+                    2
+                ? null
+                : () async {
+                    // TODO: ใส่ฟังก์ชันเช็คอิน
 
-                        if (selectedLocation != null &&
-                            selectedDate != null &&
-                            meetTime != null &&
-                            placeName != null) {
-                          if (isFutureAtLeastOneDay(
-                              combineDateAndTime(selectedDate, meetTime)!)) {
-                            var result =
-                                await meetUpExchangeController.createExchange(
-                                    postId: widget.postID!,
-                                    offerId: widget.offerID!,
-                                    exchangeType: 'meeting',
-                                    postPriceDiff: widget.payer == Payer.post
-                                        ? widget.priceDifference?.toDouble()
-                                        : null,
-                                    offerPriceDiff: widget.payer == Payer.offer
-                                        ? widget.priceDifference?.toDouble()
-                                        : null,
-                                    latitude: double.parse(selectedLocation!.latitude
-                                        .toStringAsFixed(6)),
-                                    longitude: double.parse(selectedLocation!
-                                        .longitude
-                                        .toStringAsFixed(6)),
-                                    location: placeName!,
-                                    scheduledTime: formatDateTimeWithOffset(
-                                        combineDateAndTime(
-                                            selectedDate, meetTime)!));
-                            if (result != null) {
-                              await exchangeController
-                                  .fetchExchangeDetails(result);
-                              setState(() {
-                                _currentStage = 2;
-                                exchangeID =
-                                    exchangeController.exchange.value?.id;
-                              });
-                            }
-                            print("เสนอวันเวลาและสถานที่นี้");
-                          } else {
-                            Get.snackbar('แจ้งเตือน',
-                                'การนัดหมายต้องสร้างล่วงหน้าอย่างน้อยหนึ่งวัน');
-                          }
-                        } else {
-                          Get.snackbar('แจ้งเตือน',
-                              'กรุณากรอกวันเวลา และเลือกสถานที่นัดหมายให้ครบถ้วน');
+                    if (selectedLocation != null &&
+                        selectedDate != null &&
+                        meetTime != null &&
+                        placeName != null) {
+                      if (isFuture(
+                          combineDateAndTime(selectedDate, meetTime)!)) {
+                        var result =
+                            await meetUpExchangeController.createExchange(
+                                postId: widget.postID!,
+                                offerId: widget.offerID!,
+                                exchangeType: 'meeting',
+                                postPriceDiff: widget.payer == Payer.post
+                                    ? widget.priceDifference?.toDouble()
+                                    : null,
+                                offerPriceDiff: widget.payer == Payer.offer
+                                    ? widget.priceDifference?.toDouble()
+                                    : null,
+                                latitude: double.parse(selectedLocation!
+                                    .latitude
+                                    .toStringAsFixed(6)),
+                                longitude: double.parse(selectedLocation!
+                                    .longitude
+                                    .toStringAsFixed(6)),
+                                location: placeName!,
+                                scheduledTime: formatDateTimeWithOffset(
+                                    combineDateAndTime(
+                                        selectedDate, meetTime)!));
+                        if (result != null) {
+                          await exchangeController.fetchExchangeDetails(result);
+                          setState(() {
+                            _currentStage = 2;
+                            exchangeID = exchangeController.exchange.value?.id;
+                          });
                         }
-                      },
+                        print("เสนอวันเวลาและสถานที่นี้");
+                      } else {
+                        Get.snackbar(
+                            'แจ้งเตือน', 'วันเวลาในการนัดหมายต้องเป็นอนาคต');
+                      }
+                    } else {
+                      Get.snackbar('แจ้งเตือน',
+                          'กรุณากรอกวันเวลา และเลือกสถานที่นัดหมายให้ครบถ้วน');
+                    }
+                  },
             child: const Text(
               "เสนอวันเวลาและสถานที่นี้",
               style: TextStyle(
@@ -1032,225 +1142,300 @@ class _MeetUpPageState extends State<MeetUpPage> {
   }
 
   Widget finishCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Text(
-            'การแลกเปลี่ยนเสร็จสิ้นแล้ว',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Column(
-            children: [
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/check_icon.svg',
-                    color: Color(0xFF5BD207),
-                    width: 60,
-                    height: 60,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Text(
-                'การแลกเปลี่ยนเสร็จสิ้น ขอบคุณที่ใช้บริการ',
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF5BD207),
-                    fontWeight: FontWeight.w500),
-              ),
-              SizedBox(
-                height: 25,
-              ),
-              Text(
-                'กรุณาตรวจสอบสินค้า',
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF5BD207),
-                    fontWeight: FontWeight.w500),
-              ),
-              Text(
-                'ว่าคุณได้รับสินค้าถูกต้องตามข้อตกลง',
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF5BD207),
-                    fontWeight: FontWeight.w500),
-              ),
-              SizedBox(
-                height: 20,
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: Offset(0, 1),
               ),
             ],
-          )
-        ],
-      ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'การแลกเปลี่ยนเสร็จสิ้นแล้ว',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 15),
+              Column(
+                children: [
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/check_icon.svg',
+                        color: Color(0xFF5BD207),
+                        width: 60,
+                        height: 60,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Text(
+                    'การแลกเปลี่ยนเสร็จสิ้น ขอบคุณที่ใช้บริการ',
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF5BD207),
+                        fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Text(
+                    'กรุณาตรวจสอบสินค้า',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF5BD207),
+                        fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    'ว่าคุณได้รับสินค้าถูกต้องตามข้อตกลง',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF5BD207),
+                        fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          child: ElevatedButton.icon(
+            onPressed: () async {
+              await exchangeController.updateExchangeStatus(
+                  exchangeID!, 'completed');
+              await chatRoomController.fetchChatRooms();
+
+              Navigator.pop(context);
+              Navigator.pop(context);
+              if (widget.currentStep == 1) {
+                Navigator.pop(context);
+              }
+            },
+            label: Text("เสร็จสิ้นการแลกเปลี่ยน",
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+            // icon: Icon(Icons.arrow_forward, color: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Constants.primaryColor, // สีพื้นหลัง
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15), // ขอบมน 15
+              ),
+              padding: EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 5), // ปรับขนาดปุ่ม
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget userCheckInCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // เจ้าของโพสต์
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage(
-                        exchangeController.exchange.value!.postImageUrl),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(exchangeController.exchange.value!.postUsername,
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold)),
-                ],
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: Offset(0, 1),
               ),
-              Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // เจ้าของโพสต์
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      Icon(
-                        size: 25,
-                        exchangeController.exchange.value?.meetingPoint
-                                    .postUserCheckinTime !=
-                                null
-                            ? Icons.check_circle_outline_outlined
-                            : Icons.cancel_outlined,
-                        color: exchangeController.exchange.value?.meetingPoint
-                                    .postUserCheckinTime !=
-                                null
-                            ? Color(0xFF5BD207)
-                            : Color(0xFFFF0000),
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundImage: NetworkImage(
+                            exchangeController.exchange.value!.postImageUrl),
                       ),
-                      SizedBox(
-                          width: exchangeController.exchange.value?.meetingPoint
-                                      .postUserCheckinTime !=
-                                  null
-                              ? 13
-                              : 8),
-                      Text(
-                        exchangeController.exchange.value?.meetingPoint
-                                    .postUserCheckinTime !=
-                                null
-                            ? 'เช็คอินแล้ว'
-                            : 'ยังไม่เช็คอิน',
-                        style: TextStyle(
-                            fontSize: 14,
+                      const SizedBox(width: 10),
+                      Text(exchangeController.exchange.value!.postUsername,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  Obx(() => Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            size: 25,
+                            exchangeController.exchange.value?.meetingPoint
+                                        .postUserCheckinTime !=
+                                    null
+                                ? Icons.check_circle_outline_outlined
+                                : Icons.cancel_outlined,
                             color: exchangeController.exchange.value
                                         ?.meetingPoint.postUserCheckinTime !=
                                     null
                                 ? Color(0xFF5BD207)
                                 : Color(0xFFFF0000),
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  )),
-            ],
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          // เจ้าของข้อเสนอ
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage(
-                        exchangeController.exchange.value!.offerImageUrl),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(exchangeController.exchange.value!.offerUsername,
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold)),
+                          ),
+                          SizedBox(
+                              width: exchangeController.exchange.value
+                                          ?.meetingPoint.postUserCheckinTime !=
+                                      null
+                                  ? 13
+                                  : 8),
+                          Text(
+                            exchangeController.exchange.value?.meetingPoint
+                                        .postUserCheckinTime !=
+                                    null
+                                ? 'เช็คอินแล้ว'
+                                : 'ยังไม่เช็คอิน',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: exchangeController
+                                            .exchange
+                                            .value
+                                            ?.meetingPoint
+                                            .postUserCheckinTime !=
+                                        null
+                                    ? Color(0xFF5BD207)
+                                    : Color(0xFFFF0000),
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )),
                 ],
               ),
-              Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              SizedBox(
+                height: 20,
+              ),
+              // เจ้าของข้อเสนอ
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      Icon(
-                        size: 25,
-                        exchangeController.exchange.value?.meetingPoint
-                                    .offerUserCheckinTime !=
-                                null
-                            ? Icons.check_circle_outline_outlined
-                            : Icons.cancel_outlined,
-                        color: exchangeController.exchange.value?.meetingPoint
-                                    .offerUserCheckinTime !=
-                                null
-                            ? Color(0xFF5BD207)
-                            : Color(0xFFFF0000),
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundImage: NetworkImage(
+                            exchangeController.exchange.value!.offerImageUrl),
                       ),
-                      SizedBox(
-                          width: exchangeController.exchange.value?.meetingPoint
-                                      .offerUserCheckinTime !=
-                                  null
-                              ? 13
-                              : 8),
-                      Text(
-                        exchangeController.exchange.value?.meetingPoint
-                                    .offerUserCheckinTime !=
-                                null
-                            ? 'เช็คอินแล้ว'
-                            : 'ยังไม่เช็คอิน',
-                        style: TextStyle(
-                            fontSize: 14,
+                      const SizedBox(width: 10),
+                      Text(exchangeController.exchange.value!.offerUsername,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  Obx(() => Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            size: 25,
+                            exchangeController.exchange.value?.meetingPoint
+                                        .offerUserCheckinTime !=
+                                    null
+                                ? Icons.check_circle_outline_outlined
+                                : Icons.cancel_outlined,
                             color: exchangeController.exchange.value
                                         ?.meetingPoint.offerUserCheckinTime !=
                                     null
                                 ? Color(0xFF5BD207)
                                 : Color(0xFFFF0000),
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  )),
+                          ),
+                          SizedBox(
+                              width: exchangeController.exchange.value
+                                          ?.meetingPoint.offerUserCheckinTime !=
+                                      null
+                                  ? 13
+                                  : 8),
+                          Text(
+                            exchangeController.exchange.value?.meetingPoint
+                                        .offerUserCheckinTime !=
+                                    null
+                                ? 'เช็คอินแล้ว'
+                                : 'ยังไม่เช็คอิน',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: exchangeController
+                                            .exchange
+                                            .value
+                                            ?.meetingPoint
+                                            .offerUserCheckinTime !=
+                                        null
+                                    ? Color(0xFF5BD207)
+                                    : Color(0xFFFF0000),
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+        Obx(() => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: ElevatedButton.icon(
+                onPressed: exchangeController.exchange.value?.meetingPoint
+                                .postUserCheckinTime !=
+                            null &&
+                        exchangeController.exchange.value?.meetingPoint
+                                .offerUserCheckinTime !=
+                            null
+                    ? () {
+                        setState(() {
+                          _currentStage = (_currentStage! + 1);
+                        });
+                      }
+                    : null,
+                label: Text("ขั้นตอนถัดไป",
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                icon: Icon(Icons.arrow_forward, color: Colors.white),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Constants.primaryColor, // สีพื้นหลัง
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15), // ขอบมน 15
+                  ),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 5), // ปรับขนาดปุ่ม
+                ),
+              ),
+            )),
+      ],
     );
   }
 

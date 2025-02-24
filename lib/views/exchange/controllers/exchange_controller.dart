@@ -50,13 +50,13 @@ class ExchangeController extends GetxController {
     }
   }
 
-  Future<void> updateExchangeStatus(String exchangeID, String status) async {
+  Future<bool> updateExchangeStatus(String exchangeID, String status) async {
     try {
       isLoading(true);
       if (tokenController.accessToken.value == null) {
         // Get.snackbar('Error', 'No access token found.');
         isLoading(false);
-        return;
+        return false;
       }
       final token = tokenController.accessToken.value;
 
@@ -75,28 +75,33 @@ class ExchangeController extends GetxController {
         print(jsonData);
         Get.snackbar('สำเร็จ', 'อัพเดทสถานะการแลกเปลี่ยนสำเร็จ');
         isLoading(false);
+        return true;
       } else if (response.statusCode == 409) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('แจ้งเตือน', 'คุณได้เช็คอินสถานที่เรียบร้อยแล้ว');
         isLoading(false);
+        return false;
       } else if (response.statusCode == 403) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('แจ้งเตือน',
             'คุณจะสามารถยกเลิกได้เมื่อผ่านไปหนึงชั่วโมงหลังเวลานัด');
         isLoading(false);
+        return false;
       } else {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar(
             'แจ้งเตือน', 'เกิดปัญหาระหว่างการอัพเดทสถานะการแลกเปลี่ยน');
         isLoading(false);
+        return false;
       }
     } catch (e) {
       Get.snackbar(
           'Error', 'An error occurred: ${e.toString()} in ExchangeController');
       isLoading(false);
+      return false;
     } finally {
       isLoading.value = false;
     }

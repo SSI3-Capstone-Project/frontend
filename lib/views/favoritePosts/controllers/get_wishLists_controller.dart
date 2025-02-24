@@ -52,8 +52,9 @@ class GetWishListsController extends GetxController {
           Get.snackbar('Error', 'Response does not contain expected data key');
         }
       } else {
+        var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
         Get.snackbar(
-            'Error', 'Failed to load wish lists: ${response.statusCode}');
+            'Errorsss', 'Failed to load wish lists: ${decodedResponse}');
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');

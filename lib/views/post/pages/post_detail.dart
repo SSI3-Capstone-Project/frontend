@@ -238,7 +238,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                               width: 8,
                                             ),
                                             Container(
-                                              width: 300,
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       vertical: 3,

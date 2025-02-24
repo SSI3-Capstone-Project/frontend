@@ -344,7 +344,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                               child: Text(
-                                "Send OTP",
+                                "ยืนยัน",
                                 style: TextStyle(
                                     fontSize: 16, color: Colors.white),
                               ),

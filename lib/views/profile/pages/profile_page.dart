@@ -155,7 +155,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildOfferList(List<Offers> items, Widget Function(Offers) detailPageBuilder) {
+  Widget _buildOfferList(
+      List<Offers> items, Widget Function(Offers) detailPageBuilder) {
     return RefreshIndicator(
       onRefresh: () async {
         await offerController.fetchOffers();
@@ -165,7 +166,8 @@ class _ProfilePageState extends State<ProfilePage> {
       child: ListView.builder(
         shrinkWrap: true, // ให้ขนาดพอดีกับจำนวน item
         padding: const EdgeInsets.symmetric(horizontal: 5),
-        physics: const AlwaysScrollableScrollPhysics(), // ทำให้เลื่อนและรีเฟรชได้
+        physics:
+            const AlwaysScrollableScrollPhysics(), // ทำให้เลื่อนและรีเฟรชได้
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
@@ -243,9 +245,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           SizedBox(width: 10),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 5),
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                               color: Constants.primaryColor,
                             ),
                             child: Text(
@@ -340,7 +344,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Constants.primaryColor, // Background color
+                          color: Constants.secondaryColor, // Background color
                           borderRadius:
                               BorderRadius.circular(8), // Border radius
                         ),

@@ -28,25 +28,28 @@ class ExchangeListModel {
     required this.otherUsername,
     required this.otherImageUrl,
     required this.isPostOwner,
-    required this.status
+    required this.status,
   });
 
+  /// **แก้ไขการป้องกันค่า `null` และ `.toDouble()`**
   factory ExchangeListModel.fromJson(Map<String, dynamic> json) {
     return ExchangeListModel(
-      id: json['id'],
-      postId: json['post_id'],
-      offerId: json['offer_id'],
-      exchangeType: json['exchange_type'],
-      postPriceDiff: json['post_price_diff'].toDouble(),
-      offerPriceDiff: json['offer_price_diff'].toDouble(),
-      createdAt: DateTime.parse(json['created_at']),
-      postTitle: json['post_title'],
-      offerTitle: json['offer_title'],
-      ownImageUrl: json['own_image_url'],
-      otherUsername: json['other_username'],
-      otherImageUrl: json['other_image_url'],
-      isPostOwner: json['is_post_owner'],
-      status: json['status']
+      id: json['id'] ?? "",
+      postId: json['post_id'] ?? "",
+      offerId: json['offer_id'] ?? "",
+      exchangeType: json['exchange_type'] ?? "",
+      postPriceDiff: (json['post_price_diff'] ?? 0).toDouble(),
+      offerPriceDiff: (json['offer_price_diff'] ?? 0).toDouble(),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
+      postTitle: json['post_title'] ?? "ไม่มีข้อมูล",
+      offerTitle: json['offer_title'] ?? "ไม่มีข้อมูล",
+      ownImageUrl: json['own_image_url'] ?? "",
+      otherUsername: json['other_username'] ?? "ไม่ระบุชื่อ",
+      otherImageUrl: json['other_image_url'] ?? "",
+      isPostOwner: json['is_post_owner'] ?? false,
+      status: json['status'] ?? "unknown",
     );
   }
 
@@ -65,7 +68,7 @@ class ExchangeListModel {
       'other_username': otherUsername,
       'other_image_url': otherImageUrl,
       'is_post_owner': isPostOwner,
-      'status': status
+      'status': status,
     };
   }
 }
@@ -81,11 +84,16 @@ class ExchangeListResponse {
     required this.status,
   });
 
+  /// **แก้ไข: ป้องกัน `null` ใน response**
   factory ExchangeListResponse.fromJson(Map<String, dynamic> json) {
     return ExchangeListResponse(
-      data: List<ExchangeListModel>.from(json['data'].map((x) => ExchangeListModel.fromJson(x))),
-      message: json['message'],
-      status: json['status'],
+      data: json['data'] != null
+          ? List<ExchangeListModel>.from(
+              json['data'].map((x) => ExchangeListModel.fromJson(x ?? {})),
+            )
+          : [],
+      message: json['message'] ?? "No message",
+      status: json['status'] ?? 0,
     );
   }
 

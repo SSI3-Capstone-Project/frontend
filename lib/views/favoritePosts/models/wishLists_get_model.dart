@@ -9,8 +9,6 @@ class WishListModel {
   final String coverImage;
   final String username;
   final String imageUrl;
-  final DateTime createdAt;
-  final String location;
 
   WishListModel({
     required this.wishListId,
@@ -21,8 +19,6 @@ class WishListModel {
     required this.coverImage,
     required this.username,
     required this.imageUrl,
-    required this.createdAt,
-    required this.location,
   });
 
   // สร้างฟังก์ชันจาก JSON
@@ -36,10 +32,6 @@ class WishListModel {
       coverImage: json['cover_image'] ?? '',
       username: json['username'] ?? '',
       imageUrl: json['image_url'] ?? '',
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : DateTime(0),
-      location: json['location'] ?? '',
     );
   }
 
@@ -54,8 +46,6 @@ class WishListModel {
       'cover_image': coverImage,
       'username': username,
       'image_url': imageUrl,
-      'created_at': createdAt.toIso8601String(),
-      'location': location,
     };
   }
 

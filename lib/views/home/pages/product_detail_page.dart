@@ -42,7 +42,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       Get.put(DeleteWishlistController());
   final PostOfferController offerListController =
       Get.put(PostOfferController());
-  final GetWishListsController getWishListsController = Get.put(GetWishListsController());
+  final GetWishListsController getWishListsController =
+      Get.put(GetWishListsController());
   int _currentPage = 0;
   UserProfile? user;
   var wishListId = "";
@@ -105,7 +106,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           onPressed: () async {
             await getWishListsController.getWishLists();
             Navigator.pop(context);
-            },
+          },
         ),
       ),
       body: SafeArea(
@@ -162,7 +163,28 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     fontWeight: FontWeight.w600,
                                     color: Colors.black,
                                   ),
-                                )
+                                ),
+                                if (userProfileController
+                                        .userProfile.value?.username ==
+                                    productDetail.username)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 3),
+                                    child: Row(
+                                      children: [
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          '• โพสต์ของคุณ',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Constants.secondaryColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                               ],
                             ),
                             GestureDetector(
@@ -336,54 +358,62 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ),
                             const SizedBox(height: 25),
                             if (selectedIndex == 0)
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'สนใจแลก :',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black87,
+                              if (selectedIndex == 0)
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'สนใจแลก :',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black87,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                      Container(
-                                        width: 300,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 3, horizontal: 15),
-                                        decoration: BoxDecoration(
-                                          color: Constants.secondaryColor,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.1),
-                                              blurRadius: 4,
-                                              offset: Offset(0, 2),
-                                            ),
-                                          ],
+                                        SizedBox(
+                                          width: 8,
                                         ),
-                                        // child: Text(
-                                        //   productDetail.desiredItem,
-                                        //   style: const TextStyle(
-                                        //       color: Colors.white,
-                                        //       fontSize: 14,
-                                        //       fontWeight: FontWeight.bold),
-                                        // ),
-                                        child: Expanded(
-                                          // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 3, horizontal: 15),
+                                          decoration: BoxDecoration(
+                                            color: Constants.secondaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
                                           child: Text(
                                             productDetail.desiredItem,
                                             style: const TextStyle(
-                                              color: Colors.white,
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 25),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
+                                          child: Text(
+                                            productDetail.description,
+                                            style: const TextStyle(
                                               fontSize: 14,
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight.normal,
                                             ),
                                             softWrap:
                                                 true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
@@ -391,51 +421,29 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                                 .visible, // แสดงข้อความทั้งหมด
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 25),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
-                                        child: Text(
-                                          productDetail.description,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                          softWrap:
-                                              true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                          overflow: TextOverflow
-                                              .visible, // แสดงข้อความทั้งหมด
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 25),
-                                  if (productDetail.flaw != null)
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'ตำหนิ : ${productDetail.flaw}',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Constants.secondaryColor,
-                                          ),
-                                          softWrap:
-                                              true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                          overflow: TextOverflow.visible,
-                                        ),
                                       ],
                                     ),
-                                  const SizedBox(height: 100),
-                                ],
-                              ),
+                                    const SizedBox(height: 25),
+                                    if (productDetail.flaw != null)
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'ตำหนิ : ${productDetail.flaw}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Constants.secondaryColor,
+                                            ),
+                                            softWrap:
+                                                true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
                             // if (selectedIndex == 1)
                             // Padding(
                             //   padding: EdgeInsets.only(top: 10),
@@ -698,6 +706,27 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               fontSize: 14,
                             ),
                           ),
+                          if (userProfileController
+                                  .userProfile.value?.username ==
+                              item.userName)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 3),
+                              child: Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Text(
+                                    '• ข้อเสนอของคุณ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                       Container(
