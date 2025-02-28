@@ -282,7 +282,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   itemBuilder: (context, index) {
                     final message = allMessages[index];
                     bool isMe = message.username ==
-                        userProfileController.userProfile.value!.username;
+                        userProfileController.userProfile.value?.username;
                     String messageDate = DateFormat('yyyy-MM-dd')
                         .format(message.sendAt.toLocal());
 

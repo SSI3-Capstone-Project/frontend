@@ -568,7 +568,13 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("คะแนน", Icons.star, "${user.rating}/5", user.id),
+            _buildBox(
+                "คะแนน",
+                Icons.star,
+                user.rating != null && user.rating != 0
+                    ? "${user.rating}/5"
+                    : "ยังไม่มีคะแนนรีวิว",
+                user.id),
             _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, "", user.id),
           ],
         ),

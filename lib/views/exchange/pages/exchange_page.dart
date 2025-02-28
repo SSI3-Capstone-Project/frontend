@@ -38,6 +38,7 @@ class _ExchangePageState extends State<ExchangePage> {
   @override
   void initState() {
     super.initState();
+
     productDetailController.fetchPostAndOfferDetail(
         widget.postID, widget.offerID);
   }
@@ -261,11 +262,20 @@ class _ExchangePageState extends State<ExchangePage> {
                               print(postPriceController);
                               print(postPriceController.text.toString());
                               if (selectedPriceDifference.value == 'มี') {
-                                if ((int.parse(postPriceController.text) == 0 ||
-                                        postPriceController.text == '') &&
-                                    (int.parse(offerPriceController.text) ==
-                                            0 ||
-                                        offerPriceController.text == '')) {
+                                // if (postPriceController.text.isEmpty &&
+                                //     offerPriceController.text.isEmpty) {
+                                //   Get.snackbar('แจ้งเตือน',
+                                //       'ถ้าการแลกเปลี่ยนของคุณมีค่าส่วนต่างต้องระบุค่าส่วนต่าง\nขั้นต่ำคือ 1 บาท');
+                                //   return;
+                                // }
+
+                                int? postPrice =
+                                    int.tryParse(postPriceController.text);
+                                int? offerPrice =
+                                    int.tryParse(offerPriceController.text);
+
+                                if ((postPrice == null || postPrice == 0) &&
+                                    (offerPrice == null || offerPrice == 0)) {
                                   Get.snackbar('แจ้งเตือน',
                                       'ถ้าการแลกเปลี่ยนของคุณมีค่าส่วนต่างต้องระบุค่าส่วนต่าง\nขั้นต่ำคือ 1 บาท');
                                 } else {

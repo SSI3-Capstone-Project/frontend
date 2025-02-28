@@ -79,7 +79,7 @@ class ExchangeController extends GetxController {
       } else if (response.statusCode == 409) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'คุณได้เช็คอินสถานที่เรียบร้อยแล้ว');
+        Get.snackbar('แจ้งเตือน', 'คุณได้อัพเดทสถานะการแลกเปลี่ยนนี้แล้ว');
         isLoading(false);
         return false;
       } else if (response.statusCode == 403) {
@@ -94,6 +94,66 @@ class ExchangeController extends GetxController {
         print(jsonData);
         Get.snackbar(
             'แจ้งเตือน', 'เกิดปัญหาระหว่างการอัพเดทสถานะการแลกเปลี่ยน');
+        isLoading(false);
+        return false;
+      }
+    } catch (e) {
+      Get.snackbar(
+          'Error', 'An error occurred: ${e.toString()} in ExchangeController');
+      isLoading(false);
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<bool> sendUserReview(
+      String exchangeID, int rating, String? comment) async {
+    try {
+      isLoading(true);
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading(false);
+        return false;
+      }
+      final token = tokenController.accessToken.value;
+
+      final body = jsonEncode({
+        "rating": rating,
+        "comment": comment,
+      });
+
+      final response = await http.post(
+        Uri.parse('${dotenv.env['API_URL']}/exchanges/$exchangeID/reviews'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: body,
+      );
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData);
+        Get.snackbar('สำเร็จ', 'คุณส่งรีวิวผู้ใช้งานท่านนี้สำเร็จแล้ว');
+        isLoading(false);
+        return true;
+      } else if (response.statusCode == 403) {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน',
+            'คุณสามารถส่งรีวิวได้หลังจากการแลกเปลี่ยนเสร็จสิ้นแล้วเท่านั้น');
+        isLoading(false);
+        return false;
+      } else if (response.statusCode == 409) {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'คุณได้รีวิวผู้ใช้งานท่านนี้เรียบร้อยแล้ว');
+        isLoading(false);
+        return false;
+      } else {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาระหว่างการส่งรีวิวผู้ใช้งาน');
         isLoading(false);
         return false;
       }

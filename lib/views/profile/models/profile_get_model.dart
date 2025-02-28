@@ -6,7 +6,7 @@ class UserProfile {
   final String email;
   final String phone;
   final String gender;
-  final int rating;
+  final int? rating;
   final String? imageUrl;
 
   UserProfile({
@@ -17,7 +17,7 @@ class UserProfile {
     required this.email,
     required this.phone,
     required this.gender,
-    required this.rating,
+    this.rating,
     this.imageUrl,
   });
 
@@ -30,7 +30,9 @@ class UserProfile {
       email: json['email'],
       phone: json['phone'],
       gender: json['gender'],
-      rating: json['rating'],
+      rating: json['avg_rating'] != null
+          ? int.tryParse(json['avg_rating'].toString())
+          : null,
       imageUrl: json['image_url'],
     );
   }
@@ -44,7 +46,7 @@ class UserProfile {
       'email': email,
       'phone': phone,
       'gender': gender,
-      'rating': rating,
+      'avg_rating': rating,
       'image_url': imageUrl,
     };
   }
@@ -60,7 +62,7 @@ class UserProfile {
       email: $email,
       phone: $phone,
       gender: $gender,
-      rating: $rating,
+      avg_rating: $rating,
       imageUrl: $imageUrl
     }
     ''';

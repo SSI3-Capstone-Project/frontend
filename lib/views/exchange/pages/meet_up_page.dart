@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places_hoc081098/flutter_google_places_hoc081098.dart';
 import 'package:flutter_google_places_hoc081098/google_maps_webservice_places.dart';
@@ -15,6 +16,10 @@ import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.d
 import 'package:mbea_ssi3_front/views/exchange/controllers/meet_up_exchange_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 enum Payer { post, offer }
 
@@ -40,7 +45,16 @@ class MeetUpPage extends StatefulWidget {
   State<MeetUpPage> createState() => _MeetUpPageState();
 }
 
+class RatingController extends GetxController {
+  var selectedRating = 0.obs;
+
+  void setRating(int rating) {
+    selectedRating.value = rating;
+  }
+}
+
 class _MeetUpPageState extends State<MeetUpPage> {
+  final RatingController ratingController = Get.put(RatingController());
   final ChatRoomController chatRoomController = Get.put(ChatRoomController());
   final ExchangeController exchangeController = Get.put(ExchangeController());
   final MeetUpExchangeController meetUpExchangeController =
@@ -55,6 +69,64 @@ class _MeetUpPageState extends State<MeetUpPage> {
   int? _currentStage;
   DateTime? selectedDate;
   TimeOfDay? meetTime;
+  TextEditingController reviewController = TextEditingController();
+  int maxCharacters = 200; // จำกัดจำนวนตัวอักษร
+
+  final ImagePicker _picker = ImagePicker();
+  List<Map<String, dynamic>> mediaList = [];
+  VideoPlayerController? _videoController;
+  int currentIndex = 0;
+
+  Future<void> pickMedia() async {
+    final XFile? pickedFile =
+        await _picker.pickMedia(); // รองรับทั้งรูปและวิดีโอ
+    if (pickedFile != null) {
+      File file = File(pickedFile.path);
+      if (pickedFile.path.endsWith('.mp4')) {
+        // ถ้าเป็นวิดีโอ ให้สร้าง Thumbnail
+        final String? thumbPath = await VideoThumbnail.thumbnailFile(
+          video: pickedFile.path,
+          imageFormat: ImageFormat.PNG,
+          maxWidth: 200,
+          quality: 75,
+        );
+        setState(() {
+          mediaList.add({
+            'type': 'video',
+            'file': file,
+            'thumbnail': thumbPath != null ? File(thumbPath) : null,
+          });
+        });
+      } else {
+        // ถ้าเป็นรูปภาพ
+        setState(() {
+          mediaList.add({'type': 'image', 'file': file});
+        });
+      }
+    }
+  }
+
+  void playVideo(File videoFile) {
+    _videoController?.dispose();
+    _videoController = VideoPlayerController.file(videoFile)
+      ..initialize().then((_) {
+        setState(() {});
+        _videoController?.play();
+      });
+  }
+
+  void limitTextLength() {
+    String text = reviewController.text;
+    if (text.runes.length > maxCharacters) {
+      // ตัดข้อความให้ไม่เกิน 200 ตัวอักษร
+      reviewController.text =
+          String.fromCharCodes(text.runes.take(maxCharacters));
+      reviewController.selection = TextSelection.fromPosition(
+        TextPosition(offset: reviewController.text.length),
+      );
+    }
+    setState(() {}); // อัปเดตตัวนับ
+  }
 
   DateTime? combineDateAndTime(DateTime? selectedDate, TimeOfDay? meetTime) {
     if (selectedDate == null || meetTime == null) return null;
@@ -158,6 +230,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
   @override
   void initState() {
     super.initState();
+    ratingController.selectedRating(0);
     _currentStage = widget.currentStep;
     exchangeID = widget.exchangeID;
     if (widget.exchangeID != null) {
@@ -167,6 +240,12 @@ class _MeetUpPageState extends State<MeetUpPage> {
           exchangeController.exchange.value!.meetingPoint.longitude,
           exchangeController.exchange.value!.meetingPoint.scheduledTime);
     }
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    super.dispose();
   }
 
   Future<void> _pickDate() async {
@@ -470,7 +549,135 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                 SizedBox(
                                   height: 25,
                                 ),
-                                finishCard()
+                                finishCard(),
+                                userRating(),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  child: ElevatedButton.icon(
+                                    onPressed: () async {
+                                      await exchangeController
+                                          .fetchExchangeDetails(exchangeID!);
+                                      if (exchangeController
+                                              .exchange.value?.status ==
+                                          'completed') {
+                                        if (ratingController
+                                                .selectedRating.value !=
+                                            0) {
+                                          await exchangeController
+                                              .sendUserReview(
+                                                  exchangeID!,
+                                                  ratingController
+                                                      .selectedRating.value,
+                                                  reviewController.text);
+                                        }
+
+                                        await chatRoomController
+                                            .fetchChatRooms();
+                                        // Navigator.of(context)
+                                        //     .popUntil((route) => route.isFirst);
+                                      } else {
+                                        await exchangeController
+                                            .updateExchangeStatus(
+                                                exchangeID!, 'completed');
+                                        if (ratingController
+                                                .selectedRating.value !=
+                                            0) {
+                                          await exchangeController
+                                              .sendUserReview(
+                                                  exchangeID!,
+                                                  ratingController
+                                                      .selectedRating.value,
+                                                  reviewController.text);
+                                        }
+                                        await chatRoomController
+                                            .fetchChatRooms();
+                                        // Navigator.of(context)
+                                        //     .popUntil((route) => route.isFirst);
+                                      }
+
+                                      // Navigator.pop(context);
+                                      // Navigator.pop(context);
+                                      // if (widget.currentStep == 1) {
+                                      //   Navigator.pop(context);
+                                      // }
+                                    },
+                                    label: Text("เสร็จสิ้นการแลกเปลี่ยน",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)),
+                                    // icon: Icon(Icons.arrow_forward, color: Colors.white),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Constants.primaryColor, // สีพื้นหลัง
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            15), // ขอบมน 15
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                          vertical: 5), // ปรับขนาดปุ่ม
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      height: 250, // กำหนดความสูงให้ PageView
+                                      child: Center(
+                                        child: mediaList.isEmpty
+                                            ? Text("เลือกไฟล์เพื่อแสดง")
+                                            : PageView.builder(
+                                                itemCount: mediaList.length,
+                                                onPageChanged: (index) {
+                                                  setState(() =>
+                                                      currentIndex = index);
+                                                },
+                                                itemBuilder: (context, index) {
+                                                  var media = mediaList[index];
+                                                  if (media['type'] ==
+                                                      'image') {
+                                                    return Image.file(
+                                                      media['file'],
+                                                      fit: BoxFit.cover,
+                                                    );
+                                                  } else {
+                                                    return media['thumbnail'] !=
+                                                            null
+                                                        ? GestureDetector(
+                                                            onTap: () =>
+                                                                playVideo(media[
+                                                                    'file']),
+                                                            child: Image.file(
+                                                              media[
+                                                                  'thumbnail'],
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          )
+                                                        : CircularProgressIndicator();
+                                                  }
+                                                },
+                                              ),
+                                      ),
+                                    ),
+                                    if (_videoController != null &&
+                                        _videoController!.value.isInitialized)
+                                      AspectRatio(
+                                        aspectRatio:
+                                            _videoController!.value.aspectRatio,
+                                        child: VideoPlayer(_videoController!),
+                                      ),
+                                    SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      onPressed: pickMedia,
+                                      icon: Icon(Icons.add),
+                                      label: Text("เลือกไฟล์"),
+                                    ),
+                                    SizedBox(height: 16),
+                                  ],
+                                )
                               ],
                             ),
                           // if (widget.priceDifference != null)
@@ -1221,36 +1428,6 @@ class _MeetUpPageState extends State<MeetUpPage> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: ElevatedButton.icon(
-            onPressed: () async {
-              await exchangeController.updateExchangeStatus(
-                  exchangeID!, 'completed');
-              await chatRoomController.fetchChatRooms();
-
-              Navigator.pop(context);
-              Navigator.pop(context);
-              if (widget.currentStep == 1) {
-                Navigator.pop(context);
-              }
-            },
-            label: Text("เสร็จสิ้นการแลกเปลี่ยน",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-            // icon: Icon(Icons.arrow_forward, color: Colors.white),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Constants.primaryColor, // สีพื้นหลัง
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15), // ขอบมน 15
-              ),
-              padding: EdgeInsets.symmetric(
-                  horizontal: 20, vertical: 5), // ปรับขนาดปุ่ม
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -1439,6 +1616,124 @@ class _MeetUpPageState extends State<MeetUpPage> {
     );
   }
 
+  Widget userRating() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // เจ้าของโพสต์
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundImage: NetworkImage(widget.user == Payer.post
+                            ? exchangeController.exchange.value!.postImageUrl
+                            : exchangeController.exchange.value!.offerImageUrl),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                          widget.user == Payer.post
+                              ? exchangeController.exchange.value!.postUsername
+                              : exchangeController
+                                  .exchange.value!.offerUsername,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  Obx(() => Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(5, (index) {
+                          int starIndex = index + 1;
+                          return GestureDetector(
+                            onTap: () => ratingController.setRating(starIndex),
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: ratingController.selectedRating.value ==
+                                        starIndex
+                                    ? Colors.grey.shade300
+                                    : Colors.transparent,
+                              ),
+                              padding: EdgeInsets.all(8),
+                              child: Icon(
+                                Icons.star,
+                                size: 20,
+                                color: ratingController.selectedRating.value >=
+                                        starIndex
+                                    ? Constants.primaryColor
+                                    : Colors.grey,
+                              ),
+                            ),
+                          );
+                        }),
+                      )),
+                ],
+              ),
+              SizedBox(height: 16),
+
+              TextField(
+                controller: reviewController,
+                maxLines: 3,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                decoration: InputDecoration(
+                  hintText: "เขียนรีวิวผู้ใช้งานท่านนี้...",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                        color: Colors.grey.shade300), // กำหนดสี border
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                        color: Colors.grey.shade300), // border เมื่อไม่ได้โฟกัส
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                        color: Colors.grey.shade300,
+                        width: 2), // border เมื่อโฟกัส
+                  ),
+                  contentPadding: EdgeInsets.all(12),
+                ),
+                onChanged: (text) {
+                  limitTextLength(); // ตรวจสอบและตัดข้อความ
+                },
+              ),
+              SizedBox(height: 5),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  "${reviewController.text.runes.length}/$maxCharacters",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildStepIndicator() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1462,6 +1757,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
               GestureDetector(
                 onTap: () {
                   if (exchangeController.exchange.value != null) {
+                    ratingController.setRating(0);
                     if (stepNumber < 3) {
                       setState(() {
                         _currentStage = stepNumber;
