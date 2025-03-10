@@ -57,6 +57,7 @@ dependencies:
   flutter_svg: ^2.0.17
   geolocator: ^13.0.2
   mime: ^2.0.0
+  path_provider: ^2.1.5
 
 
 dev_dependencies:

@@ -4,6 +4,7 @@ class PostOffers {
   String description;
   String subCollectionName;
   String coverImage;
+  String userID;
   String userName;
   String imageURL;
   String location;
@@ -14,6 +15,7 @@ class PostOffers {
     required this.description,
     required this.subCollectionName,
     required this.coverImage,
+    required this.userID,
     required this.userName,
     required this.imageURL,
     required this.location,
@@ -27,6 +29,7 @@ class PostOffers {
       description: json['description'],
       subCollectionName: json['sub_collection_name'],
       coverImage: json['cover_image'],
+      userID: json['user_id'],
       userName: json['username'],
       imageURL: json['image_url'],
       location: json['location'],
@@ -41,6 +44,7 @@ class PostOffers {
       'description': description,
       'sub_collection_name': subCollectionName,
       'cover_image': coverImage,
+      'user_id': userID,
       'username': userName,
       'image_url': imageURL,
       'location': location,

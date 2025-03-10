@@ -9,12 +9,14 @@ import 'package:mbea_ssi3_front/views/exchange/pages/exchange_page.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/post_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/post_offer_detail_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/other_user_profile_page.dart';
 import 'package:video_player/video_player.dart';
 
 class OfferDetailPage extends StatefulWidget {
   final String postID;
   final String postName;
   final String offerID;
+  final String userID;
   final String username;
   final String userImage;
 
@@ -23,6 +25,7 @@ class OfferDetailPage extends StatefulWidget {
       required this.postID,
       required this.postName,
       required this.offerID,
+      required this.userID,
       required this.username,
       required this.userImage})
       : super(key: key);
@@ -104,7 +107,16 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          OtherUserProfileDetail(
+                                              userId: widget.userID),
+                                    ),
+                                  );
+                                },
                                 child: Align(
                                   alignment: Alignment.topRight,
                                   child: Container(

@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'dart:convert';
-
+import 'package:path/path.dart' as path;
 import 'package:mbea_ssi3_front/views/exchange/models/exchange_model.dart';
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 
 class ExchangeController extends GetxController {
   final tokenController = Get.find<TokenController>();
@@ -107,59 +111,80 @@ class ExchangeController extends GetxController {
     }
   }
 
-  Future<bool> sendUserReview(
-      String exchangeID, int rating, String? comment) async {
+  Future<bool> sendUserReview(String exchangeID, int rating, String? comment,
+      List<Map<String, dynamic>> mediaList) async {
     try {
       isLoading(true);
       if (tokenController.accessToken.value == null) {
-        // Get.snackbar('Error', 'No access token found.');
         isLoading(false);
         return false;
       }
       final token = tokenController.accessToken.value;
 
-      final body = jsonEncode({
-        "rating": rating,
-        "comment": comment,
-      });
+      var uri =
+          Uri.parse('${dotenv.env['API_URL']}/exchanges/$exchangeID/reviews');
 
-      final response = await http.post(
-        Uri.parse('${dotenv.env['API_URL']}/exchanges/$exchangeID/reviews'),
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-        body: body,
-      );
+      var request = http.MultipartRequest("POST", uri)
+        ..headers["Authorization"] = "Bearer $token"
+        ..fields["rating"] = rating.toString()
+        ..fields["comment"] = comment ?? "";
+
+      // เพิ่มไฟล์ทั้งหมดใน request จาก mediaList
+      for (var media in mediaList) {
+        if (media["file"] is File) {
+          File file = media["file"];
+
+          // ตรวจสอบ MIME Type ตามไฟล์จริง
+          String? mimeType =
+              lookupMimeType(file.path) ?? "application/octet-stream";
+          String fileExtension = path.extension(file.path).toLowerCase();
+
+          // ตรวจสอบชนิดของไฟล์
+          if (fileExtension == ".mp4") {
+            mimeType = "video/mp4";
+          } else if (fileExtension == ".png") {
+            mimeType = "image/png";
+          } else if (fileExtension == ".jpg" || fileExtension == ".jpeg") {
+            mimeType = "image/jpeg";
+          } else if (fileExtension == ".gif") {
+            mimeType = "image/gif";
+          }
+
+          String fieldName = "files"; // ใช้ชื่อ key เป็น "files" ตามที่ต้องการ
+          request.files.add(await http.MultipartFile.fromPath(
+              fieldName, file.path,
+              contentType: MediaType.parse(mimeType)));
+        }
+      }
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      var jsonData = jsonDecode(responseBody);
+
       if (response.statusCode == 200) {
-        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('สำเร็จ', 'คุณส่งรีวิวผู้ใช้งานท่านนี้สำเร็จแล้ว');
         isLoading(false);
         return true;
       } else if (response.statusCode == 403) {
-        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('แจ้งเตือน',
             'คุณสามารถส่งรีวิวได้หลังจากการแลกเปลี่ยนเสร็จสิ้นแล้วเท่านั้น');
         isLoading(false);
         return false;
       } else if (response.statusCode == 409) {
-        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('แจ้งเตือน', 'คุณได้รีวิวผู้ใช้งานท่านนี้เรียบร้อยแล้ว');
         isLoading(false);
         return false;
       } else {
-        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('แจ้งเตือน', 'เกิดปัญหาระหว่างการส่งรีวิวผู้ใช้งาน');
         isLoading(false);
         return false;
       }
     } catch (e) {
-      Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in ExchangeController');
+      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
       isLoading(false);
       return false;
     } finally {

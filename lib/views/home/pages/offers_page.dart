@@ -270,6 +270,7 @@ class _OffersPageState extends State<OffersPage> {
                           postID: postId,
                           postName: postName,
                           offerID: item.id,
+                          userID: item.userID,
                           username: item.userName,
                           userImage: item.imageURL,
                         ),

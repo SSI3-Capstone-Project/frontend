@@ -8,6 +8,7 @@ class ProductDetail {
   String desiredItem;
   String subCollectionName;
   String coverImage;
+  String userID;
   String username;
   String userImageUrl;
   String createdAt;
@@ -17,23 +18,24 @@ class ProductDetail {
   RxBool isFavorated;
   String wishListId;
 
-  ProductDetail({
-    required this.id,
-    required this.title,
-    required this.description,
-    this.flaw,
-    required this.desiredItem,
-    required this.subCollectionName,
-    required this.coverImage,
-    required this.username,
-    required this.userImageUrl,
-    required this.createdAt,
-    required this.location,
-    required this.productImages,
-    required this.productVideos,
-    required bool isFavorated,
-    required this.wishListId
-  }) : isFavorated = RxBool(isFavorated);
+  ProductDetail(
+      {required this.id,
+      required this.title,
+      required this.description,
+      this.flaw,
+      required this.desiredItem,
+      required this.subCollectionName,
+      required this.coverImage,
+      required this.userID,
+      required this.username,
+      required this.userImageUrl,
+      required this.createdAt,
+      required this.location,
+      required this.productImages,
+      required this.productVideos,
+      required bool isFavorated,
+      required this.wishListId})
+      : isFavorated = RxBool(isFavorated);
 
   factory ProductDetail.fromJson(Map<String, dynamic> json) {
     var productImagesFromJson = json['post_images'] as List?;
@@ -54,6 +56,7 @@ class ProductDetail {
       desiredItem: json['desired_item'],
       subCollectionName: json['sub_collection_name'],
       coverImage: json['cover_image'],
+      userID: json['user_id'],
       username: json['username'],
       userImageUrl: json['image_url'],
       createdAt: json['created_at'],

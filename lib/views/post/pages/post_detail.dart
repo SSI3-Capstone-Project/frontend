@@ -448,6 +448,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           postID: postId,
                           postName: postName,
                           offerID: item.id,
+                          userID: item.userID,
                           username: item.userName,
                           userImage: item.imageURL,
                         ),

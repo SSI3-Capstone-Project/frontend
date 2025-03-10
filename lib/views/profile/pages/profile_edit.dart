@@ -173,18 +173,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     onChanged: _onFieldChanged,
                   ),
                   const SizedBox(height: 10),
-                  _buildTextFormField(
-                    controller: emailController,
-                    label: 'อีเมล',
-                    validator: (value) {
-                      if (value == null || !GetUtils.isEmail(value)) {
-                        return 'กรุณากรอกอีเมลที่ถูกต้อง';
-                      }
-                      return null;
-                    },
-                    maxLength: 255,
-                    field: 'email',
-                    onChanged: _onFieldChanged,
+                  IgnorePointer(
+                    ignoring: true,
+                    child: _buildTextFormField(
+                      controller: emailController,
+                      label: 'อีเมล',
+                      validator: (value) {
+                        if (value == null || !GetUtils.isEmail(value)) {
+                          return 'กรุณากรอกอีเมลที่ถูกต้อง';
+                        }
+                        return null;
+                      },
+                      maxLength: 255,
+                      field: 'email',
+                      onChanged: _onFieldChanged,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   _buildTextFormField(
@@ -347,7 +350,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         genderController.value != widget.userProfile.gender;
 
     setState(() {
-        isEdited = hasTextChanged || hasDropdownChanged || _isFieldModified['image'] == true;
+      isEdited = hasTextChanged ||
+          hasDropdownChanged ||
+          _isFieldModified['image'] == true;
     });
   }
 }

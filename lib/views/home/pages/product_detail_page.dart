@@ -15,6 +15,7 @@ import 'package:mbea_ssi3_front/views/post/controllers/post_offer_controller.dar
 import 'package:mbea_ssi3_front/views/post/pages/post_offer_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
+import 'package:mbea_ssi3_front/views/profile/pages/other_user_profile_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
 import 'package:video_player/video_player.dart';
@@ -137,7 +138,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            OtherUserProfileDetail(
+                                                userId: productDetail.userID),
+                                      ),
+                                    );
+                                  },
                                   child: Align(
                                     alignment: Alignment.topRight,
                                     child: Container(
@@ -644,6 +654,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         postID: postId,
                         postName: postName,
                         offerID: item.id,
+                        userID: item.userID,
                         username: item.userName,
                         userImage: item.imageURL,
                       ),

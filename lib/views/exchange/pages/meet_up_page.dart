@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places_hoc081098/flutter_google_places_hoc081098.dart';
 import 'package:flutter_google_places_hoc081098/google_maps_webservice_places.dart';
@@ -16,8 +18,8 @@ import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.d
 import 'package:mbea_ssi3_front/views/exchange/controllers/meet_up_exchange_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
-
 import 'package:image_picker/image_picker.dart';
+import 'package:mbea_ssi3_front/views/report/pages/report_issue_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -441,10 +443,61 @@ class _MeetUpPageState extends State<MeetUpPage> {
                     Center(
                       child: Column(
                         children: [
+                          if (_currentStage == 4 || _currentStage == 3)
+                            SizedBox(height: 15),
+                          if (_currentStage == 4 || _currentStage == 3)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  height: 35,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Constants.secondaryColor, // สีแดง
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ReportIssuePage(
+                                                      exchangeId:
+                                                          exchangeID!)));
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.error_outline,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          "รายงานปัญหา",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                              ],
+                            ),
                           if (_currentStage == 1 || _currentStage == 3)
                             Column(
                               children: [
-                                SizedBox(height: 25),
+                                SizedBox(height: 10),
                                 chooseDateTime(),
                                 SizedBox(height: 15),
                                 if (_currentStage == 3)
@@ -494,7 +547,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
                             Obx(() {
                               return Column(
                                 children: [
-                                  SizedBox(height: 25),
+                                  SizedBox(height: 10),
                                   if ((exchangeController
                                               .exchange.value?.exchangeStage ??
                                           0) <=
@@ -547,7 +600,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
                             Column(
                               children: [
                                 SizedBox(
-                                  height: 25,
+                                  height: 10,
                                 ),
                                 finishCard(),
                                 userRating(),
@@ -569,13 +622,14 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                                   exchangeID!,
                                                   ratingController
                                                       .selectedRating.value,
-                                                  reviewController.text);
+                                                  reviewController.text,
+                                                  mediaList);
                                         }
 
                                         await chatRoomController
                                             .fetchChatRooms();
-                                        // Navigator.of(context)
-                                        //     .popUntil((route) => route.isFirst);
+                                        Navigator.of(context)
+                                            .popUntil((route) => route.isFirst);
                                       } else {
                                         await exchangeController
                                             .updateExchangeStatus(
@@ -588,12 +642,13 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                                   exchangeID!,
                                                   ratingController
                                                       .selectedRating.value,
-                                                  reviewController.text);
+                                                  reviewController.text,
+                                                  mediaList);
                                         }
                                         await chatRoomController
                                             .fetchChatRooms();
-                                        // Navigator.of(context)
-                                        //     .popUntil((route) => route.isFirst);
+                                        Navigator.of(context)
+                                            .popUntil((route) => route.isFirst);
                                       }
 
                                       // Navigator.pop(context);
@@ -621,63 +676,6 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                     ),
                                   ),
                                 ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      height: 250, // กำหนดความสูงให้ PageView
-                                      child: Center(
-                                        child: mediaList.isEmpty
-                                            ? Text("เลือกไฟล์เพื่อแสดง")
-                                            : PageView.builder(
-                                                itemCount: mediaList.length,
-                                                onPageChanged: (index) {
-                                                  setState(() =>
-                                                      currentIndex = index);
-                                                },
-                                                itemBuilder: (context, index) {
-                                                  var media = mediaList[index];
-                                                  if (media['type'] ==
-                                                      'image') {
-                                                    return Image.file(
-                                                      media['file'],
-                                                      fit: BoxFit.cover,
-                                                    );
-                                                  } else {
-                                                    return media['thumbnail'] !=
-                                                            null
-                                                        ? GestureDetector(
-                                                            onTap: () =>
-                                                                playVideo(media[
-                                                                    'file']),
-                                                            child: Image.file(
-                                                              media[
-                                                                  'thumbnail'],
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          )
-                                                        : CircularProgressIndicator();
-                                                  }
-                                                },
-                                              ),
-                                      ),
-                                    ),
-                                    if (_videoController != null &&
-                                        _videoController!.value.isInitialized)
-                                      AspectRatio(
-                                        aspectRatio:
-                                            _videoController!.value.aspectRatio,
-                                        child: VideoPlayer(_videoController!),
-                                      ),
-                                    SizedBox(height: 16),
-                                    ElevatedButton.icon(
-                                      onPressed: pickMedia,
-                                      icon: Icon(Icons.add),
-                                      label: Text("เลือกไฟล์"),
-                                    ),
-                                    SizedBox(height: 16),
-                                  ],
-                                )
                               ],
                             ),
                           // if (widget.priceDifference != null)
@@ -1727,11 +1725,172 @@ class _MeetUpPageState extends State<MeetUpPage> {
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_videoController != null &&
+                      _videoController!.value.isInitialized)
+                    AspectRatio(
+                      aspectRatio: _videoController!.value.aspectRatio,
+                      child: VideoPlayer(_videoController!),
+                    ),
+                  if (mediaList.isNotEmpty)
+                    SizedBox(
+                      height: 120,
+                      child: ReorderableListView(
+                        scrollDirection: Axis.horizontal,
+                        onReorder: (oldIndex, newIndex) {
+                          setState(() {
+                            if (newIndex > oldIndex) {
+                              newIndex -= 1;
+                            }
+                            final item = mediaList.removeAt(oldIndex);
+                            mediaList.insert(newIndex, item);
+                          });
+                        },
+                        children: List.generate(mediaList.length, (index) {
+                          var media = mediaList[index];
+                          File? file = media['file'];
+
+                          return Stack(
+                            key: ValueKey(media),
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                margin: EdgeInsets.symmetric(horizontal: 4),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                      8), // เพิ่มมุมมนให้รูปภาพและวิดีโอ
+                                  child: file != null && file.existsSync()
+                                      ? media['type'] == 'image'
+                                          ? Image.file(file, fit: BoxFit.cover)
+                                          : _buildVideoPreview(
+                                              file) // ใช้ฟังก์ชันพรีวิววิดีโอ
+                                      : Center(
+                                          child: Text("ไฟล์ไม่พบ",
+                                              style: TextStyle(fontSize: 12))),
+                                ),
+                              ),
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      mediaList.removeAt(index);
+                                    });
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: Colors.red,
+                                    child: Icon(Icons.close,
+                                        color: Colors.white, size: 16),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
+                    ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Constants.primaryColor, // สีพื้นหลังฟ้า
+                        shape: BoxShape.circle, // ทำให้เป็นวงกลม
+                      ),
+                      child: IconButton(
+                        onPressed: pickMedia,
+                        tooltip: "แนบไฟล์รูปภาพหรือวิดีโอ",
+                        icon: Transform.rotate(
+                          angle: pi / 4, // หมุน 45 องศา
+                          child: Icon(Icons.attach_file, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
             ],
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildVideoPreview(File videoFile) {
+    return FutureBuilder<Uint8List?>(
+      future: VideoThumbnail.thumbnailData(
+        video: videoFile.path,
+        imageFormat: ImageFormat.JPEG,
+        maxHeight: 1500, // ลดความสูงของ thumbnail
+        quality: 100,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.data != null) {
+          return Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8), // เพิ่มมุมมนให้กับรูป
+                child: Image.memory(
+                  snapshot.data!,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FutureBuilder<Duration>(
+                future: _getVideoDuration(videoFile),
+                builder: (context, durationSnapshot) {
+                  if (durationSnapshot.connectionState ==
+                          ConnectionState.done &&
+                      durationSnapshot.data != null) {
+                    return Container(
+                      margin: EdgeInsets.all(4),
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _formatDuration(durationSnapshot.data!),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    );
+                  } else {
+                    return SizedBox(); // หากยังโหลดเวลาไม่เสร็จ จะไม่แสดงอะไร
+                  }
+                },
+              ),
+            ],
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
+  Future<Duration> _getVideoDuration(File videoFile) async {
+    final controller = VideoPlayerController.file(videoFile);
+    await controller.initialize();
+    final duration = controller.value.duration;
+    await controller.dispose(); // ปล่อยหน่วยความจำหลังใช้งาน
+    return duration;
+  }
+
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   Widget _buildStepIndicator() {
