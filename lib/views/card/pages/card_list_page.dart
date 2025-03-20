@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 import '../../../common/constants.dart';
+import '../controllers/card_list_get_controller.dart';
 import 'card_create_page.dart';
 import 'card_details_page.dart';
 
@@ -13,11 +16,13 @@ class CardListPage extends StatefulWidget {
 }
 
 class _CardListPageState extends State<CardListPage> {
-  final List<Map<String, String>> cards = [
-    {'brand': 'Visa', 'last4': '1234'},
-    {'brand': 'MasterCard', 'last4': '5678'},
-    {'brand': 'Amex', 'last4': '9876'},
-  ];
+  final CardListController cardListController = Get.put(CardListController());
+
+  @override
+  void initState() {
+    super.initState();
+    cardListController.fetchCustomerCards();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,55 +40,63 @@ class _CardListPageState extends State<CardListPage> {
           },
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: cards.isEmpty
-                  ? const Center(
-                child: Text("ยังไม่มีช่องทางการชำระเงิน กรุณาเพิ่มช่องทางการชำระเงิน"),
-              )
-                  : _buildCardList(),
+      body: Obx(() {
+        if (cardListController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (cardListController.cards.isEmpty) {
+          return const Center(
+            child: Text("ยังไม่มีช่องทางการชำระเงิน กรุณาเพิ่มช่องทางการชำระเงิน"),
+          );
+        }
+
+        return Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: _buildCardList(),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Constants.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CardCreatePage(),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Constants.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  );
-                },
-                child: const Text(
-                  "เพิ่มวิธีการชำระเงิน",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CardCreatePage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "เพิ่มวิธีการชำระเงิน",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
   Widget _buildCardList() {
     return ListView.builder(
-      itemCount: cards.length,
+      itemCount: cardListController.cards.length,
       itemBuilder: (context, index) {
-        final card = cards[index];
+        final card = cardListController.cards[index];
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
@@ -101,7 +114,7 @@ class _CardListPageState extends State<CardListPage> {
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             title: Text(
-              "${card['brand']} **** ${card['last4']}",
+              "${card.brand} **** ${card.last4}",
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),

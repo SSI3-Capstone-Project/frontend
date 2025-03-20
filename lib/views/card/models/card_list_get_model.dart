@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-class OmiseCustomerCard {
+class GetOmiseCustomerCard {
   final String cardId;
   final String brand;
   final String last4;
   final int expMonth;
   final int expYear;
 
-  OmiseCustomerCard({
+  GetOmiseCustomerCard({
     required this.cardId,
     required this.brand,
     required this.last4,
@@ -15,8 +15,8 @@ class OmiseCustomerCard {
     required this.expYear,
   });
 
-  factory OmiseCustomerCard.fromJson(Map<String, dynamic> json) {
-    return OmiseCustomerCard(
+  factory GetOmiseCustomerCard.fromJson(Map<String, dynamic> json) {
+    return GetOmiseCustomerCard(
       cardId: json['card_id'],
       brand: json['brand'],
       last4: json['last4'],

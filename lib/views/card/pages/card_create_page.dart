@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 
 import '../../../common/constants.dart';
 import '../controllers/card_create_controller.dart';
+import '../controllers/card_list_get_controller.dart';
 
 class CardCreatePage extends StatefulWidget {
   const CardCreatePage({super.key});
@@ -19,6 +20,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
   final CardCreateController createCardController = Get.put(CardCreateController());
+  final cardListController = Get.find<CardListController>();
 
   Future<bool> submitCard() async {
     final expiryParts = expiryDateController.text.split('/');
@@ -125,6 +127,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
                 onPressed: () async {
                   bool success = await submitCard();
                   if (success) {
+                    await cardListController.fetchCustomerCards();
                     Navigator.pop(context);
                   }
                 },
