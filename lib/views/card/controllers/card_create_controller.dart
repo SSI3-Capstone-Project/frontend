@@ -23,7 +23,7 @@ class CardCreateController extends GetxController {
     final url = Uri.parse('https://vault.omise.co/tokens');
     final headers = {
       'Authorization':
-      'Basic ${base64Encode(utf8.encode("pkey_test_630m532d4ot9rgjzyqa:"))}',
+      'Basic ${base64Encode(utf8.encode("${dotenv.env['OMISE_PUBLIC_KEY']}:"))}',
       'Content-Type': 'application/x-www-form-urlencoded',
     };
 
