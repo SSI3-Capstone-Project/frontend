@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../../../common/constants.dart';
 import '../controllers/card_create_controller.dart';
 
 class CardCreatePage extends StatefulWidget {
@@ -17,24 +18,26 @@ class _CardCreatePageState extends State<CardCreatePage> {
   final TextEditingController cardNameController = TextEditingController();
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
-  final CardCreateController controller = Get.put(CardCreateController());
+  final CardCreateController createCardController = Get.put(CardCreateController());
 
-  void submitCard() {
+  Future<bool> submitCard() async {
     final expiryParts = expiryDateController.text.split('/');
     if (expiryParts.length != 2) {
       Get.snackbar("Error", "รูปแบบวันหมดอายุไม่ถูกต้อง");
-      return;
+      return false;
     }
 
-    controller.createCardToken(
+    bool isSuccess = await createCardController.createCardToken( // ✅ ใช้ instance ที่ถูกต้อง
       name: cardNameController.text,
       number: cardNumberController.text,
       expirationMonth: expiryParts[0],
       expirationYear: "20${expiryParts[1]}",
-      city: "Bangkok",  // Placeholder, change as needed
-      postalCode: "10200", // Placeholder, change as needed
+      city: "Bangkok",
+      postalCode: "10200",
       securityCode: cvvController.text,
     );
+
+    return isSuccess;
   }
 
   @override
@@ -114,12 +117,17 @@ class _CardCreatePageState extends State<CardCreatePage> {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Constants.primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: submitCard,
+                onPressed: () async {
+                  bool success = await submitCard();
+                  if (success) {
+                    Navigator.pop(context);
+                  }
+                },
                 child: const Text(
                   "เพิ่มวิธีการชำระเงินนี้",
                   style: TextStyle(color: Colors.white, fontSize: 16),

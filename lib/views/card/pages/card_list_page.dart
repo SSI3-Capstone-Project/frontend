@@ -56,7 +56,7 @@ class _CardListPageState extends State<CardListPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Constants.primaryColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 onPressed: () {
