@@ -108,6 +108,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
+                      LengthLimitingTextInputFormatter(3),
                     ],
                     obscureText: true,
                     decoration: const InputDecoration(
