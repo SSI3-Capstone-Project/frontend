@@ -122,7 +122,7 @@ class _CardListPageState extends State<CardListPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CardDetailsPage(),
+                  builder: (context) => CardDetailsPage(cardId: card.cardId),
                 ),
               );
             },
