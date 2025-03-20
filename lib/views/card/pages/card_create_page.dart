@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
@@ -65,6 +66,9 @@ class _CardCreatePageState extends State<CardCreatePage> {
             TextField(
               controller: cardNumberController,
               keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
+              ],
               decoration: const InputDecoration(
                 labelText: "หมายเลขบัตร",
                 hintText: "กรอกหมายเลขบัตรของคุณ",
@@ -102,6 +106,9 @@ class _CardCreatePageState extends State<CardCreatePage> {
                   child: TextField(
                     controller: cvvController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
+                    ],
                     obscureText: true,
                     decoration: const InputDecoration(
                       labelText: "CVV",
