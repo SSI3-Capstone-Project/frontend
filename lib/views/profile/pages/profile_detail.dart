@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/views/address/controllers/address_controller.dart';
 import 'package:mbea_ssi3_front/views/address/pages/address_page.dart';
@@ -10,8 +9,9 @@ import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller
 import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/account_delete.dart';
 import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
-import 'package:mbea_ssi3_front/views/profile/pages/profile_page.dart';
 import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
+
+import '../../card/pages/card_list_page.dart';
 
 class ProfileDetail extends StatefulWidget {
   const ProfileDetail({super.key});
@@ -187,7 +187,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
     ];
     List<String> menuItems = [
       "ที่อยู่ของคุณ",
-      "ช่องทางชำระเงิน",
+      "วิธีการชำระเงิน",
       "ประวัติการแลก",
       "รายงานปัญหา",
       "เปลี่ยนรหัสผ่าน",
@@ -211,7 +211,11 @@ class _ProfileDetailState extends State<ProfileDetail> {
                   MaterialPageRoute(builder: (context) => AddressPage()),
                 );
                 break;
-              case "ช่องทางชำระเงิน":
+              case "วิธีการชำระเงิน":
+                Navigator.push(
+                 context,
+                MaterialPageRoute(builder: (context) => CardListPage()),
+                );
                 break;
               case "ประวัติการแลก":
                 break;
