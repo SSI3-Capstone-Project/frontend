@@ -46,8 +46,9 @@ class _CardListPageState extends State<CardListPage> {
         }
 
         if (cardListController.cards.isEmpty) {
-          return const Center(
-            child: Text("ยังไม่มีช่องทางการชำระเงิน กรุณาเพิ่มช่องทางการชำระเงิน"),
+          const Center(
+            child:
+                Text("ยังไม่มีช่องทางการชำระเงิน กรุณาเพิ่มช่องทางการชำระเงิน"),
           );
         }
 
@@ -112,12 +113,14 @@ class _CardListPageState extends State<CardListPage> {
             ],
           ),
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             title: Text(
               "${card.brand} **** ${card.last4}",
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 18, color: Colors.grey),
             onTap: () {
               Navigator.push(
                 context,
