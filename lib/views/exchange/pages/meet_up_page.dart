@@ -17,6 +17,7 @@ import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart
 import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/meet_up_exchange_controller.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mbea_ssi3_front/views/exchange/pages/exchange_product_detail_page.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/views/report/pages/report_issue_page.dart';
@@ -28,8 +29,8 @@ enum Payer { post, offer }
 class MeetUpPage extends StatefulWidget {
   final int currentStep;
   final String? exchangeID;
-  final String? offerID;
-  final String? postID;
+  final String offerID;
+  final String postID;
   final Payer user;
   final Payer? payer;
   final int? priceDifference;
@@ -37,8 +38,8 @@ class MeetUpPage extends StatefulWidget {
       {super.key,
       this.exchangeID,
       required this.currentStep,
-      this.postID,
-      this.offerID,
+      required this.postID,
+      required this.offerID,
       this.priceDifference,
       required this.user,
       this.payer});
@@ -388,6 +389,15 @@ class _MeetUpPageState extends State<MeetUpPage> {
               if (exchangeID != null) {
                 fetchExchangeDetails(exchangeID!);
               }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExchangeProductDetailPage(
+                    offerID: widget.offerID,
+                    postID: widget.postID,
+                  ),
+                ),
+              );
             },
           ),
         ],
@@ -465,8 +475,10 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ReportIssuePage(
-                                                      exchangeId:
-                                                          exchangeID!)));
+                                                    exchangeId: exchangeID!,
+                                                    postID: widget.postID!,
+                                                    offerID: widget.offerID!,
+                                                  )));
                                     },
                                     child: Row(
                                       mainAxisAlignment:
@@ -837,7 +849,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
                     exchangeController.exchange.value!.exchangeStage <= 2
                 ? () async {
                     await exchangeController.updateExchangeStatus(
-                        exchangeID!, 'confirmed');
+                        exchangeID!, 'waiting_payment');
                     await exchangeController.fetchExchangeDetails(exchangeID!);
                     setState(() {
                       _currentStage = 2;

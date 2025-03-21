@@ -17,6 +17,9 @@ class UserCreationController extends GetxController {
     email: '',
     phone: '',
     gender: '',
+    bankCode: '',
+    bankAccountNumber: '',
+    bankAccountName: '',
   ).obs;
 
   // Loading status to show loading indicators
@@ -34,7 +37,10 @@ class UserCreationController extends GetxController {
       ..fields['lastname'] = userRequest.value.lastname
       ..fields['email'] = userRequest.value.email
       ..fields['phone'] = userRequest.value.phone
-      ..fields['gender'] = userRequest.value.gender;
+      ..fields['gender'] = userRequest.value.gender
+      ..fields['bank_code'] = userRequest.value.bankCode
+      ..fields['bank_account_number'] = userRequest.value.bankAccountNumber
+      ..fields['bank_account_name'] = userRequest.value.bankAccountName;
 
     // Attach image file if provided
     if (imagePath.isNotEmpty) {
@@ -61,9 +67,9 @@ class UserCreationController extends GetxController {
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
-        var responseData = await response.stream.bytesToString();
-        var jsonResponse = json.decode(responseData);
-        userRequest.value = CreateUserRequest.fromJson(jsonResponse['data']);
+        // var responseData = await response.stream.bytesToString();
+        // var jsonResponse = json.decode(responseData);
+        // userRequest.value = CreateUserRequest.fromJson(jsonResponse['data']);
         Get.snackbar('สำเร็จ', 'ลงทะเบียนผู้ใช้เรียบร้อยแล้ว');
         isLoading.value = false;
         return true;

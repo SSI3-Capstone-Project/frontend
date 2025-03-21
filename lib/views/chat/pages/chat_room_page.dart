@@ -10,6 +10,7 @@ import 'package:mbea_ssi3_front/views/chat/models/message_model.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_product_detail_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/pages/exchange_page.dart';
+import 'package:mbea_ssi3_front/views/exchange/pages/exchange_product_detail_page.dart';
 import 'package:mbea_ssi3_front/views/exchange/pages/meet_up_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
 import 'package:intl/intl.dart';
@@ -96,7 +97,17 @@ class _ChatRoomState extends State<ChatRoom> {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ExchangeProductDetailPage(
+                    offerID: chatController.offerID.value,
+                    postID: chatController.postID.value,
+                  ),
+                ),
+              );
+            },
             child: Container(
               decoration: BoxDecoration(
                 color: Constants.primaryColor, // พื้นหลังสีฟ้า
