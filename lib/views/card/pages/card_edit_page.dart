@@ -24,12 +24,16 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
 
+  var isSaveButtonEnabled = false.obs;
+  String originalCardName = '';
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchCardDetails();
     });
+    cardNameController.addListener(_checkIfFormChanged);
   }
 
   void fetchCardDetails() async {
@@ -38,12 +42,18 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
 
     if (card != null) {
       setState(() {
-        cardNumberController.text = "•••• •••• •••• ${card.last4}";
+        cardNumberController.text = "**** **** **** ${card.last4}";
         cardNameController.text = card.cardHolderName;
         expiryDateController.text = "${card.expMonth.toString().padLeft(2, '0')}/${card.expYear.toString().substring(2)}";
-        cvvController.text = "***"; // ซ่อน CVV
+        cvvController.text = "***";
+        originalCardName = card.cardHolderName; // บันทึกค่าเดิมของชื่อบนบัตร
+        _checkIfFormChanged(); // ตรวจสอบตอนโหลดข้อมูลเสร็จ
       });
     }
+  }
+
+  void _checkIfFormChanged() {
+    isSaveButtonEnabled.value = cardNameController.text.trim() != originalCardName;
   }
 
   void saveCard() async {
@@ -56,10 +66,10 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
 
     await editCardDetailsController.updateCard(widget.cardId, newName);
 
-    // เมื่ออัปเดตสำเร็จ ให้โหลดรายการบัตรใหม่
     await cardDetailController.getOmiseCustomerCardDetail(widget.cardId);
+    originalCardName = newName;
+    isSaveButtonEnabled.value = false;
 
-    // กลับไปหน้ารายการบัตร
     Navigator.pop(context);
   }
 
@@ -130,23 +140,23 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
                 ],
               ),
               const SizedBox(height: 24),
-              SizedBox(
+              Obx(() => SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Constants.primaryColor,
+                    backgroundColor: isSaveButtonEnabled.value ? Constants.primaryColor : Colors.grey,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: saveCard,
+                  onPressed: isSaveButtonEnabled.value ? saveCard : null,
                   child: const Text(
                     "บันทึกการแก้ไข",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-              ),
+              )),
             ],
           ),
         );
