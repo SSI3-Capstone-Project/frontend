@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../../../common/constants.dart';
 import '../controllers/card_delete_controller.dart';
 import '../controllers/card_details_get_controller.dart';
 import '../controllers/card_list_get_controller.dart';
@@ -128,33 +129,53 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
               ),
               const SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      showDeleteConfirmationDialog(context, card.cardId);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: const Text("ลบ", style: TextStyle(color: Colors.white)),
-                  ),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      // เพิ่มฟังก์ชันแก้ไข
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditCardDetailsPage(cardId: card.cardId),
+                  Expanded(
+                    child: SizedBox(
+                      height: 40,
+                      child: TextButton(
+                        onPressed: () {
+                          showDeleteConfirmationDialog(context, card.cardId);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8), // ปรับขอบมน
+                          ),
                         ),
-                      );
-                      print("แก้ไขบัตร ${card.cardHolderName}");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                        child: const Text(
+                          "ลบ",
+                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
-                    child: const Text("แก้ไข", style: TextStyle(color: Colors.white)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditCardDetailsPage(cardId: card.cardId),
+                            ),
+                          );
+                          print("แก้ไขบัตร ${card.cardHolderName}");
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Constants.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8), // ปรับขอบมน
+                          ),
+                        ),
+                        child: const Text(
+                          "แก้ไข",
+                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -170,6 +191,10 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10), // กรอบมนน้อยลง
+          ),
+          backgroundColor: Colors.white,
           title: const Text("ยืนยันการลบ"),
           content: const Text("คุณแน่ใจหรือไม่ว่าต้องการลบบัตรนี้?"),
           actions: [
@@ -177,9 +202,18 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด popup
               },
-              child: const Text("ยกเลิก"),
+              child: Text(
+                "ยกเลิก",
+                style: TextStyle(color: Colors.indigo),
+              ),
             ),
-            TextButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8), // ปุ่มขอบมนเล็กน้อย
+                ),
+              ),
               onPressed: () async {
                 final deleteCardController = Get.put(DeleteCardController());
                 await deleteCardController.deleteCard(cardId);
@@ -189,7 +223,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
               },
               child: const Text(
                 "ยืนยัน",
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -197,6 +231,5 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       },
     );
   }
-
 }
 
