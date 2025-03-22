@@ -23,6 +23,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
   final TextEditingController cardNameController = TextEditingController();
   final TextEditingController expiryDateController = TextEditingController();
   final TextEditingController cvvController = TextEditingController();
+  final ValueNotifier<String?> nameError = ValueNotifier<String?>(null);
 
   var isSaveButtonEnabled = false.obs;
   String originalCardName = '';
@@ -33,7 +34,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchCardDetails();
     });
-    cardNameController.addListener(_checkIfFormChanged);
+    cardNameController.addListener(_validateName);
   }
 
   void fetchCardDetails() async {
@@ -47,13 +48,20 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
         expiryDateController.text = "${card.expMonth.toString().padLeft(2, '0')}/${card.expYear.toString().substring(2)}";
         cvvController.text = "***";
         originalCardName = card.cardHolderName; // บันทึกค่าเดิมของชื่อบนบัตร
-        _checkIfFormChanged(); // ตรวจสอบตอนโหลดข้อมูลเสร็จ
+        _validateName(); // ตรวจสอบตอนโหลดข้อมูลเสร็จ
       });
     }
   }
 
-  void _checkIfFormChanged() {
-    isSaveButtonEnabled.value = cardNameController.text.trim() != originalCardName;
+  void _validateName() {
+    final newName = cardNameController.text.trim();
+    if (newName.isEmpty) {
+      nameError.value = "กรุณากรอกชื่อบนบัตร";
+      isSaveButtonEnabled.value = false;
+    } else {
+      nameError.value = null;
+      isSaveButtonEnabled.value = newName != originalCardName;
+    }
   }
 
   void saveCard() async {
@@ -71,6 +79,30 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
     isSaveButtonEnabled.value = false;
 
     Navigator.pop(context);
+  }
+
+  Widget _buildNameTextField() {
+    return ValueListenableBuilder<String?>(
+      valueListenable: nameError,
+      builder: (context, error, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("ชื่อบนบัตร", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: cardNameController,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                errorText: error,
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildTextField({required String label, required TextEditingController controller, bool isEditable = false}) {
@@ -130,7 +162,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
             children: [
               _buildTextField(label: "หมายเลขบัตร", controller: cardNumberController),
               const SizedBox(height: 16),
-              _buildTextField(label: "ชื่อบนบัตร", controller: cardNameController, isEditable: true),
+              _buildNameTextField(),
               const SizedBox(height: 16),
               Row(
                 children: [
