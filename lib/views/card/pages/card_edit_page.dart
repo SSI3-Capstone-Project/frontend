@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../common/constants.dart';
 import '../controllers/card_details_get_controller.dart';
+import '../controllers/card_edit_controller.dart';
+import '../controllers/card_list_get_controller.dart';
 
 class EditCardDetailsPage extends StatefulWidget {
   final String cardId;
@@ -15,6 +17,7 @@ class EditCardDetailsPage extends StatefulWidget {
 
 class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
   final GetOmiseCustomerCardDetailController cardDetailController = Get.put(GetOmiseCustomerCardDetailController());
+  final EditCardDetailsController editCardDetailsController = Get.put(EditCardDetailsController());
 
   final TextEditingController cardNumberController = TextEditingController();
   final TextEditingController cardNameController = TextEditingController();
@@ -41,6 +44,23 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
         cvvController.text = "***"; // ซ่อน CVV
       });
     }
+  }
+
+  void saveCard() async {
+    final newName = cardNameController.text.trim();
+
+    if (newName.isEmpty) {
+      Get.snackbar("❌ ผิดพลาด", "กรุณากรอกชื่อบนบัตร");
+      return;
+    }
+
+    await editCardDetailsController.updateCard(widget.cardId, newName);
+
+    // เมื่ออัปเดตสำเร็จ ให้โหลดรายการบัตรใหม่
+    await cardDetailController.getOmiseCustomerCardDetail(widget.cardId);
+
+    // กลับไปหน้ารายการบัตร
+    Navigator.pop(context);
   }
 
   Widget _buildTextField({required String label, required TextEditingController controller, bool isEditable = false}) {
@@ -120,9 +140,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
-                    // เพิ่มฟังก์ชันอัปเดตข้อมูลบัตรที่นี่
-                  },
+                  onPressed: saveCard,
                   child: const Text(
                     "บันทึกการแก้ไข",
                     style: TextStyle(color: Colors.white, fontSize: 16),
