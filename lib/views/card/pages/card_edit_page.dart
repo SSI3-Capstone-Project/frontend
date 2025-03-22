@@ -122,7 +122,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
               borderSide: BorderSide(color: Colors.grey.shade400),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: isEditable ? Colors.blue : Colors.grey.shade400),
+              borderSide: BorderSide(color: isEditable ? Constants.primaryColor : Colors.grey.shade400),
             ),
           ),
         ),
