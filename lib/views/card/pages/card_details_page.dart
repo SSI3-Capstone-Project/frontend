@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../controllers/card_delete_controller.dart';
 import '../controllers/card_details_get_controller.dart';
+import '../controllers/card_list_get_controller.dart';
 import 'card_edit_page.dart';
 
 class CardDetailsPage extends StatefulWidget {
@@ -17,6 +19,7 @@ class CardDetailsPage extends StatefulWidget {
 
 class _CardDetailsPageState extends State<CardDetailsPage> {
   final GetOmiseCustomerCardDetailController cardDetailController = Get.put(GetOmiseCustomerCardDetailController());
+  final cardListController = Get.find<CardListController>();
 
   @override
   void initState() {
@@ -129,14 +132,14 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // เพิ่มฟังก์ชันลบบัตร
-                      print("ลบบัตร ${card.cardHolderName}");
+                      showDeleteConfirmationDialog(context, card.cardId);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
                     child: const Text("ลบ", style: TextStyle(color: Colors.white)),
                   ),
+
                   ElevatedButton(
                     onPressed: () {
                       // เพิ่มฟังก์ชันแก้ไข
@@ -161,5 +164,39 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       }),
     );
   }
+
+  void showDeleteConfirmationDialog(BuildContext context, String cardId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("ยืนยันการลบ"),
+          content: const Text("คุณแน่ใจหรือไม่ว่าต้องการลบบัตรนี้?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด popup
+              },
+              child: const Text("ยกเลิก"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final deleteCardController = Get.put(DeleteCardController());
+                await deleteCardController.deleteCard(cardId);
+                await cardListController.fetchCustomerCards();
+                Navigator.of(context).pop(); // ปิด popup
+                Navigator.of(context).pop(); // กลับไปหน้าก่อนหน้า
+              },
+              child: const Text(
+                "ยืนยัน",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
 
