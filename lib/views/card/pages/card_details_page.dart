@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
 import '../controllers/card_details_get_controller.dart';
+import 'card_edit_page.dart';
 
 class CardDetailsPage extends StatefulWidget {
   final String cardId;
@@ -51,74 +52,110 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
 
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Container(
-            width: double.infinity,
-            height: 220,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                const BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 6,
-                  spreadRadius: 1,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  card.brand,
-                  style: const TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  card.cardHolderName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  "**** **** **** ${card.last4}",
-                  style: const TextStyle(
-                    fontSize: 20, // ลดขนาดลง
-                    letterSpacing: 2,
-                  ),
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "EXPIRY DATE",
-                          style: TextStyle(fontSize: 10),
-                        ),
-                        Text(
-                          "${card.expMonth.toString().padLeft(2, '0')}/${card.expYear.toString().substring(2)}",
-                          style: const TextStyle(
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Icon(
-                      Icons.credit_card,
-                      size: 36,
-                      color: Colors.grey,
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 220,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    const BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      spreadRadius: 1,
+                      offset: Offset(0, 3),
                     ),
                   ],
                 ),
-              ],
-            ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      card.brand,
+                      style: const TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      card.cardHolderName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "**** **** **** ${card.last4}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "EXPIRY DATE",
+                              style: TextStyle(fontSize: 10),
+                            ),
+                            Text(
+                              "${card.expMonth.toString().padLeft(2, '0')}/${card.expYear.toString().substring(2)}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Icon(
+                          Icons.credit_card,
+                          size: 36,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // เพิ่มฟังก์ชันลบบัตร
+                      print("ลบบัตร ${card.cardHolderName}");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text("ลบ", style: TextStyle(color: Colors.white)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // เพิ่มฟังก์ชันแก้ไข
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditCardDetailsPage(cardId: card.cardId),
+                        ),
+                      );
+                      print("แก้ไขบัตร ${card.cardHolderName}");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: const Text("แก้ไข", style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       }),

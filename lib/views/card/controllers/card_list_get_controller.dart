@@ -35,8 +35,16 @@ class CardListController extends GetxController {
 
       if (response.statusCode == 200) {
         final utf8Data = utf8.decode(response.bodyBytes);
-        final List<dynamic> data = json.decode(utf8Data)['data'];
-        cards.value = data.map((card) => GetOmiseCustomerCard.fromJson(card)).toList();
+        final decodedJson = json.decode(utf8Data);
+
+        // ตรวจสอบว่ามีข้อมูลและเป็น List หรือไม่
+        if (decodedJson['data'] is List) {
+          final List<dynamic> data = decodedJson['data'];
+          cards.value =
+              data.map((card) => GetOmiseCustomerCard.fromJson(card)).toList();
+        } else {
+          cards.value = []; // ตั้งค่าให้เป็น array ว่างหากไม่มีข้อมูล
+        }
       } else {
         Get.snackbar('Error', 'Failed to fetch customer cards');
       }
