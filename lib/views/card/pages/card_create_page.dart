@@ -68,15 +68,17 @@ class _CardCreatePageState extends State<CardCreatePage> {
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
+                LengthLimitingTextInputFormatter(16), // รวมช่องว่างสูงสุดเป็น 19 ตัวอักษร (16+3 ช่องว่าง)
+                CardNumberFormatter(), // ใช้ฟอร์แมตเตอร์ที่สร้างขึ้น
               ],
               decoration: const InputDecoration(
                 labelText: "หมายเลขบัตร",
-                hintText: "กรอกหมายเลขบัตรของคุณ",
+                hintText: "XXXX XXXX XXXX XXXX",
                 border: OutlineInputBorder(),
                 hintStyle: TextStyle(fontSize: 14),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             TextField(
               controller: cardNameController,
               decoration: const InputDecoration(
@@ -86,13 +88,18 @@ class _CardCreatePageState extends State<CardCreatePage> {
                 hintStyle: TextStyle(fontSize: 14),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: expiryDateController,
-                    keyboardType: TextInputType.datetime,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
+                      LengthLimitingTextInputFormatter(4), // จำกัดแค่ 4 ตัว (MMYY)
+                      ExpiryDateFormatter(), // ฟอร์แมตให้เป็น MM/YY
+                    ],
                     decoration: const InputDecoration(
                       labelText: "วันหมดอายุ",
                       hintText: "MM/YY",
@@ -101,7 +108,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 20),
                 Expanded(
                   child: TextField(
                     controller: cvvController,
@@ -151,4 +158,54 @@ class _CardCreatePageState extends State<CardCreatePage> {
     );
   }
 }
+
+class CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text.replaceAll(RegExp(r'\s+'), ''); // ลบช่องว่างทั้งหมดก่อนจัดรูปแบบ
+    String formattedText = '';
+
+    for (int i = 0; i < newText.length; i++) {
+      if (i > 0 && i % 4 == 0) {
+        formattedText += ' '; // เพิ่มช่องว่างทุก 4 ตัว
+      }
+      formattedText += newText[i];
+    }
+
+    // คำนวณตำแหน่งเคอร์เซอร์ใหม่
+    int cursorPosition = newValue.selection.baseOffset;
+    int newCursorPosition = cursorPosition +
+        (formattedText.length - newText.length); // ปรับตำแหน่งเคอร์เซอร์ให้เหมาะสม
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: newCursorPosition),
+    );
+  }
+}
+
+class ExpiryDateFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text.replaceAll(RegExp(r'[^0-9]'), ''); // เอาเฉพาะตัวเลข
+    String formattedText = '';
+
+    if (newText.length > 2) {
+      formattedText = '${newText.substring(0, 2)}/${newText.substring(2)}';
+    } else {
+      formattedText = newText;
+    }
+
+    int cursorPosition = formattedText.length;
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: cursorPosition),
+    );
+  }
+}
+
+
+
+
 
