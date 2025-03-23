@@ -12,6 +12,8 @@ import 'package:mbea_ssi3_front/views/profile/pages/profile_edit.dart';
 import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.dart';
 
 import '../../card/pages/card_list_page.dart';
+import '../../recipient/pages/recepient_get_page.dart';
+
 
 class ProfileDetail extends StatefulWidget {
   const ProfileDetail({super.key});
@@ -47,14 +49,12 @@ class _ProfileDetailState extends State<ProfileDetail> {
           }
 
           // หากได้ข้อมูล userProfile มาแล้ว
-          return Container(
-            // margin: EdgeInsets.symmetric(vertical: 10.0),
-            color: Colors.white,
+          return SingleChildScrollView(
             child: Column(
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -72,7 +72,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                   padding: EdgeInsets.symmetric(horizontal: 30),
                   child: Column(
                     children: [
-                      _buildProfileInfo(userProfile), // ส่ง userProfile ไป
+                      _buildProfileInfo(userProfile),
                     ],
                   ),
                 ),
@@ -179,6 +179,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
     List<IconData> iconList = [
       Icons.location_on,
       Icons.credit_card_outlined,
+      Icons.account_balance,
       Icons.history_outlined,
       Icons.report_problem,
       Icons.lock_outline,
@@ -188,6 +189,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
     List<String> menuItems = [
       "ที่อยู่ของคุณ",
       "วิธีการชำระเงิน",
+      "บัญชีรับเงิน",
       "ประวัติการแลก",
       "รายงานปัญหา",
       "เปลี่ยนรหัสผ่าน",
@@ -215,6 +217,12 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 Navigator.push(
                  context,
                 MaterialPageRoute(builder: (context) => CardListPage()),
+                );
+                break;
+              case "บัญชีรับเงิน":
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RecipientGetPage()),
                 );
                 break;
               case "ประวัติการแลก":
