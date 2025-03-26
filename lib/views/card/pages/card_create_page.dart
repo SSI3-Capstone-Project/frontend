@@ -23,7 +23,93 @@ class _CardCreatePageState extends State<CardCreatePage> {
   final CardCreateController createCardController = Get.put(CardCreateController());
   final cardListController = Get.find<CardListController>();
 
+  // FocusNodes ใช้จับเหตุการณ์เมื่อผู้ใช้กดออกจากฟิลด์
+  final FocusNode cardNumberFocus = FocusNode();
+  final FocusNode cardNameFocus = FocusNode();
+  final FocusNode expiryDateFocus = FocusNode();
+  final FocusNode cvvFocus = FocusNode();
+
+  // เก็บ error message ของแต่ละช่อง
+  String? cardNumberError;
+  String? cardNameError;
+  String? expiryDateError;
+  String? cvvError;
+
+  @override
+  void initState() {
+    super.initState();
+    cardNumberFocus.addListener(() {
+      if (!cardNumberFocus.hasFocus) validateCardNumber();
+    });
+    cardNameFocus.addListener(() {
+      if (!cardNameFocus.hasFocus) validateCardName();
+    });
+    expiryDateFocus.addListener(() {
+      if (!expiryDateFocus.hasFocus) validateExpiryDate();
+    });
+    cvvFocus.addListener(() {
+      if (!cvvFocus.hasFocus) validateCvv();
+    });
+  }
+
+  // ฟังก์ชันตรวจสอบ validation แต่ละฟิลด์
+  void validateCardNumber() {
+    setState(() {
+      if (cardNumberController.text.isEmpty) {
+        cardNumberError = "กรุณากรอกหมายเลขบัตร";
+      } else if (cardNumberController.text.length < 19) {
+        cardNumberError = "หมายเลขบัตรต้องมี 16 หลัก";
+      } else {
+        cardNumberError = null;
+      }
+    });
+  }
+
+  void validateCardName() {
+    setState(() {
+      if (cardNameController.text.isEmpty) {
+        cardNameError = "กรุณากรอกชื่อบนบัตร";
+      } else {
+        cardNameError = null;
+      }
+    });
+  }
+
+
+  void validateExpiryDate() {
+    setState(() {
+      if (expiryDateController.text.isEmpty) {
+        expiryDateError = "กรุณากรอกวันหมดอายุ";
+      } else if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(expiryDateController.text)) {
+        expiryDateError = "รูปแบบต้องเป็น MM/YY";
+      } else {
+        expiryDateError = null;
+      }
+    });
+  }
+
+  void validateCvv() {
+    setState(() {
+      if (cvvController.text.isEmpty) {
+        cvvError = "กรุณากรอก CVV";
+      } else if (cvvController.text.length < 3) {
+        cvvError = "CVV ต้องมี 3 หลัก";
+      } else {
+        cvvError = null;
+      }
+    });
+  }
+
   Future<bool> submitCard() async {
+    validateCardNumber();
+    validateCardName();
+    validateExpiryDate();
+    validateCvv();
+
+    if (cardNumberError != null || expiryDateError != null || cvvError != null) {
+      return false;
+    }
+
     final expiryParts = expiryDateController.text.split('/');
     if (expiryParts.length != 2) {
       Get.snackbar("Error", "รูปแบบวันหมดอายุไม่ถูกต้อง");
@@ -65,57 +151,72 @@ class _CardCreatePageState extends State<CardCreatePage> {
           children: [
             TextField(
               controller: cardNumberController,
+              focusNode: cardNumberFocus,
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
+                LengthLimitingTextInputFormatter(16), // รวมช่องว่างสูงสุดเป็น 19 ตัวอักษร (16+3 ช่องว่าง)
+                CardNumberFormatter(), // ใช้ฟอร์แมตเตอร์ที่สร้างขึ้น
               ],
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: "หมายเลขบัตร",
-                hintText: "กรอกหมายเลขบัตรของคุณ",
-                border: OutlineInputBorder(),
-                hintStyle: TextStyle(fontSize: 14),
+                hintText: "XXXX XXXX XXXX XXXX",
+                border: const OutlineInputBorder(),
+                hintStyle: const TextStyle(fontSize: 14),
+                errorText: cardNumberError,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             TextField(
               controller: cardNameController,
-              decoration: const InputDecoration(
+              focusNode: cardNameFocus,
+              decoration: InputDecoration(
                 labelText: "ชื่อบนบัตร",
                 hintText: "กรอกชื่อบนบัตร",
-                border: OutlineInputBorder(),
-                hintStyle: TextStyle(fontSize: 14),
+                border: const OutlineInputBorder(),
+                hintStyle: const TextStyle(fontSize: 14),
+                errorText: cardNameError,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: expiryDateController,
-                    keyboardType: TextInputType.datetime,
-                    decoration: const InputDecoration(
+                    focusNode: expiryDateFocus,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
+                      LengthLimitingTextInputFormatter(4), // จำกัดแค่ 4 ตัว (MMYY)
+                      ExpiryDateFormatter(), // ฟอร์แมตให้เป็น MM/YY
+                    ],
+                    decoration: InputDecoration(
                       labelText: "วันหมดอายุ",
                       hintText: "MM/YY",
-                      border: OutlineInputBorder(),
-                      hintStyle: TextStyle(fontSize: 14),
+                      border: const OutlineInputBorder(),
+                      hintStyle: const TextStyle(fontSize: 14),
+                      errorText: expiryDateError,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 20),
                 Expanded(
                   child: TextField(
                     controller: cvvController,
+                    focusNode: cvvFocus,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly, // รับเฉพาะตัวเลข
                       LengthLimitingTextInputFormatter(3),
                     ],
                     obscureText: true,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "CVV",
                       hintText: "XXX",
-                      border: OutlineInputBorder(),
-                      hintStyle: TextStyle(fontSize: 14),
+                      border: const OutlineInputBorder(),
+                      hintStyle: const TextStyle(fontSize: 14),
+                      errorText: cvvError,
                     ),
                   ),
                 ),
@@ -151,4 +252,54 @@ class _CardCreatePageState extends State<CardCreatePage> {
     );
   }
 }
+
+class CardNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text.replaceAll(RegExp(r'\s+'), ''); // ลบช่องว่างทั้งหมดก่อนจัดรูปแบบ
+    String formattedText = '';
+
+    for (int i = 0; i < newText.length; i++) {
+      if (i > 0 && i % 4 == 0) {
+        formattedText += ' '; // เพิ่มช่องว่างทุก 4 ตัว
+      }
+      formattedText += newText[i];
+    }
+
+    // คำนวณตำแหน่งเคอร์เซอร์ใหม่
+    int cursorPosition = newValue.selection.baseOffset;
+    int newCursorPosition = cursorPosition +
+        (formattedText.length - newText.length); // ปรับตำแหน่งเคอร์เซอร์ให้เหมาะสม
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: newCursorPosition),
+    );
+  }
+}
+
+class ExpiryDateFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text.replaceAll(RegExp(r'[^0-9]'), ''); // เอาเฉพาะตัวเลข
+    String formattedText = '';
+
+    if (newText.length > 2) {
+      formattedText = '${newText.substring(0, 2)}/${newText.substring(2)}';
+    } else {
+      formattedText = newText;
+    }
+
+    int cursorPosition = formattedText.length;
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: cursorPosition),
+    );
+  }
+}
+
+
+
+
 
