@@ -188,6 +188,21 @@ class _ChatRoomState extends State<ChatRoom> {
                                 ),
                               ),
                             );
+                          } else if (exchangeController
+                                  .exchange.value?.exchangeStage ==
+                              3) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MeetUpPage(
+                                  exchangeID: chatController.exchangeID.value,
+                                  currentStep: 2,
+                                  user: Payer.offer,
+                                  postID: chatController.postID.value,
+                                  offerID: chatController.offerID.value,
+                                ),
+                              ),
+                            );
                           } else {
                             Navigator.push(
                               context,

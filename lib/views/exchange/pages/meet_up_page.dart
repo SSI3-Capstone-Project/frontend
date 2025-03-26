@@ -79,6 +79,8 @@ class _MeetUpPageState extends State<MeetUpPage> {
   List<Map<String, dynamic>> mediaList = [];
   VideoPlayerController? _videoController;
   int currentIndex = 0;
+  String? selectedCardId;
+  bool isTermsAccepted = false;
 
   Future<void> pickMedia() async {
     final XFile? pickedFile =
@@ -213,7 +215,8 @@ class _MeetUpPageState extends State<MeetUpPage> {
 
   bool isFuture(DateTime dateTime) {
     final now = DateTime.now();
-    return dateTime.isAfter(now);
+    final twoDaysLater = now.add(Duration(days: 2));
+    return dateTime.isAfter(twoDaysLater);
   }
 
   bool isPast(DateTime dateTime) {
@@ -248,16 +251,24 @@ class _MeetUpPageState extends State<MeetUpPage> {
   @override
   void dispose() {
     _videoController?.dispose();
+    mapController?.dispose();
     super.dispose();
   }
 
   Future<void> _pickDate() async {
+    DateTime today = DateTime.now();
+    DateTime minSelectableDate =
+        today.add(Duration(days: 2)); // เริ่มเลือกได้จาก 2 วันถัดไป
+
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      initialDate:
+          selectedDate ?? minSelectableDate, // ให้วันที่เริ่มต้นเป็น 2 วันถัดไป
+      firstDate:
+          minSelectableDate, // จำกัดวันแรกที่เลือกได้เป็น 2 วันหลังจากวันนี้
+      lastDate: DateTime(2101), // จำกัดวันที่สิ้นสุด
     );
+
     if (picked != null) {
       setState(() {
         selectedDate = picked;
@@ -506,12 +517,90 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                 SizedBox(width: 20),
                               ],
                             ),
+                          if (_currentStage == 1 &&
+                              (exchangeController
+                                          .exchange.value?.exchangeStage ??
+                                      0) >=
+                                  2)
+                            if (_currentStage == 1 &&
+                                (exchangeController
+                                            .exchange.value?.exchangeStage ??
+                                        0) ==
+                                    2 &&
+                                widget.user == Payer.offer)
+                              SizedBox()
+                            else
+                              Obx(() {
+                                return Column(
+                                  children: [
+                                    SizedBox(height: 10),
+                                    if ((exchangeController.exchange.value
+                                                ?.exchangeStage ??
+                                            0) <=
+                                        2)
+                                      statusCard(true),
+                                    if ((exchangeController.exchange.value
+                                                ?.exchangeStage ??
+                                            0) >
+                                        2)
+                                      statusCard(false),
+                                    if ((exchangeController.exchange.value
+                                                ?.exchangeStage ??
+                                            0) >
+                                        2)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 15),
+                                        child: ElevatedButton.icon(
+                                          onPressed: () {
+                                            setState(() {
+                                              _currentStage =
+                                                  (_currentStage! + 1);
+                                            });
+                                          },
+                                          label: Text("ขั้นตอนถัดไป",
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white)),
+                                          icon: Icon(Icons.arrow_forward,
+                                              color: Colors.white),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Constants
+                                                .primaryColor, // สีพื้นหลัง
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      15), // ขอบมน 15
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 20,
+                                                vertical: 5), // ปรับขนาดปุ่ม
+                                          ),
+                                        ),
+                                      )
+                                  ],
+                                );
+                              }),
                           if (_currentStage == 1 || _currentStage == 3)
+                            // if ((_currentStage == 1 &&
+                            //         (exchangeController.exchange.value
+                            //                     ?.exchangeStage ??
+                            //                 0) ==
+                            //             2 &&
+                            //         widget.user == Payer.post) ||
+                            //     (_currentStage == 1 &&
+                            //         (exchangeController.exchange.value
+                            //                     ?.exchangeStage ??
+                            //                 0) >
+                            //             2))
+                            //   SizedBox()
+                            // else
                             Column(
                               children: [
                                 SizedBox(height: 10),
                                 chooseDateTime(),
-                                SizedBox(height: 15),
+                                // SizedBox(height: 15),
                                 if (_currentStage == 3)
                                   Column(
                                     children: [
@@ -537,17 +626,25 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                       ),
                                     ],
                                   ),
-                                SizedBox(height: 15),
+                                // SizedBox(height: 8),
                                 chooseLocation(),
                                 if (_currentStage == 1 &&
-                                    widget.user == Payer.offer)
+                                    widget.user == Payer.offer &&
+                                    (exchangeController.exchange.value
+                                                ?.exchangeStage ??
+                                            0) <=
+                                        2)
                                   Padding(
                                     padding: const EdgeInsets.all(25),
                                     child:
                                         buildConfirmCancelAppointmentButtons(),
                                   ),
                                 if (_currentStage == 1 &&
-                                    widget.user == Payer.post)
+                                    widget.user == Payer.post &&
+                                    (exchangeController.exchange.value
+                                                ?.exchangeStage ??
+                                            0) <
+                                        2)
                                   Padding(
                                     padding: const EdgeInsets.all(25),
                                     child:
@@ -555,58 +652,15 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                   ),
                               ],
                             ),
+
                           if (_currentStage == 2)
-                            Obx(() {
-                              return Column(
-                                children: [
-                                  SizedBox(height: 10),
-                                  if ((exchangeController
-                                              .exchange.value?.exchangeStage ??
-                                          0) <=
-                                      2)
-                                    statusCard(true),
-                                  if ((exchangeController
-                                              .exchange.value?.exchangeStage ??
-                                          0) >
-                                      2)
-                                    statusCard(false),
-                                  if ((exchangeController
-                                              .exchange.value?.exchangeStage ??
-                                          0) >
-                                      2)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 15),
-                                      child: ElevatedButton.icon(
-                                        onPressed: () {
-                                          setState(() {
-                                            _currentStage =
-                                                (_currentStage! + 1);
-                                          });
-                                        },
-                                        label: Text("ขั้นตอนถัดไป",
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white)),
-                                        icon: Icon(Icons.arrow_forward,
-                                            color: Colors.white),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Constants
-                                              .primaryColor, // สีพื้นหลัง
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                15), // ขอบมน 15
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 20,
-                                              vertical: 5), // ปรับขนาดปุ่ม
-                                        ),
-                                      ),
-                                    )
-                                ],
-                              );
-                            }),
+                            Column(
+                              children: [
+                                SizedBox(height: 10),
+                                paymentDetails(),
+                                paymentChannels()
+                              ],
+                            ),
                           if (_currentStage == 3) userCheckInCard(),
                           if (_currentStage == 4)
                             Column(
@@ -986,57 +1040,57 @@ class _MeetUpPageState extends State<MeetUpPage> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: (exchangeController.exchange.value?.exchangeStage ??
-                        0) >=
-                    2
-                ? null
-                : () async {
-                    // TODO: ใส่ฟังก์ชันเช็คอิน
+            onPressed:
+                (exchangeController.exchange.value?.exchangeStage ?? 0) >= 2
+                    ? null
+                    : () async {
+                        // TODO: ใส่ฟังก์ชันเช็คอิน
 
-                    if (selectedLocation != null &&
-                        selectedDate != null &&
-                        meetTime != null &&
-                        placeName != null) {
-                      if (isFuture(
-                          combineDateAndTime(selectedDate, meetTime)!)) {
-                        var result =
-                            await meetUpExchangeController.createExchange(
-                                postId: widget.postID!,
-                                offerId: widget.offerID!,
-                                exchangeType: 'meeting',
-                                postPriceDiff: widget.payer == Payer.post
-                                    ? widget.priceDifference?.toDouble()
-                                    : null,
-                                offerPriceDiff: widget.payer == Payer.offer
-                                    ? widget.priceDifference?.toDouble()
-                                    : null,
-                                latitude: double.parse(selectedLocation!
-                                    .latitude
-                                    .toStringAsFixed(6)),
-                                longitude: double.parse(selectedLocation!
-                                    .longitude
-                                    .toStringAsFixed(6)),
-                                location: placeName!,
-                                scheduledTime: formatDateTimeWithOffset(
-                                    combineDateAndTime(
-                                        selectedDate, meetTime)!));
-                        if (result != null) {
-                          await exchangeController.fetchExchangeDetails(result);
-                          setState(() {
-                            _currentStage = 2;
-                            exchangeID = exchangeController.exchange.value?.id;
-                          });
+                        if (selectedLocation != null &&
+                            selectedDate != null &&
+                            meetTime != null &&
+                            placeName != null) {
+                          if (isFuture(
+                              combineDateAndTime(selectedDate, meetTime)!)) {
+                            var result =
+                                await meetUpExchangeController.createExchange(
+                                    postId: widget.postID!,
+                                    offerId: widget.offerID!,
+                                    exchangeType: 'meeting',
+                                    postPriceDiff: widget.payer == Payer.post
+                                        ? widget.priceDifference?.toDouble()
+                                        : null,
+                                    offerPriceDiff: widget.payer == Payer.offer
+                                        ? widget.priceDifference?.toDouble()
+                                        : null,
+                                    latitude: double.parse(selectedLocation!.latitude
+                                        .toStringAsFixed(6)),
+                                    longitude: double.parse(selectedLocation!
+                                        .longitude
+                                        .toStringAsFixed(6)),
+                                    location: placeName!,
+                                    scheduledTime: formatDateTimeWithOffset(
+                                        combineDateAndTime(
+                                            selectedDate, meetTime)!));
+                            if (result != null) {
+                              await exchangeController
+                                  .fetchExchangeDetails(result);
+                              setState(() {
+                                _currentStage = 2;
+                                exchangeID =
+                                    exchangeController.exchange.value?.id;
+                              });
+                            }
+                            print("เสนอวันเวลาและสถานที่นี้");
+                          } else {
+                            Get.snackbar('แจ้งเตือน',
+                                'เวลาในการนัดหมายต้องเป็นอย่างน้อย 2 วันนับจากวันที่ทำรายการ');
+                          }
+                        } else {
+                          Get.snackbar('แจ้งเตือน',
+                              'กรุณากรอกวันเวลา และเลือกสถานที่นัดหมายให้ครบถ้วน');
                         }
-                        print("เสนอวันเวลาและสถานที่นี้");
-                      } else {
-                        Get.snackbar(
-                            'แจ้งเตือน', 'วันเวลาในการนัดหมายต้องเป็นอนาคต');
-                      }
-                    } else {
-                      Get.snackbar('แจ้งเตือน',
-                          'กรุณากรอกวันเวลา และเลือกสถานที่นัดหมายให้ครบถ้วน');
-                    }
-                  },
+                      },
             child: const Text(
               "เสนอวันเวลาและสถานที่นี้",
               style: TextStyle(
@@ -1078,7 +1132,10 @@ class _MeetUpPageState extends State<MeetUpPage> {
         children: [
           Text(
             _currentStage == 1
-                ? widget.user == Payer.post
+                ? widget.user == Payer.post &&
+                        (exchangeController.exchange.value?.exchangeStage ??
+                                0) <
+                            2
                     ? "เลือกวันเวลา"
                     : "วันเวลานัดหมาย"
                 : "กำหนดการนัดหมาย",
@@ -1132,6 +1189,28 @@ class _MeetUpPageState extends State<MeetUpPage> {
               ),
             ],
           ),
+          if (_currentStage == 1 &&
+              widget.user == Payer.post &&
+              (exchangeController.exchange.value?.exchangeStage ?? 0) < 2)
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "กรุณาเลือกวันนัดหมายที่เป็นอย่างน้อย 2 วันนับจากวันที่ทำรายการ เพื่อให้สามารถเตรียมการได้อย่างเหมาะสม",
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.grey.shade700),
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                      maxLines: null,
+                    ),
+                  )
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -1158,14 +1237,19 @@ class _MeetUpPageState extends State<MeetUpPage> {
         children: [
           Text(
             _currentStage == 1
-                ? widget.user == Payer.post
+                ? widget.user == Payer.post &&
+                        (exchangeController.exchange.value?.exchangeStage ??
+                                0) <
+                            2
                     ? "เลือกสถานที่"
                     : "สถานที่นัดหมาย"
                 : "สถานที่นัดหมาย",
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
           SizedBox(height: 10),
-          if (_currentStage == 1 && widget.user == Payer.post)
+          if (_currentStage == 1 &&
+              widget.user == Payer.post &&
+              (exchangeController.exchange.value?.exchangeStage ?? 0) < 2)
             TextField(
               style: TextStyle(
                 fontSize: 14, // ขนาดตัวอักษร
@@ -1353,6 +1437,374 @@ class _MeetUpPageState extends State<MeetUpPage> {
                 ),
               ],
             )
+        ],
+      ),
+    );
+  }
+
+  Widget paymentDetails() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              'รายละเอียดการชำระเงิน',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(
+              height: 25,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'ราคาส่วนต่าง',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  exchangeController
+                              .exchange.value?.paymentDetails?.priceDiff ==
+                          null
+                      ? '0.0.-'
+                      : "${exchangeController.exchange.value?.paymentDetails?.priceDiff}.-",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'ประกันค่าเสียเวลา',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '${exchangeController.exchange.value?.paymentDetails?.depositAmount}.-',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'ค่าธรรมเนียมการโอน 3.65%',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '${exchangeController.exchange.value?.paymentDetails?.omiseFee}.-',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'ภาษีมูลค่าเพิ่ม 7%',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '${exchangeController.exchange.value?.paymentDetails?.vat}.-',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10), // ระยะห่างจากเนื้อหา
+              height: 1, // ความหนาของเส้น
+              width: double.infinity, // ความกว้างของเส้น
+              color: Colors.grey.shade400, // สีของเส้น
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'ยอดรวม',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  '${exchangeController.exchange.value?.paymentDetails?.totalAmount}.-',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    'หลังจากการแลกเปลี่ยนเสร็จสิ้นหรือการยกเลิกการแลกเปลี่ยน การหักค่าบริการเพิ่มเติมจำนวน ${exchangeController.exchange.value?.paymentDetails?.appServiceFee.toInt()} บาท จะถูกดำเนินการก่อนการคืนเงินให้แก่ผู้ใช้บริการ',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade600),
+                    softWrap: true, // เว้นบรรทัดอัตโนมัติ
+                    overflow: TextOverflow
+                        .visible, // ใช้ TextOverflow.visible เพื่อให้ข้อความไม่ถูกตัด
+                    maxLines: null, // ไม่มีการจำกัดบรรทัด
+                    textAlign: TextAlign.start, // ตั้งค่าให้ข้อความเริ่มที่ซ้าย
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget paymentChannels() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ช่องทางชำระเงิน',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  'จัดการช่องทางชำระเงิน',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Constants.primaryColor),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          // เช็คว่า exchangeController.exchange.value?.cards มีข้อมูลหรือไม่
+          if (exchangeController.exchange.value?.cards != null &&
+              exchangeController.exchange.value!.cards!.isNotEmpty)
+            ...exchangeController.exchange.value!.cards!.map((card) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedCardId = card.cardId; // เก็บค่า cardId ที่เลือก
+                  });
+                },
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: selectedCardId == card.cardId
+                          ? Constants.primaryColor // ถ้าเลือกจะเป็นสีฟ้า
+                          : Colors.grey.shade400, // ไม่เลือกจะเป็นสีเทา
+                      width: 2,
+                    ),
+                  ),
+                  elevation: 0,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            if (card.brand == 'Visa')
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                      100), // กำหนดขนาดขอบมน
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/icons/visa.svg',
+                                  width: 40,
+                                  height: 40,
+                                ),
+                              ),
+                            if (card.brand != 'Visa')
+                              SvgPicture.asset(
+                                'assets/icons/mastercard.svg', // path to the visa svg
+                                width: 40,
+                                height: 40,
+                              ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              '**** ${card.last4}', // แสดงชื่อแบรนด์และเลขการ์ด 4 หลักสุดท้าย
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        Icon(
+                          selectedCardId == card.cardId
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          color: selectedCardId == card.cardId
+                              ? Constants.primaryColor
+                              : Colors
+                                  .grey.shade400, // แสดงไอคอนตามสถานะการเลือก
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList()
+          else
+            // ถ้าไม่มีข้อมูลการ์ด
+            const Text(
+              'ไม่มีข้อมูลการ์ดที่ใช้สำหรับการชำระเงิน',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          Row(
+            children: [
+              Checkbox(
+                value:
+                    isTermsAccepted, // ตัวแปรบอกว่าผู้ใช้ยอมรับเงื่อนไขหรือไม่
+                onChanged: (bool? value) {
+                  setState(() {
+                    isTermsAccepted = value ?? false;
+                  });
+                },
+                activeColor: Colors.blue,
+              ),
+              Text(
+                'ข้าพเจ้ายอมรับข้อกำหนด',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(
+                width: 3,
+              ),
+              GestureDetector(
+                onTap: () {
+                  // โค้ดสำหรับการเปิดเงื่อนไขการใช้บริการ
+                  // เช่น เปิดหน้าต่างใหม่ที่แสดง Terms and Conditions
+                },
+                child: Text(
+                  'เงื่อนไขการใช้บริการ',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w500,
+                    // decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: Constants.primaryColor, // สีเขียว
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: selectedCardId != null && isTermsAccepted
+                        ? () {}
+                        : null,
+                    child: const Text(
+                      "ยืนยันการชำระเงิน",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
