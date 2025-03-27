@@ -17,24 +17,20 @@ class Notification {
     required this.createdAt,
   });
 
-  // Convert a single notification from JSON
+  /// **แก้ไขการป้องกันค่า `null`**
   factory Notification.fromJson(Map<String, dynamic> json) {
     return Notification(
-      id: json['id'],
-      relatedEntityId: json['related_entity_id'],
-      relatedType: json['related_type'],
-      message: json['message'],
-      isRead: json['is_read'],
-      createdAt: DateTime.parse(json['created_at']),
+      id: json['id'] ?? "",
+      relatedEntityId: json['related_entity_id'] ?? "",
+      relatedType: json['related_type'] ?? "",
+      message: json['message'] ?? "No message",
+      isRead: json['is_read'] ?? false,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
     );
   }
 
-  // Convert a list of notifications from JSON
-  static List<Notification> listFromJson(List<dynamic> jsonList) {
-    return jsonList.map((json) => Notification.fromJson(json)).toList();
-  }
-
-  // Convert notification to JSON format
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -44,6 +40,12 @@ class Notification {
       'is_read': isRead,
       'created_at': createdAt.toIso8601String(),
     };
+  }
+
+  static List<Notification> listFromJson(List<dynamic>? jsonList) {
+    return jsonList != null
+        ? jsonList.map((json) => Notification.fromJson(json ?? {})).toList()
+        : [];
   }
 }
 
@@ -58,12 +60,20 @@ class NotificationResponse {
     required this.status,
   });
 
-  // Convert from JSON response
+  /// **แก้ไข: ป้องกัน `null` ใน response**
   factory NotificationResponse.fromJson(Map<String, dynamic> json) {
     return NotificationResponse(
       data: Notification.listFromJson(json['data']),
-      message: json['message'],
-      status: json['status'],
+      message: json['message'] ?? "No message",
+      status: json['status'] ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'data': List<dynamic>.from(data.map((x) => x.toJson())),
+      'message': message,
+      'status': status,
+    };
   }
 }
