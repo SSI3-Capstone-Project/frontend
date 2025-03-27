@@ -63,7 +63,7 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
               },
             ),
           elevation: 0,
-          bottom:PreferredSize(
+          bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
             child: Align(
               alignment: Alignment.centerLeft,
@@ -83,7 +83,7 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
                 labelPadding: EdgeInsets.symmetric(horizontal: 16), // เว้นระยะห่างด้านซ้ายและขวาของแต่ละแท็บ
                 tabs: notificationTypes.map((type) {
                   return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8), // เว้นระยะห่างให้เท่ากันระหว่างแท็บ
+                    padding: EdgeInsets.symmetric(horizontal: 16), // เว้นระยะห่างให้เท่ากันระหว่างแท็บ
                     child: Tab(
                       text: type['display'],
                     ),
@@ -144,38 +144,41 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
               ],
             ),
             child: Card(
-              color: Colors.transparent,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              clipBehavior: Clip.hardEdge,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          // แสดงข้อความทั้งหมด
-                          Text(
-                            notification.message,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                          ),
-                          const SizedBox(height: 4),
-                          // แสดงวันที่และเวลาในรูปแบบที่ใช้งานง่าย
-                          Text(
+            color: Colors.transparent,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            clipBehavior: Clip.hardEdge,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start, // Keeps the message left-aligned
+                      children: [
+                        // แสดงข้อความทั้งหมด
+                        Text(
+                          notification.message,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                        const SizedBox(height: 10),
+                        // แสดงวันที่และเวลาในรูปแบบที่ใช้งานง่าย
+                        Align(
+                          alignment: Alignment.centerRight, // Align the date to the right
+                          child: Text(
                             formattedDate,
                             style: const TextStyle(fontSize: 12, color: Colors.grey),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
           );
         },
       );
