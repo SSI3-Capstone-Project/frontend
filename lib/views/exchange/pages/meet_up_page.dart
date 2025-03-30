@@ -13,14 +13,18 @@ import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/views/card/pages/card_list_page.dart';
 import 'package:mbea_ssi3_front/views/chat/controllers/chat_room_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/meet_up_exchange_controller.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mbea_ssi3_front/views/exchange/controllers/rating_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/pages/exchange_product_detail_page.dart';
+import 'package:mbea_ssi3_front/views/exchange/pages/user_review_section.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mbea_ssi3_front/views/report/pages/report_issue_page.dart';
+import 'package:mbea_ssi3_front/views/termsOfService/pages/terms_of_service_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -46,14 +50,6 @@ class MeetUpPage extends StatefulWidget {
 
   @override
   State<MeetUpPage> createState() => _MeetUpPageState();
-}
-
-class RatingController extends GetxController {
-  var selectedRating = 0.obs;
-
-  void setRating(int rating) {
-    selectedRating.value = rating;
-  }
 }
 
 class _MeetUpPageState extends State<MeetUpPage> {
@@ -653,14 +649,86 @@ class _MeetUpPageState extends State<MeetUpPage> {
                               ],
                             ),
 
-                          if (_currentStage == 2)
-                            Column(
-                              children: [
-                                SizedBox(height: 10),
-                                paymentDetails(),
-                                paymentChannels()
-                              ],
-                            ),
+                          if (((exchangeController.exchange.value?.isPaid ??
+                                      false) ||
+                                  (exchangeController
+                                              .exchange.value?.exchangeStage ??
+                                          0) >
+                                      3) &&
+                              _currentStage == 2)
+                            Obx(() {
+                              return Column(
+                                children: [
+                                  SizedBox(height: 10),
+                                  if ((exchangeController
+                                              .exchange.value?.exchangeStage ??
+                                          0) <=
+                                      3)
+                                    paymentStatusCard(true),
+                                  if ((exchangeController
+                                              .exchange.value?.exchangeStage ??
+                                          0) >
+                                      3)
+                                    paymentStatusCard(false),
+                                  if ((exchangeController
+                                              .exchange.value?.exchangeStage ??
+                                          0) >
+                                      3)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 15),
+                                      child: ElevatedButton.icon(
+                                        onPressed: () {
+                                          setState(() {
+                                            _currentStage =
+                                                (_currentStage! + 1);
+                                          });
+                                        },
+                                        label: Text("ขั้นตอนถัดไป",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white)),
+                                        icon: Icon(Icons.arrow_forward,
+                                            color: Colors.white),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Constants
+                                              .primaryColor, // สีพื้นหลัง
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                15), // ขอบมน 15
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 5), // ปรับขนาดปุ่ม
+                                        ),
+                                      ),
+                                    )
+                                ],
+                              );
+                            }),
+
+                          if (_currentStage == 2 &&
+                              !(exchangeController.exchange.value?.isPaid ??
+                                  false))
+                            Obx(() {
+                              return Column(
+                                children: [
+                                  SizedBox(height: 10),
+                                  if ((exchangeController
+                                              .exchange.value?.exchangeStage ??
+                                          0) <=
+                                      3)
+                                    paymentDetails(),
+                                  if ((exchangeController
+                                              .exchange.value?.exchangeStage ??
+                                          0) <=
+                                      3)
+                                    paymentChannels()
+                                ],
+                              );
+                            }),
+
                           if (_currentStage == 3) userCheckInCard(),
                           if (_currentStage == 4)
                             Column(
@@ -669,7 +737,16 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                   height: 10,
                                 ),
                                 finishCard(),
-                                userRating(),
+                                UserReviewSection(
+                                  ratingController: ratingController,
+                                  reviewController: reviewController,
+                                  mediaList: mediaList,
+                                  onMediaChanged: (updatedMediaList) {
+                                    setState(() {
+                                      mediaList = updatedMediaList;
+                                    });
+                                  },
+                                ),
                                 Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 15),
@@ -1076,7 +1153,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
                               await exchangeController
                                   .fetchExchangeDetails(result);
                               setState(() {
-                                _currentStage = 2;
+                                // _currentStage = 2;
                                 exchangeID =
                                     exchangeController.exchange.value?.id;
                               });
@@ -1442,6 +1519,93 @@ class _MeetUpPageState extends State<MeetUpPage> {
     );
   }
 
+  Widget paymentStatusCard(bool status) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'สถานะการชำระเงิน',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 15),
+          if (status)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.payments_outlined,
+                  size: 33,
+                  color: Colors.grey.shade500,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'กำลังรออีกผู้ใช้งานอีกท่านชำระเงิน',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade500,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            )
+          else
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/check_icon.svg',
+                      width: 60,
+                      height: 60,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 25),
+                Text(
+                  'ชำระเงินสำเร็จ',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Constants.primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Text(
+                  'ทั้งสองฝ่ายได้ชำระเงินเรียบร้อยแล้ว',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Constants.primaryColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget paymentDetails() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1647,97 +1811,111 @@ class _MeetUpPageState extends State<MeetUpPage> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                Text(
-                  'จัดการช่องทางชำระเงิน',
-                  style: TextStyle(
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CardListPage()),
+                    );
+                  },
+                  child: Text(
+                    'จัดการช่องทางชำระเงิน',
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Constants.primaryColor),
-                ),
+                      color: Constants.primaryColor,
+                    ),
+                  ),
+                )
               ],
             ),
           ),
-          SizedBox(
-            height: 16,
-          ),
-          // เช็คว่า exchangeController.exchange.value?.cards มีข้อมูลหรือไม่
-          if (exchangeController.exchange.value?.cards != null &&
-              exchangeController.exchange.value!.cards!.isNotEmpty)
-            ...exchangeController.exchange.value!.cards!.map((card) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedCardId = card.cardId; // เก็บค่า cardId ที่เลือก
-                  });
-                },
-                child: Card(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                      color: selectedCardId == card.cardId
-                          ? Constants.primaryColor // ถ้าเลือกจะเป็นสีฟ้า
-                          : Colors.grey.shade400, // ไม่เลือกจะเป็นสีเทา
-                      width: 2,
-                    ),
-                  ),
-                  elevation: 0,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
+          // SizedBox(
+          //   height: 16,
+          // ),
+          Obx(() {
+            final cards = exchangeController.exchange.value?.cards;
+
+            if (cards != null && cards.isNotEmpty) {
+              return Column(
+                children: cards.map((card) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedCardId = card.cardId;
+                      });
+                    },
+                    child: Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: selectedCardId == card.cardId
+                              ? Constants.primaryColor
+                              : Colors.grey.shade400,
+                          width: 2,
+                        ),
+                      ),
+                      elevation: 0,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            if (card.brand == 'Visa')
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                      100), // กำหนดขนาดขอบมน
+                            Row(
+                              children: [
+                                if (card.brand == 'Visa')
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    child: SvgPicture.asset(
+                                      'assets/icons/visa.svg',
+                                      width: 40,
+                                      height: 40,
+                                    ),
+                                  )
+                                else
+                                  SvgPicture.asset(
+                                    'assets/icons/mastercard.svg',
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                                SizedBox(width: 10),
+                                Text(
+                                  '**** ${card.last4}',
+                                  style: TextStyle(fontSize: 14),
                                 ),
-                                child: SvgPicture.asset(
-                                  'assets/icons/visa.svg',
-                                  width: 40,
-                                  height: 40,
-                                ),
-                              ),
-                            if (card.brand != 'Visa')
-                              SvgPicture.asset(
-                                'assets/icons/mastercard.svg', // path to the visa svg
-                                width: 40,
-                                height: 40,
-                              ),
-                            SizedBox(
-                              width: 10,
+                              ],
                             ),
-                            Text(
-                              '**** ${card.last4}', // แสดงชื่อแบรนด์และเลขการ์ด 4 หลักสุดท้าย
-                              style: TextStyle(fontSize: 14),
+                            Icon(
+                              selectedCardId == card.cardId
+                                  ? Icons.check_circle
+                                  : Icons.circle_outlined,
+                              color: selectedCardId == card.cardId
+                                  ? Constants.primaryColor
+                                  : Colors.grey.shade400,
                             ),
                           ],
                         ),
-                        Icon(
-                          selectedCardId == card.cardId
-                              ? Icons.check_circle
-                              : Icons.circle_outlined,
-                          color: selectedCardId == card.cardId
-                              ? Constants.primaryColor
-                              : Colors
-                                  .grey.shade400, // แสดงไอคอนตามสถานะการเลือก
-                        ),
-                      ],
+                      ),
                     ),
+                  );
+                }).toList(),
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Center(
+                  child: Text(
+                    'ไม่มีข้อมูลการ์ดที่ใช้สำหรับการชำระเงิน',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ),
               );
-            }).toList()
-          else
-            // ถ้าไม่มีข้อมูลการ์ด
-            const Text(
-              'ไม่มีข้อมูลการ์ดที่ใช้สำหรับการชำระเงิน',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
+            }
+          }),
           Row(
             children: [
               Checkbox(
@@ -1762,8 +1940,11 @@ class _MeetUpPageState extends State<MeetUpPage> {
               ),
               GestureDetector(
                 onTap: () {
-                  // โค้ดสำหรับการเปิดเงื่อนไขการใช้บริการ
-                  // เช่น เปิดหน้าต่างใหม่ที่แสดง Terms and Conditions
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TermsOfServicePage()),
+                  );
                 },
                 child: Text(
                   'เงื่อนไขการใช้บริการ',
@@ -1790,8 +1971,22 @@ class _MeetUpPageState extends State<MeetUpPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: selectedCardId != null && isTermsAccepted
-                        ? () {}
+                    onPressed: selectedCardId != null &&
+                            isTermsAccepted &&
+                            exchangeController.exchange.value != null &&
+                            exchangeController.exchange.value!.exchangeStage ==
+                                3
+                        ? () async {
+                            {
+                              await exchangeController.createExchangeCharge(
+                                  exchangeID!, selectedCardId!);
+                              await exchangeController
+                                  .fetchExchangeDetails(exchangeID!);
+                              setState(() {
+                                _currentStage = 2;
+                              });
+                            }
+                          }
                         : null,
                     child: const Text(
                       "ยืนยันการชำระเงิน",
@@ -2078,285 +2273,6 @@ class _MeetUpPageState extends State<MeetUpPage> {
     );
   }
 
-  Widget userRating() {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: Offset(0, 1),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // เจ้าของโพสต์
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundImage: NetworkImage(widget.user == Payer.post
-                            ? exchangeController.exchange.value!.postImageUrl
-                            : exchangeController.exchange.value!.offerImageUrl),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                          widget.user == Payer.post
-                              ? exchangeController.exchange.value!.postUsername
-                              : exchangeController
-                                  .exchange.value!.offerUsername,
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  Obx(() => Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(5, (index) {
-                          int starIndex = index + 1;
-                          return GestureDetector(
-                            onTap: () => ratingController.setRating(starIndex),
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ratingController.selectedRating.value ==
-                                        starIndex
-                                    ? Colors.grey.shade300
-                                    : Colors.transparent,
-                              ),
-                              padding: EdgeInsets.all(8),
-                              child: Icon(
-                                Icons.star,
-                                size: 20,
-                                color: ratingController.selectedRating.value >=
-                                        starIndex
-                                    ? Constants.primaryColor
-                                    : Colors.grey,
-                              ),
-                            ),
-                          );
-                        }),
-                      )),
-                ],
-              ),
-              SizedBox(height: 16),
-
-              TextField(
-                controller: reviewController,
-                maxLines: 3,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                decoration: InputDecoration(
-                  hintText: "เขียนรีวิวผู้ใช้งานท่านนี้...",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                        color: Colors.grey.shade300), // กำหนดสี border
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                        color: Colors.grey.shade300), // border เมื่อไม่ได้โฟกัส
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 2), // border เมื่อโฟกัส
-                  ),
-                  contentPadding: EdgeInsets.all(12),
-                ),
-                onChanged: (text) {
-                  limitTextLength(); // ตรวจสอบและตัดข้อความ
-                },
-              ),
-              SizedBox(height: 5),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  "${reviewController.text.runes.length}/$maxCharacters",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_videoController != null &&
-                      _videoController!.value.isInitialized)
-                    AspectRatio(
-                      aspectRatio: _videoController!.value.aspectRatio,
-                      child: VideoPlayer(_videoController!),
-                    ),
-                  if (mediaList.isNotEmpty)
-                    SizedBox(
-                      height: 120,
-                      child: ReorderableListView(
-                        scrollDirection: Axis.horizontal,
-                        onReorder: (oldIndex, newIndex) {
-                          setState(() {
-                            if (newIndex > oldIndex) {
-                              newIndex -= 1;
-                            }
-                            final item = mediaList.removeAt(oldIndex);
-                            mediaList.insert(newIndex, item);
-                          });
-                        },
-                        children: List.generate(mediaList.length, (index) {
-                          var media = mediaList[index];
-                          File? file = media['file'];
-
-                          return Stack(
-                            key: ValueKey(media),
-                            children: [
-                              Container(
-                                width: 80,
-                                height: 80,
-                                margin: EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                      8), // เพิ่มมุมมนให้รูปภาพและวิดีโอ
-                                  child: file != null && file.existsSync()
-                                      ? media['type'] == 'image'
-                                          ? Image.file(file, fit: BoxFit.cover)
-                                          : _buildVideoPreview(
-                                              file) // ใช้ฟังก์ชันพรีวิววิดีโอ
-                                      : Center(
-                                          child: Text("ไฟล์ไม่พบ",
-                                              style: TextStyle(fontSize: 12))),
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      mediaList.removeAt(index);
-                                    });
-                                  },
-                                  child: CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: Colors.red,
-                                    child: Icon(Icons.close,
-                                        color: Colors.white, size: 16),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
-                      ),
-                    ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Constants.primaryColor, // สีพื้นหลังฟ้า
-                        shape: BoxShape.circle, // ทำให้เป็นวงกลม
-                      ),
-                      child: IconButton(
-                        onPressed: pickMedia,
-                        tooltip: "แนบไฟล์รูปภาพหรือวิดีโอ",
-                        icon: Transform.rotate(
-                          angle: pi / 4, // หมุน 45 องศา
-                          child: Icon(Icons.attach_file, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVideoPreview(File videoFile) {
-    return FutureBuilder<Uint8List?>(
-      future: VideoThumbnail.thumbnailData(
-        video: videoFile.path,
-        imageFormat: ImageFormat.JPEG,
-        maxHeight: 1500, // ลดความสูงของ thumbnail
-        quality: 100,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
-            snapshot.data != null) {
-          return Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8), // เพิ่มมุมมนให้กับรูป
-                child: Image.memory(
-                  snapshot.data!,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              FutureBuilder<Duration>(
-                future: _getVideoDuration(videoFile),
-                builder: (context, durationSnapshot) {
-                  if (durationSnapshot.connectionState ==
-                          ConnectionState.done &&
-                      durationSnapshot.data != null) {
-                    return Container(
-                      margin: EdgeInsets.all(4),
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        _formatDuration(durationSnapshot.data!),
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    );
-                  } else {
-                    return SizedBox(); // หากยังโหลดเวลาไม่เสร็จ จะไม่แสดงอะไร
-                  }
-                },
-              ),
-            ],
-          );
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
-
-  Future<Duration> _getVideoDuration(File videoFile) async {
-    final controller = VideoPlayerController.file(videoFile);
-    await controller.initialize();
-    final duration = controller.value.duration;
-    await controller.dispose(); // ปล่อยหน่วยความจำหลังใช้งาน
-    return duration;
-  }
-
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes;
-    final seconds = duration.inSeconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
   Widget _buildStepIndicator() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -2382,9 +2298,13 @@ class _MeetUpPageState extends State<MeetUpPage> {
                   if (exchangeController.exchange.value != null) {
                     ratingController.setRating(0);
                     if (stepNumber < 3) {
-                      setState(() {
-                        _currentStage = stepNumber;
-                      });
+                      if ((exchangeController.exchange.value?.exchangeStage ??
+                              0) >
+                          2) {
+                        setState(() {
+                          _currentStage = stepNumber;
+                        });
+                      }
                     } else {
                       if (exchangeController.exchange.value?.status ==
                           'confirmed') {

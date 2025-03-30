@@ -162,7 +162,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
               ListView(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -193,30 +193,53 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                                     'รายงานปัญหาการแลกเปลี่ยน',
                                     style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.red,
+                                        color: Colors.grey.shade900,
                                         fontWeight: FontWeight.w500),
                                   ),
                                   SizedBox(
                                     height: 25,
                                   ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      productDetail(postDetail, 'post'),
-                                      // Center(
-                                      //   child: Text(
-                                      //     '-' *
-                                      //         dashCount, // ทำซ้ำ "-" ตามที่คำนวณได้
-                                      //     style: TextStyle(
-                                      //         fontSize: 14, color: Colors.grey),
-                                      //   ),
-                                      // ),
-                                      SizedBox(
-                                        height: 25,
-                                      ),
-                                      productDetail(offerDetail, 'offer'),
-                                    ],
-                                  ),
+                                  // Column(
+                                  //   mainAxisSize: MainAxisSize.min,
+                                  //   children: [
+                                  //     productDetail(postDetail, 'post'),
+                                  //     // Center(
+                                  //     //   child: Text(
+                                  //     //     '-' *
+                                  //     //         dashCount, // ทำซ้ำ "-" ตามที่คำนวณได้
+                                  //     //     style: TextStyle(
+                                  //     //         fontSize: 14, color: Colors.grey),
+                                  //     //   ),
+                                  //     // ),
+                                  //     SizedBox(
+                                  //       height: 25,
+                                  //     ),
+                                  //     productDetail(offerDetail, 'offer'),
+                                  //   ],
+                                  // ),
+                                  customCard("โพสต์และข้อเสนอ", [
+                                    Obx(() {
+                                      final post = productDetailController
+                                          .postDetail.value;
+                                      final offer = productDetailController
+                                          .offerDetail.value;
+
+                                      if (post == null || offer == null) {
+                                        return Center(
+                                            child: CircularProgressIndicator());
+                                      }
+
+                                      return Column(
+                                        children: [
+                                          productDetail(post, 'post'),
+                                          SizedBox(height: 10),
+                                          Divider(color: Colors.grey.shade400),
+                                          productDetail(offer, 'offer'),
+                                          SizedBox(height: 8),
+                                        ],
+                                      );
+                                    }),
+                                  ]),
                                   SizedBox(
                                     height: 25,
                                   ),
@@ -241,58 +264,55 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                               )
                             ],
                           ),
-                          _buildDropdownField(
-                            label: 'ประเภทปัญหา',
-                            items: ReportType.values
-                                .map((type) => type.displayName)
-                                .toList(),
-                            value: _selectedReportType?.displayName,
-                            onChanged: (value) => setState(() =>
-                                _selectedReportType = ReportType.values
-                                    .firstWhere(
-                                        (type) => type.displayName == value)),
-                          ),
-                          // TextFormField(
-                          //   controller: _reasonController,
-                          //   maxLines: 3,
-                          //   decoration: const InputDecoration(
-                          //     labelText: 'รายละเอียดปัญหา',
-                          //     border: OutlineInputBorder(),
-                          //   ),
-                          //   validator: (value) => value == null || value.isEmpty
-                          //       ? 'โปรดระบุรายละเอียดปัญหา'
-                          //       : null,
-                          // ),
-                          TextField(
-                            controller: _reasonController,
-                            maxLines: 3,
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w500),
-                            decoration: InputDecoration(
-                              hintText: "รายละเอียดปัญหา...",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                    color:
-                                        Colors.grey.shade300), // กำหนดสี border
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                    color: Colors.grey
-                                        .shade300), // border เมื่อไม่ได้โฟกัส
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                    color: Colors.grey.shade300,
-                                    width: 2), // border เมื่อโฟกัส
-                              ),
-                              contentPadding: EdgeInsets.all(12),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              children: [
+                                _buildDropdownField(
+                                  label: 'ประเภทปัญหา',
+                                  items: ReportType.values
+                                      .map((type) => type.displayName)
+                                      .toList(),
+                                  value: _selectedReportType?.displayName,
+                                  onChanged: (value) => setState(() =>
+                                      _selectedReportType = ReportType.values
+                                          .firstWhere((type) =>
+                                              type.displayName == value)),
+                                ),
+                                TextField(
+                                  controller: _reasonController,
+                                  maxLines: 3,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500),
+                                  decoration: InputDecoration(
+                                    hintText: "รายละเอียดปัญหา...",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Colors
+                                              .grey.shade300), // กำหนดสี border
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey
+                                              .shade300), // border เมื่อไม่ได้โฟกัส
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade300,
+                                          width: 2), // border เมื่อโฟกัส
+                                    ),
+                                    contentPadding: EdgeInsets.all(12),
+                                  ),
+                                  onChanged: (text) {
+                                    limitTextLength(); // ตรวจสอบและตัดข้อความ
+                                  },
+                                ),
+                              ],
                             ),
-                            onChanged: (text) {
-                              limitTextLength(); // ตรวจสอบและตัดข้อความ
-                            },
                           ),
                           SizedBox(height: 5),
                           Align(
@@ -351,26 +371,54 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
     );
   }
 
-  Widget productDetail(dynamic item, String type) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: Offset(0, 1),
+  Widget customCard(String title, List<Widget> children) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ส่วนหัวสีส้ม
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF15A29),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+            ),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+
+          // ส่วนเนื้อหาพื้นหลังขาว
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(children: children),
           ),
         ],
       ),
+    );
+  }
+
+  Widget productDetail(dynamic item, String type) {
+    return Container(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 15,
+          SizedBox(
+            height: 14,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -381,7 +429,15 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) =>
+                        //         OtherUserProfileDetail(userId: item.id),
+                        //   ),
+                        // );
+                      },
                       child: Align(
                         alignment: Alignment.topRight,
                         child: Container(
@@ -390,14 +446,14 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                             color: Colors.white,
                           ),
                           child: CircleAvatar(
-                            radius: 20,
+                            radius: 18,
                             backgroundImage: NetworkImage(item.userImage),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(
-                      width: 5,
+                      width: 6,
                     ),
                     Text(
                       item.username,
@@ -444,7 +500,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   item.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -452,7 +508,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                   'รายละเอียด',
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -465,8 +521,8 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                         item.description,
                         style: const TextStyle(
                           color: Colors.black45,
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
                         ),
                         softWrap: true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
                         overflow: TextOverflow.visible, // แสดงข้อความทั้งหมด
@@ -534,7 +590,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
         ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: SizedBox(
-            width: 300,
+            width: 320,
             height: 250,
             child: PageView.builder(
               controller:

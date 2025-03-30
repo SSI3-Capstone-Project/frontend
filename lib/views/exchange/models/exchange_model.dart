@@ -16,6 +16,8 @@ class ExchangeModel {
   MeetingPoint meetingPoint;
   int exchangeStage;
   bool isOwnerPost;
+  bool? isPaid;
+  bool? isReview;
   String? exchangeDate;
   PaymentDetails? paymentDetails; // nullable
   List<CardInfo>? cards; // nullable
@@ -36,6 +38,8 @@ class ExchangeModel {
     required this.meetingPoint,
     required this.exchangeStage,
     required this.isOwnerPost,
+    this.isPaid,
+    this.isReview,
     this.exchangeDate,
     this.paymentDetails,
     this.cards,
@@ -62,6 +66,8 @@ class ExchangeModel {
       meetingPoint: MeetingPoint.fromJson(json['meeting_point']),
       exchangeStage: json['exchange_stage'],
       isOwnerPost: json['is_owner_post'],
+      isPaid: json['is_paid'],
+      isReview: json['is_review'],
       exchangeDate: json['exchange_date'],
       paymentDetails: json['payment_details'] != null
           ? PaymentDetails.fromJson(json['payment_details'])

@@ -91,7 +91,10 @@ class _OtherUserProfileDetailState extends State<OtherUserProfileDetail> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("คะแนนเฉลี่ย: ${user.avgRating.toString()}",
+            Text(
+                user.avgRating != 0.0
+                    ? "คะแนนเฉลี่ย: ${user.avgRating.toString()}"
+                    : 'ยังไม่มีคะแนน',
                 style: TextStyle(color: Colors.grey[600])),
             SizedBox(
               width: 3,

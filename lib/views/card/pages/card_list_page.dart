@@ -45,25 +45,17 @@ class _CardListPageState extends State<CardListPage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-<<<<<<< HEAD
-        if (cardListController.cards.isEmpty) {
-          const Center(
-            child:
-                Text("ยังไม่มีช่องทางการชำระเงิน กรุณาเพิ่มช่องทางการชำระเงิน"),
-          );
-        }
-
-=======
->>>>>>> 54d0f973f20e29eb2a8a3d5f526e670f5c088150
         return Column(
           children: [
             Expanded(
               child: cardListController.cards.isEmpty
-                  ? const Center(child: Text("ยังไม่มีช่องทางการชำระเงิน กรุณาเพิ่มช่องทางการชำระเงิน"))
+                  ? const Center(
+                      child: Text(
+                          "ยังไม่มีช่องทางการชำระเงิน กรุณาเพิ่มช่องทางการชำระเงิน"))
                   : Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: _buildCardList(),
-              ),
+                      padding: const EdgeInsets.all(15.0),
+                      child: _buildCardList(),
+                    ),
             ),
             Padding(
               padding: const EdgeInsets.all(15.0),

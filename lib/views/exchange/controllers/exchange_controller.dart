@@ -110,6 +110,50 @@ class ExchangeController extends GetxController {
     }
   }
 
+  Future<bool> createExchangeCharge(String exchangeID, String cardID) async {
+    try {
+      isLoading(true);
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading(false);
+        return false;
+      }
+
+      final token = tokenController.accessToken.value;
+
+      final body = jsonEncode({"card_id": cardID});
+
+      final response = await http.post(
+        Uri.parse('${dotenv.env['API_URL']}/exchanges/$exchangeID/charges'),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData);
+        Get.snackbar('สำเร็จ', 'สร้างรายการชำระเงินเรียบร้อยแล้ว');
+        return true;
+      } else {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        print(jsonData);
+        print(response.statusCode);
+        print(cardID);
+
+        Get.snackbar('แจ้งเตือน', 'ไม่สามารถสร้างรายการชำระเงินได้');
+        return false;
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'เกิดข้อผิดพลาด: ${e.toString()}');
+      return false;
+    } finally {
+      isLoading(false);
+    }
+  }
+
   Future<bool> sendUserReview(String exchangeID, int rating, String? comment,
       List<Map<String, dynamic>> mediaList) async {
     try {

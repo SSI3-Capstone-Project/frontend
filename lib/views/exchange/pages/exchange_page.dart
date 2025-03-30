@@ -279,14 +279,46 @@ class _ExchangePageState extends State<ExchangePage> {
                                   Get.snackbar('แจ้งเตือน',
                                       'ถ้าการแลกเปลี่ยนของคุณมีค่าส่วนต่างต้องระบุค่าส่วนต่าง\nขั้นต่ำคือ 1 บาท');
                                 } else {
-                                  setState(() {
-                                    _exchangeStage = _exchangeStage + 1;
-                                  });
+                                  // setState(() {
+                                  //   _exchangeStage = _exchangeStage + 1;
+                                  // });
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MeetUpPage(
+                                        currentStep: 1,
+                                        user: Payer.post,
+                                        payer: selectedPayer.value == 'post'
+                                            ? Payer.post
+                                            : Payer.offer,
+                                        priceDifference:
+                                            selectedPayer.value == 'post'
+                                                ? int.tryParse(
+                                                    postPriceController.text
+                                                        .toString())
+                                                : int.tryParse(
+                                                    offerPriceController.text),
+                                        postID: widget.postID,
+                                        offerID: widget.offerID,
+                                      ),
+                                    ),
+                                  );
                                 }
                               } else {
-                                setState(() {
-                                  _exchangeStage = _exchangeStage + 1;
-                                });
+                                // setState(() {
+                                //   _exchangeStage = _exchangeStage + 1;
+                                // });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MeetUpPage(
+                                      currentStep: 1,
+                                      user: Payer.post,
+                                      postID: widget.postID,
+                                      offerID: widget.offerID,
+                                    ),
+                                  ),
+                                );
                               }
                             } else if (_exchangeStage == 2) {
                               if (selectedExchangeFormat.value == 'นัดรับ') {
