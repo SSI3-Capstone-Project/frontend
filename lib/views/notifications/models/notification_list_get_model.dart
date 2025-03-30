@@ -4,6 +4,7 @@ class Notification {
   String id;
   String relatedEntityId;
   String relatedType;
+  String relatedPostId;
   String message;
   bool isRead;
   DateTime createdAt;
@@ -12,6 +13,7 @@ class Notification {
     required this.id,
     required this.relatedEntityId,
     required this.relatedType,
+    required this.relatedPostId,
     required this.message,
     required this.isRead,
     required this.createdAt,
@@ -23,6 +25,7 @@ class Notification {
       id: json['id'] ?? "",
       relatedEntityId: json['related_entity_id'] ?? "",
       relatedType: json['related_type'] ?? "",
+      relatedPostId: json['related_post_id'] ?? "",
       message: json['message'] ?? "No message",
       isRead: json['is_read'] ?? false,
       createdAt: json['created_at'] != null
@@ -36,6 +39,7 @@ class Notification {
       'id': id,
       'related_entity_id': relatedEntityId,
       'related_type': relatedType,
+      'related_post_id': relatedPostId,
       'message': message,
       'is_read': isRead,
       'created_at': createdAt.toIso8601String(),

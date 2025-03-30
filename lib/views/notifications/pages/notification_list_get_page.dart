@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import '../../chat/pages/chat_page.dart';
+import '../../post/pages/post_detail.dart';
+import '../../profile/controllers/get_profile_controller.dart';
 import '../controllers/notification_list_get_controller.dart';
 
 class NotificationListGetPage extends StatefulWidget {
@@ -13,13 +16,14 @@ class NotificationListGetPage extends StatefulWidget {
 
 class _NotificationListGetPageState extends State<NotificationListGetPage> with SingleTickerProviderStateMixin {
   final NotificationController notificationController = Get.put(NotificationController());
+  final UserProfileController userProfileController = Get.put(UserProfileController());
   late TabController _tabController;
 
   final List<Map<String, String>> notificationTypes = [
     {'display': 'ทั้งหมด', 'api': ''},
     {'display': 'ข้อเสนอ', 'api': 'offer'},
     {'display': 'แชท', 'api': 'chat'},
-    {'display': 'นัดรับ', 'api': 'meeting_point'},
+    {'display': 'นัดหมาย', 'api': 'meeting_point'},
   ];
 
   @override
@@ -83,7 +87,7 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
                 labelPadding: EdgeInsets.symmetric(horizontal: 16), // เว้นระยะห่างด้านซ้ายและขวาของแต่ละแท็บ
                 tabs: notificationTypes.map((type) {
                   return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16), // เว้นระยะห่างให้เท่ากันระหว่างแท็บ
+                    padding: EdgeInsets.symmetric(horizontal: 13), // เว้นระยะห่างให้เท่ากันระหว่างแท็บ
                     child: Tab(
                       text: type['display'],
                     ),
@@ -120,68 +124,111 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
         return const Center(child: Text("ยังไม่มีการแจ้งเตือน"));
       }
 
+      final userProfile = userProfileController.userProfile.value;
+      if (userProfile == null) {
+        // กรณีข้อมูลเป็น null หรือไม่ได้รับข้อมูลจาก API
+        return Center(child: Text("Failed to load user profile"));
+      }
+
       return ListView.builder(
         itemCount: notificationController.notifications.length,
         itemBuilder: (context, index) {
           final notification = notificationController.notifications[index];
 
-          // แปลงวันที่ที่ได้รับให้เป็น DateTime และจัดรูปแบบให้ใช้งานง่าย
-          DateTime createdDate = notification.createdAt;
-          String formattedDate = DateFormat('dd MMM yyyy, hh:mm a').format(createdDate);
-
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 6,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Card(
-            color: Colors.transparent,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            clipBehavior: Clip.hardEdge,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, // Keeps the message left-aligned
-                      children: [
-                        // แสดงข้อความทั้งหมด
-                        Text(
-                          notification.message,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                        const SizedBox(height: 10),
-                        // แสดงวันที่และเวลาในรูปแบบที่ใช้งานง่าย
-                        Align(
-                          alignment: Alignment.centerRight, // Align the date to the right
-                          child: Text(
-                            formattedDate,
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ),
-                      ],
+          // Check if the notification is of type 'offer' and has a related post ID
+          if (notification.relatedType == 'offer' && notification.relatedPostId != null && notification.relatedPostId != "") {
+            return GestureDetector(
+              onTap: () {
+                Get.snackbar('postId', notification.relatedPostId);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PostDetailPage(
+                      postId: notification.relatedPostId,
+                      username: userProfile.username,
+                      userImageUrl: userProfile.imageUrl.toString(), // Pass relatePostId
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          );
+                );
+              },
+              child: _buildNotificationItem(notification),
+            );
+          }
+
+          // Check if the notification is of type 'chat'
+          if (notification.relatedType == 'chat') {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatPage(), // Navigate to ChatListPage
+                  ),
+                );
+              },
+              child: _buildNotificationItem(notification),
+            );
+          }
+
+          return _buildNotificationItem(notification);
         },
       );
     });
+  }
+
+  // Helper method to build notification item
+  Widget _buildNotificationItem(notification) {
+    DateTime createdDate = notification.createdAt;
+    String formattedDate = DateFormat('dd MMM yyyy, hh:mm a').format(createdDate);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Card(
+        color: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      notification.message,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    const SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        formattedDate,
+                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
