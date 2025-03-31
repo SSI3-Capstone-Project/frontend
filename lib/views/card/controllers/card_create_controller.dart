@@ -44,8 +44,8 @@ class CardCreateController extends GetxController {
         tokenId.value = responseData['id'] ?? '';
 
         if (tokenId.value.isNotEmpty) {
-          Get.snackbar(
-              "Success", "Token created successfully: ${tokenId.value}");
+          // Get.snackbar(
+          //     "Success", "Token created successfully: ${tokenId.value}");
           int status = await createCreditCard(tokenId.value);
           if (status == 200) {
             return 200;
@@ -56,10 +56,10 @@ class CardCreateController extends GetxController {
           }
         }
       } else if (response.statusCode == 400) {
-        Get.snackbar("Error", "Invalid card, Please fill in again");
+        // Get.snackbar("Error", "Invalid card, Please fill in again");
         return 400;
       } else {
-        Get.snackbar("Error", "Failed to create token: ${response.body}");
+        // Get.snackbar("Error", "Failed to create token: ${response.body}");
         return 500;
       }
     } catch (e) {
@@ -91,18 +91,18 @@ class CardCreateController extends GetxController {
     try {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.snackbar("Success", "Credit card added successfully");
+        // Get.snackbar("Success", "Credit card added successfully");
         isLoading.value = false;
         return 200;
       } else if (response.statusCode == 409) {
-        Get.snackbar('error', 'duplicate data');
+        // Get.snackbar('error', 'duplicate data');
         isLoading(false);
         return 409;
       } else {
         var errorData = response.body;
         print(
             'Failed to add credit card: ${response.statusCode}, Error: $errorData');
-        Get.snackbar("Error", "Failed to add credit card");
+        // Get.snackbar("Error", "Failed to add credit card");
         isLoading.value = false;
         return 500;
       }

@@ -179,7 +179,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
       );
     }
 
-    Get.snackbar("Error", "Failed to create token: ${status}");
+    // Get.snackbar("Error", "Failed to create token: ${status}");
 
     return isSuccess;
   }
