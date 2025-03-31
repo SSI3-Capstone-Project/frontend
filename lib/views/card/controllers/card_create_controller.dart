@@ -23,7 +23,7 @@ class CardCreateController extends GetxController {
     final url = Uri.parse('https://vault.omise.co/tokens');
     final headers = {
       'Authorization':
-      'Basic ${base64Encode(utf8.encode("${dotenv.env['OMISE_PUBLIC_KEY']}:"))}',
+          'Basic ${base64Encode(utf8.encode("${dotenv.env['OMISE_PUBLIC_KEY']}:"))}',
       'Content-Type': 'application/x-www-form-urlencoded',
     };
 
@@ -44,9 +44,14 @@ class CardCreateController extends GetxController {
         tokenId.value = responseData['id'] ?? '';
 
         if (tokenId.value.isNotEmpty) {
-          Get.snackbar("Success", "Token created successfully: ${tokenId.value}");
-          await createCreditCard(tokenId.value);
-          return 200;
+          Get.snackbar(
+              "Success", "Token created successfully: ${tokenId.value}");
+          bool isCreated = await createCreditCard(tokenId.value);
+          if (isCreated) {
+            return 200;
+          } else {
+            return 409;
+          }
         }
       } else if (response.statusCode == 400) {
         Get.snackbar("Error", "Invalid card, Please fill in again");
@@ -87,9 +92,14 @@ class CardCreateController extends GetxController {
         Get.snackbar("Success", "Credit card added successfully");
         isLoading.value = false;
         return true;
+      } else if (response.statusCode == 409) {
+        Get.snackbar('error', 'duplicate data');
+        isLoading(false);
+        return false;
       } else {
         var errorData = response.body;
-        print('Failed to add credit card: ${response.statusCode}, Error: $errorData');
+        print(
+            'Failed to add credit card: ${response.statusCode}, Error: $errorData');
         Get.snackbar("Error", "Failed to add credit card");
         isLoading.value = false;
         return false;
@@ -101,4 +111,3 @@ class CardCreateController extends GetxController {
     }
   }
 }
-

@@ -69,14 +69,16 @@ class _CardListPageState extends State<CardListPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CardCreatePage(),
-                      ),
-                    );
-                  },
+                  onPressed: cardListController.cards.length < 5
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CardCreatePage(),
+                            ),
+                          );
+                        }
+                      : null,
                   child: const Text(
                     "เพิ่มวิธีการชำระเงิน",
                     style: TextStyle(color: Colors.white, fontSize: 16),
