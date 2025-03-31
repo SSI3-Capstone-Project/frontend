@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,10 +5,10 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/brand_controller.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_controller.dart';
 import 'package:mbea_ssi3_front/views/home/pages/product_detail_page.dart';
-import 'package:mbea_ssi3_front/views/profile/controllers/get_profile_controller.dart';
-import 'package:mbea_ssi3_front/views/profile/models/profile_get_model.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
+
+import '../../notifications/pages/notification_list_get_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,7 +44,11 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(
                     width: 10,
                   ),
-                  shortItemsButton()
+                  shortItemsButton(),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  notificationButton()
                 ],
               ),
             ),
@@ -473,6 +476,36 @@ class _HomePageState extends State<HomePage> {
                 : const BoxDecoration(),
           )
         ],
+      ),
+    );
+  }
+
+  Widget notificationButton() {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const NotificationListGetPage(),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(15),
+      splashColor: Colors.white24,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Constants.primaryColor,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: const RotatedBox(
+          quarterTurns: 4,
+          child: Icon(
+            Icons.notifications,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
       ),
     );
   }
