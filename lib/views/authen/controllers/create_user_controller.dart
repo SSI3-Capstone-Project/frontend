@@ -42,16 +42,13 @@ class UserCreationController extends GetxController {
       ..fields['bank_account_number'] = userRequest.value.bankAccountNumber
       ..fields['bank_account_name'] = userRequest.value.bankAccountName;
 
-    // Attach image file if provided
     if (imagePath.isNotEmpty) {
       request.files.add(await http.MultipartFile.fromPath(
         'image_file',
         imagePath,
-        contentType:
-            MediaType('image', 'jpeg'), // กำหนดประเภทไฟล์เป็น image/jpeg
+        contentType: MediaType('image', 'jpeg'),
       ));
     } else {
-      // Load the default asset image
       ByteData byteData =
           await rootBundle.load('assets/images/white_gray_person_image.png');
       List<int> imageData = byteData.buffer.asUint8List();
@@ -67,9 +64,6 @@ class UserCreationController extends GetxController {
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
-        // var responseData = await response.stream.bytesToString();
-        // var jsonResponse = json.decode(responseData);
-        // userRequest.value = CreateUserRequest.fromJson(jsonResponse['data']);
         Get.snackbar('สำเร็จ', 'ลงทะเบียนผู้ใช้เรียบร้อยแล้ว');
         isLoading.value = false;
         return true;
@@ -77,7 +71,6 @@ class UserCreationController extends GetxController {
         var errorData = await response.stream.bytesToString();
         var errorJson = json.decode(errorData);
 
-        // แปลงข้อความข้อผิดพลาดเป็นภาษาไทย
         var errorMessages = (errorJson['errors'] as List).map((e) {
           switch (e['field']) {
             case 'Username':
@@ -87,9 +80,9 @@ class UserCreationController extends GetxController {
             case 'Phone':
               return 'เบอร์โทรนี้ถูกใช้ไปแล้ว';
             default:
-              return e['error']; // หากไม่มีคำแปล ให้ใช้ข้อความเดิม
+              return '${e['field']}: ${e['error']}';
           }
-        }).join(', '); // รวมข้อความทั้งหมดเข้าด้วยกัน
+        }).join(', ');
 
         Get.snackbar('แจ้งเตือน', errorMessages);
         print(errorMessages); // Debug log
@@ -107,10 +100,9 @@ class UserCreationController extends GetxController {
         return false;
       }
     } catch (e) {
-      print(
-          '-----------------------------------------------------------------');
       print(e);
-      Get.snackbar('Error', 'An error occurred');
+      Get.snackbar('Error',
+          'An error occurred: ${e.toString()} in UserCreationController');
       isLoading.value = false;
       return false;
     }

@@ -72,16 +72,38 @@ class ReportController extends GetxController {
         },
         body: body,
       );
-
+      var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('สำเร็จ', 'การสร้างรายงานสำเร็จ');
+        isLoading.value = false;
         return true;
+      } else if (response.statusCode == 400) {
+        var errorMessages = (jsonData['errors'] as List).map((e) {
+          switch (e['field']) {
+            case 'Reason':
+              return 'กรุณาเลือกประเภทของรายงานปัญหา';
+            case 'ReportType':
+              return 'กรุณากรอกข้อมูลรายละเอียดของปัญหา';
+            default:
+              return '${e['field']}: ${e['error']}';
+          }
+        }).join(', ');
+
+        Get.snackbar('แจ้งเตือน', errorMessages);
+        print(errorMessages); // Debug log
+        isLoading.value = false;
+        return false;
+      } else if (response.statusCode == 404) {
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'ไม่พบรายการแลกเปลี่ยนนี้ในระบบ');
+        isLoading.value = false;
+        return false;
       } else {
-        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('แจ้งเตือน', 'เกิดปัญหาระหว่างการส่งรายงาน');
+        isLoading.value = false;
         return false;
       }
     } catch (e) {

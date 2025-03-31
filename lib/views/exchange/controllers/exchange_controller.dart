@@ -114,7 +114,6 @@ class ExchangeController extends GetxController {
     try {
       isLoading(true);
       if (tokenController.accessToken.value == null) {
-        // Get.snackbar('Error', 'No access token found.');
         isLoading(false);
         return false;
       }
@@ -131,23 +130,34 @@ class ExchangeController extends GetxController {
         },
         body: body,
       );
-
+      var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar('สำเร็จ', 'สร้างรายการชำระเงินเรียบร้อยแล้ว');
+        isLoading.value = false;
         return true;
-      } else {
-        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+      } else if (response.statusCode == 400) {
         print(jsonData);
-        print(response.statusCode);
-        print(cardID);
-
-        Get.snackbar('แจ้งเตือน', 'ไม่สามารถสร้างรายการชำระเงินได้');
+        Get.snackbar('แจ้งเตือน',
+            'ไม่มีการแนบเลขการ์ดสำหรับชำระเงิน หรือ รูปแบบไม่ถูกต้อง');
+        isLoading.value = false;
+        return false;
+      } else if (response.statusCode == 404) {
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'ไม่พบรายการชำระเงินนี้');
+        isLoading.value = false;
+        return false;
+      } else {
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาในการสร้างรายการชำระเงินนี้');
+        isLoading.value = false;
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'เกิดข้อผิดพลาด: ${e.toString()}');
+      print(e);
+      Get.snackbar(
+          'Error', 'An error occurred: ${e.toString()} in ExchangeController');
       return false;
     } finally {
       isLoading(false);
@@ -209,11 +219,32 @@ class ExchangeController extends GetxController {
         Get.snackbar('สำเร็จ', 'คุณส่งรีวิวผู้ใช้งานท่านนี้สำเร็จแล้ว');
         isLoading(false);
         return true;
+      } else if (response.statusCode == 400) {
+        var errorMessages = (jsonData['errors'] as List).map((e) {
+          switch (e['field']) {
+            case 'files':
+              return 'กรุณาแนบรูปภาพหรือวีดีโออย่างน้องหนึ่งไฟล์';
+            case 'Rating':
+              return 'กรุณากดให้คะแนนการแลกเปลี่ยนครั้งนี้';
+            default:
+              return '${e['field']}: ${e['error']}';
+          }
+        }).join(', ');
+
+        Get.snackbar('แจ้งเตือน', errorMessages);
+        print(errorMessages); // Debug log
+        isLoading.value = false;
+        return false;
       } else if (response.statusCode == 403) {
         print(jsonData);
         Get.snackbar('แจ้งเตือน',
             'คุณสามารถส่งรีวิวได้หลังจากการแลกเปลี่ยนเสร็จสิ้นแล้วเท่านั้น');
         isLoading(false);
+        return false;
+      } else if (response.statusCode == 404) {
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'ไม่พบรายการแลกเปลี่ยนนี้ในระบบ');
+        isLoading.value = false;
         return false;
       } else if (response.statusCode == 409) {
         print(jsonData);

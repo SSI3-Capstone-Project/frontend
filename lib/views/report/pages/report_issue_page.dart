@@ -279,7 +279,7 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                                           .firstWhere((type) =>
                                               type.displayName == value)),
                                 ),
-                                TextField(
+                                TextFormField(
                                   controller: _reasonController,
                                   maxLines: 3,
                                   style: TextStyle(
@@ -290,37 +290,44 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                          color: Colors
-                                              .grey.shade300), // กำหนดสี border
+                                          color: Colors.grey.shade300),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                          color: Colors.grey
-                                              .shade300), // border เมื่อไม่ได้โฟกัส
+                                          color: Colors.grey.shade300),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
                                           color: Colors.grey.shade300,
-                                          width: 2), // border เมื่อโฟกัส
+                                          width: 2),
                                     ),
                                     contentPadding: EdgeInsets.all(12),
                                   ),
                                   onChanged: (text) {
-                                    limitTextLength(); // ตรวจสอบและตัดข้อความ
+                                    limitTextLength();
+                                  },
+                                  validator: (value) {
+                                    if (value == null || value.trim().isEmpty) {
+                                      return 'โปรดกรอกรายละเอียดปัญหา';
+                                    }
+                                    return null;
                                   },
                                 ),
                               ],
                             ),
                           ),
                           SizedBox(height: 5),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              "${_reasonController.text.runes.length}/$maxCharacters",
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.grey),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                "${_reasonController.text.runes.length}/$maxCharacters",
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.grey),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),

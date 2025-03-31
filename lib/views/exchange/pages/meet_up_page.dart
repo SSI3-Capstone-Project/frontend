@@ -382,7 +382,7 @@ class _MeetUpPageState extends State<MeetUpPage> {
           children: [
             Spacer(),
             Text(
-              "นัดรับ ${widget.user}",
+              "นัดรับ",
               style:
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
             ),

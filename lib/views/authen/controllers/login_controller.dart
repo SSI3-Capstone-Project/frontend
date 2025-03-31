@@ -22,7 +22,7 @@ class LoginController extends GetxController {
           "password": password,
         }),
       );
-
+      var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final tokenData = data['data'];
@@ -35,16 +35,31 @@ class LoginController extends GetxController {
         Get.snackbar('สำเร็จ', 'เข้าสู่ระบบสำเร็จ');
         isLoading.value = false;
         return true;
-      } else {
+      } else if (response.statusCode == 400) {
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'กรุณากรอกรหัสผ่านของท่าน');
+        isLoading.value = false;
+        return false;
+      } else if (response.statusCode == 401) {
+        print(jsonData);
         Get.snackbar('แจ้งเตือน', 'ชื่อผู้ใช้งาน หรือ รหัสผ่าน ไม่ถูกต้อง');
+        isLoading.value = false;
+        return false;
+      } else if (response.statusCode == 404) {
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'กรุณากรอกชื่อผู้ใช้งานของท่าน');
+        isLoading.value = false;
+        return false;
+      } else {
+        print(jsonData);
+        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาระหว่างการเข้าสู่ระบบ');
         isLoading.value = false;
         return false;
       }
     } catch (e) {
-      print(
-          '-----------------------------------------------------------------');
       print(e);
-      Get.snackbar('Error', 'An error occurred. Please try again.');
+      Get.snackbar(
+          'Error', 'An error occurred: ${e.toString()} in LoginController');
       isLoading.value = false;
       return false;
     } finally {

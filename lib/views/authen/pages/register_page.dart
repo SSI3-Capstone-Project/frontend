@@ -18,6 +18,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _personalFormKey = GlobalKey<FormState>();
+
   final UserCreationController _controller = Get.put(UserCreationController());
   final OTPController otpController = Get.put(OTPController());
 
@@ -31,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+
   File? _profileImage;
 
   String? _selectedGender;
@@ -141,6 +144,8 @@ class _RegisterPageState extends State<RegisterPage> {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (_) => LoginPage()));
       }
+    } else {
+      Get.snackbar('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน');
     }
   }
 
@@ -168,473 +173,463 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       body: SafeArea(
         child: Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Form(
-              key: _formKey,
-              child: selectedIndex == 2
-                  ? ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      children: [
-                        SizedBox(height: 10),
-                        Center(
-                          child: Text(
-                            'โปรดกรอกข้อมูลธนาคารของท่านให้ครบถ้วนและถูกต้อง เพื่อความสะดวกในการคืนเงินค่าส่วนต่างหลังจากการแลกเปลี่ยน',
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w500),
-                            textAlign:
-                                TextAlign.center, // จัดเรียงข้อความตรงกลาง
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: selectedIndex == 2
+              ? Form(
+                  key: _formKey,
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    children: [
+                      SizedBox(height: 10),
+                      Center(
+                        child: Text(
+                          'โปรดกรอกข้อมูลธนาคารของท่านให้ครบถ้วนและถูกต้อง เพื่อความสะดวกในการคืนเงินค่าส่วนต่างหลังจากการแลกเปลี่ยน',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center, // จัดเรียงข้อความตรงกลาง
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      _buildBankDropdownField(
+                        label: 'เลือกธนาคาร',
+                        items: bankItems,
+                        value: 'kbank', // ตัวอย่างค่าที่ถูกเลือกเริ่มต้น
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedBankCode = newValue;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      _buildTextField(
+                        controller: _bankAccountNumber,
+                        label: 'เลขบัญชี',
+                        isBankAccountNumber: true,
+                      ),
+                      SizedBox(height: 20),
+                      _buildTextField(
+                        controller: _bankAccountName,
+                        label: 'ชื่อผู้ใช้',
+                        maxLength: 30,
+                      ),
+                      SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          backgroundColor: Constants.secondaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        SizedBox(height: 30),
-                        _buildBankDropdownField(
-                          label: 'เลือกธนาคาร',
-                          items: bankItems,
-                          value: 'kbank', // ตัวอย่างค่าที่ถูกเลือกเริ่มต้น
-                          onChanged: (newValue) {
-                            setState(() {
-                              _selectedBankCode = newValue;
-                            });
-                          },
+                        child: Text(
+                          'สมัครสมาชิก',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
-                        SizedBox(height: 20),
-                        _buildTextField(
-                          controller: _bankAccountNumber,
-                          label: 'เลขบัญชี',
-                          isBankAccountNumber: true,
-                        ),
-                        SizedBox(height: 20),
-                        _buildTextField(
-                          controller: _bankAccountName,
-                          label: 'ชื่อผู้ใช้',
-                          maxLength: 30,
-                        ),
-                        SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: _submitForm,
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            backgroundColor: Constants.secondaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'มีบัญชีแล้ว?',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (_) => LoginPage()),
+                              );
+                            },
+                            child: Text(
+                              'เข้าสู่ระบบ',
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 16),
                             ),
                           ),
-                          child: Text(
-                            'สมัครสมาชิก',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'มีบัญชีแล้ว?',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => LoginPage()),
-                                );
-                              },
-                              child: Text(
-                                'เข้าสู่ระบบ',
-                                style:
-                                    TextStyle(color: Colors.blue, fontSize: 16),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              : selectedIndex == 1
+                  ? Form(
+                      key: _personalFormKey,
+                      child: ListView(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        children: [
+                          // SizedBox(height: 20),
+                          Center(
+                            child: GestureDetector(
+                              onTap: _pickImage,
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.grey[300],
+                                backgroundImage: _profileImage != null
+                                    ? FileImage(_profileImage!)
+                                    : null,
+                                child: _profileImage == null
+                                    ? Icon(Icons.person_add_alt_1,
+                                        size: 50, color: Colors.black54)
+                                    : null,
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    )
-                  : selectedIndex == 1
-                      ? ListView(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          children: [
-                            // SizedBox(height: 20),
-                            Center(
-                              child: GestureDetector(
-                                onTap: _pickImage,
-                                child: CircleAvatar(
-                                  radius: 50,
-                                  backgroundColor: Colors.grey[300],
-                                  backgroundImage: _profileImage != null
-                                      ? FileImage(_profileImage!)
-                                      : null,
-                                  child: _profileImage == null
-                                      ? Icon(Icons.person_add_alt_1,
-                                          size: 50, color: Colors.black54)
-                                      : null,
+                          ),
+                          SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                  controller: _nameController,
+                                  label: 'ชื่อ',
+                                  maxLength: 30,
                                 ),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: _buildTextField(
+                                  controller: _surnameController,
+                                  label: 'นามสกุล',
+                                  maxLength: 45,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          _buildTextField(
+                            controller: _usernameController,
+                            label: 'ชื่อผู้ใช้งาน',
+                            maxLength: 30,
+                          ),
+                          SizedBox(height: 20),
+                          _buildTextField(
+                            controller: _emailController,
+                            label: 'Email',
+                            maxLength: 255,
+                            isEmail: true,
+                          ),
+                          SizedBox(height: 20),
+                          _buildTextField(
+                            controller: _passwordController,
+                            label: 'รหัสผ่าน',
+                            isPassword: true,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8, left: 8),
+                            child: Text(
+                              'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษรและประกอบด้วย\nตัวอักษร a-z, A-Z, และ 0-9',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          _buildTextField(
+                            controller: _confirmPasswordController,
+                            label: 'ยืนยันรหัสผ่าน',
+                            isPassword: true,
+                            isConfirmPassword: true,
+                          ),
+                          SizedBox(height: 20),
+                          _buildTextField(
+                            controller: _phoneController,
+                            label: 'เบอร์โทร',
+                            isPhone: true,
+                          ),
+                          SizedBox(height: 20),
+                          _buildDropdownField(
+                            label: 'เพศ',
+                            items: genderOptions,
+                            value: _selectedGender,
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedGender = newValue;
+                              });
+                            },
+                          ),
+                          SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_personalFormKey.currentState!.validate()) {
+                                setState(() {
+                                  selectedIndex = 2;
+                                });
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              backgroundColor: Constants.secondaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'ยืนยัน',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'มีบัญชีแล้ว?',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => LoginPage()),
+                                  );
+                                },
+                                child: Text(
+                                  'เข้าสู่ระบบ',
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  : selectedIndex == 0
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Image (Placeholder for now)
+                            // Container(
+                            //   height: 150,
+                            //   width: 150,
+                            //   decoration: BoxDecoration(
+                            //     image: DecorationImage(
+                            //       image: AssetImage(
+                            //           "assets/images/verification.png"), // Replace with your image asset
+                            //       fit: BoxFit.contain,
+                            //     ),
+                            //   ),
+                            // ),
+                            SizedBox(height: 20),
+                            // Title
+                            Text(
+                              "ยืนยันอีเมลผ่านรหัส OTP",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 8),
+                            // Subtitle
+                            Text(
+                              "ระบบจะส่งรหัสผ่านแบบใช้ครั้งเดียว (OTP) ไปยังที่อยู่อีเมลนี้",
+                              textAlign: TextAlign.center,
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey),
+                            ),
+                            SizedBox(height: 30),
+                            // Email Input Field
+                            TextField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: InputDecoration(
+                                hintText: "mail@gmail.com",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                prefixIcon: Icon(Icons.email),
                               ),
                             ),
                             SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: _buildTextField(
-                                    controller: _nameController,
-                                    label: 'ชื่อ',
-                                    maxLength: 30,
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                Expanded(
-                                  child: _buildTextField(
-                                    controller: _surnameController,
-                                    label: 'นามสกุล',
-                                    maxLength: 45,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _usernameController,
-                              label: 'ชื่อผู้ใช้งาน',
-                              maxLength: 30,
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _emailController,
-                              label: 'Email',
-                              maxLength: 255,
-                              isEmail: true,
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _passwordController,
-                              label: 'รหัสผ่าน',
-                              isPassword: true,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8, left: 8),
-                              child: Text(
-                                'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษรและประกอบด้วย\nตัวอักษร a-z, A-Z, และ 0-9',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _confirmPasswordController,
-                              label: 'ยืนยันรหัสผ่าน',
-                              isPassword: true,
-                              isConfirmPassword: true,
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(
-                              controller: _phoneController,
-                              label: 'เบอร์โทร',
-                              isPhone: true,
-                            ),
-                            SizedBox(height: 20),
-                            _buildDropdownField(
-                              label: 'เพศ',
-                              items: genderOptions,
-                              value: _selectedGender,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  _selectedGender = newValue;
-                                });
-                              },
-                            ),
-                            SizedBox(height: 24),
+                            // Send OTP Button
                             ElevatedButton(
-                              onPressed: () {
-                                if (mounted) {
-                                  setState(() {
-                                    selectedIndex = 2;
-                                  });
+                              onPressed: () async {
+                                String email = _emailController.text;
+                                if (!email.isNotEmpty) {
+                                  Get.snackbar(
+                                      'แจ้งเตือน', 'กรุณากรอกอีเมลของคุณ');
+                                } else {
+                                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                      .hasMatch(email)) {
+                                    Get.snackbar(
+                                        'แจ้งเตือน', 'โปรดกรอกอีเมลที่ถูกต้อง');
+                                  } else {
+                                    print("Sending OTP to: $email");
+                                    var result =
+                                        await otpController.sendOTP(email);
+                                    if (result) {
+                                      setState(() {
+                                        selectedIndex =
+                                            3; // อัพเดต state หลัง Dialog ปิด
+                                      });
+                                    }
+                                  }
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                backgroundColor: Constants.secondaryColor,
+                                backgroundColor:
+                                    Constants.secondaryColor, // Button color
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 10),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                               child: Text(
-                                'ยืนยัน',
+                                "ยืนยัน",
                                 style: TextStyle(
-                                    fontSize: 18, color: Colors.white),
+                                    fontSize: 16, color: Colors.white),
                               ),
-                            ),
-                            SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'มีบัญชีแล้ว?',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => LoginPage()),
-                                    );
-                                  },
-                                  child: Text(
-                                    'เข้าสู่ระบบ',
-                                    style: TextStyle(
-                                        color: Colors.blue, fontSize: 16),
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         )
-                      : selectedIndex == 0
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                      : Column(
+                          children: [
+                            // กำหนดขนาดของ Dialog
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // Image (Placeholder for now)
-                                // Container(
-                                //   height: 150,
-                                //   width: 150,
-                                //   decoration: BoxDecoration(
-                                //     image: DecorationImage(
-                                //       image: AssetImage(
-                                //           "assets/images/verification.png"), // Replace with your image asset
-                                //       fit: BoxFit.contain,
-                                //     ),
-                                //   ),
-                                // ),
-                                SizedBox(height: 20),
+                                SizedBox(height: 16),
                                 // Title
                                 Text(
-                                  "ยืนยันอีเมลผ่านรหัส OTP",
+                                  "กรอกรหัสยืนยัน OTP ของท่าน",
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(height: 8),
-                                // Subtitle
+                                // Description
                                 Text(
-                                  "ระบบจะส่งรหัสผ่านแบบใช้ครั้งเดียว (OTP) ไปยังที่อยู่อีเมลนี้",
+                                  "ระบบจะส่งรหัสผ่านแบบใช้ครั้งเดียวไปยังอีเมล ${_emailController.text} ของท่าน",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 14, color: Colors.grey),
                                 ),
-                                SizedBox(height: 30),
-                                // Email Input Field
-                                TextField(
-                                  controller: _emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: InputDecoration(
-                                    hintText: "mail@gmail.com",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    prefixIcon: Icon(Icons.email),
-                                  ),
+                                SizedBox(height: 24),
+                                // OTP Input Fields
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: List.generate(6, (index) {
+                                    return Container(
+                                      width: 40,
+                                      height: 45,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: RawKeyboardListener(
+                                        focusNode:
+                                            FocusNode(), // FocusNode แยกสำหรับ RawKeyboardListener
+                                        onKey: (RawKeyEvent event) {
+                                          if (event is RawKeyDownEvent &&
+                                              event.logicalKey ==
+                                                  LogicalKeyboardKey
+                                                      .backspace &&
+                                              otpControllers[index]
+                                                  .text
+                                                  .isEmpty &&
+                                              index > 0) {
+                                            // ย้อนกลับไปยังช่องก่อนหน้าหากกด backspace และช่องปัจจุบันว่าง
+                                            FocusScope.of(context).requestFocus(
+                                                focusNodes[index - 1]);
+                                          }
+                                        },
+                                        child: TextField(
+                                          controller: otpControllers[index],
+                                          focusNode: focusNodes[index],
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                          maxLength: 1,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly
+                                          ],
+                                          decoration: InputDecoration(
+                                            counterText: "", // ซ่อนตัวนับอักขระ
+                                            border: InputBorder.none,
+                                          ),
+                                          onChanged: (value) {
+                                            if (value.isNotEmpty) {
+                                              if (index < 5) {
+                                                // เลื่อนไปยังช่องถัดไป
+                                                FocusScope.of(context)
+                                                    .requestFocus(
+                                                        focusNodes[index + 1]);
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  }),
                                 ),
-                                SizedBox(height: 30),
-                                // Send OTP Button
+
+                                SizedBox(height: 5),
+                                // Resend Code and Switch Account Links
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        // Resend code functionality
+                                        await otpController
+                                            .reSendOTP(_emailController.text);
+                                      },
+                                      child: Text(
+                                        "ส่งรหัสใหม่อีกครั้ง",
+                                        style: TextStyle(color: Colors.blue),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                                // Verify Button
                                 ElevatedButton(
                                   onPressed: () async {
-                                    String email = _emailController.text;
-                                    if (!email.isNotEmpty) {
-                                      Get.snackbar(
-                                          'แจ้งเตือน', 'กรุณากรอกอีเมลของคุณ');
-                                    } else {
-                                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                          .hasMatch(email)) {
-                                        Get.snackbar('แจ้งเตือน',
-                                            'โปรดกรอกอีเมลที่ถูกต้อง');
-                                      } else {
-                                        print("Sending OTP to: $email");
-                                        var result =
-                                            await otpController.sendOTP(email);
-                                        if (result) {
-                                          setState(() {
-                                            selectedIndex =
-                                                3; // อัพเดต state หลัง Dialog ปิด
-                                          });
-                                        }
+                                    String otp = otpControllers
+                                        .map((controller) => controller.text)
+                                        .join();
+                                    if (otp.length != 6) {
+                                      Get.snackbar('แจ้งเตือน',
+                                          'กรุณากรอก OTP ให้ครบ 6 หลัก');
+                                    }
+                                    var result = await otpController.verifyOTP(
+                                        _emailController.text, otp);
+                                    if (result) {
+                                      if (mounted) {
+                                        setState(() {
+                                          selectedIndex =
+                                              1; // อัพเดต state หลัง Dialog ปิด
+                                        });
                                       }
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Constants
-                                        .secondaryColor, // Button color
+                                    backgroundColor: Constants.secondaryColor,
                                     padding: EdgeInsets.symmetric(
-                                        horizontal: 40, vertical: 10),
+                                        horizontal: 40, vertical: 12),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                   child: Text(
-                                    "ยืนยัน",
+                                    "Verify OTP",
                                     style: TextStyle(
                                         fontSize: 16, color: Colors.white),
                                   ),
                                 ),
                               ],
-                            )
-                          : Column(
-                              children: [
-                                // กำหนดขนาดของ Dialog
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(height: 16),
-                                    // Title
-                                    Text(
-                                      "กรอกรหัสยืนยัน OTP ของท่าน",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 8),
-                                    // Description
-                                    Text(
-                                      "ระบบจะส่งรหัสผ่านแบบใช้ครั้งเดียวไปยังอีเมล ${_emailController.text} ของท่าน",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.grey),
-                                    ),
-                                    SizedBox(height: 24),
-                                    // OTP Input Fields
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: List.generate(6, (index) {
-                                        return Container(
-                                          width: 40,
-                                          height: 45,
-                                          decoration: BoxDecoration(
-                                            border:
-                                                Border.all(color: Colors.grey),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: RawKeyboardListener(
-                                            focusNode:
-                                                FocusNode(), // FocusNode แยกสำหรับ RawKeyboardListener
-                                            onKey: (RawKeyEvent event) {
-                                              if (event is RawKeyDownEvent &&
-                                                  event.logicalKey ==
-                                                      LogicalKeyboardKey
-                                                          .backspace &&
-                                                  otpControllers[index]
-                                                      .text
-                                                      .isEmpty &&
-                                                  index > 0) {
-                                                // ย้อนกลับไปยังช่องก่อนหน้าหากกด backspace และช่องปัจจุบันว่าง
-                                                FocusScope.of(context)
-                                                    .requestFocus(
-                                                        focusNodes[index - 1]);
-                                              }
-                                            },
-                                            child: TextField(
-                                              controller: otpControllers[index],
-                                              focusNode: focusNodes[index],
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              maxLength: 1,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly
-                                              ],
-                                              decoration: InputDecoration(
-                                                counterText:
-                                                    "", // ซ่อนตัวนับอักขระ
-                                                border: InputBorder.none,
-                                              ),
-                                              onChanged: (value) {
-                                                if (value.isNotEmpty) {
-                                                  if (index < 5) {
-                                                    // เลื่อนไปยังช่องถัดไป
-                                                    FocusScope.of(context)
-                                                        .requestFocus(
-                                                            focusNodes[
-                                                                index + 1]);
-                                                  }
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-
-                                    SizedBox(height: 5),
-                                    // Resend Code and Switch Account Links
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        TextButton(
-                                          onPressed: () async {
-                                            // Resend code functionality
-                                            await otpController.reSendOTP(
-                                                _emailController.text);
-                                          },
-                                          child: Text(
-                                            "ส่งรหัสใหม่อีกครั้ง",
-                                            style:
-                                                TextStyle(color: Colors.blue),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 16),
-                                    // Verify Button
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        String otp = otpControllers
-                                            .map(
-                                                (controller) => controller.text)
-                                            .join();
-                                        if (otp.length != 6) {
-                                          Get.snackbar('แจ้งเตือน',
-                                              'กรุณากรอก OTP ให้ครบ 6 หลัก');
-                                        }
-                                        var result =
-                                            await otpController.verifyOTP(
-                                                _emailController.text, otp);
-                                        if (result) {
-                                          if (mounted) {
-                                            setState(() {
-                                              selectedIndex =
-                                                  1; // อัพเดต state หลัง Dialog ปิด
-                                            });
-                                          }
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            Constants.secondaryColor,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 40, vertical: 12),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        "Verify OTP",
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
                             ),
-            )),
+                          ],
+                        ),
+        ),
       ),
     );
   }
