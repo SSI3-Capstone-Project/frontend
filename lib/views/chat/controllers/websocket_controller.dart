@@ -21,6 +21,8 @@ class ChatController extends GetxController {
   var postOfferID = ''.obs;
   var postID = ''.obs;
   var offerID = ''.obs;
+  var otherUername = ''.obs;
+  var otherUerImageProfile = ''.obs;
   var isExchanged = false.obs;
   var exchangeID = ''.obs;
   var chatRooms = <ChatRoom>[].obs;
@@ -304,6 +306,8 @@ class ChatController extends GetxController {
             offerID(jsonData['data']['offer_id']);
             isExchanged(jsonData['data']['is_exchanged']);
             exchangeID(jsonData['data']['exchange_id']);
+            otherUername(jsonData['data']['other_username']);
+            otherUerImageProfile(jsonData['data']['other_user_image_profile']);
             print(
                 '-------------------------post and offer-------------------------');
             print(postOfferID);

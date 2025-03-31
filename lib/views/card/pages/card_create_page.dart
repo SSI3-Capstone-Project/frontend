@@ -137,6 +137,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text("ข้อมูลบัตรไม่ถูกต้อง"),
+          backgroundColor: Colors.white,
           content: Text("กรุณากรอกข้อมูลใหม่อีกครั้ง"),
           actions: [
             TextButton(
@@ -151,7 +152,23 @@ class _CardCreatePageState extends State<CardCreatePage> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text("ข้อมูลบัตรซ้ำ"),
+          backgroundColor: Colors.white,
           content: Text("มีข้อมูลบัตรนี้อยู่แล้ว กรุณากรอกข้อมูลใหม่อีกครั้ง"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("ตกลง"),
+            ),
+          ],
+        ),
+      );
+    } else if (status == 500) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("เกิดข้อผิดพลาด"),
+          backgroundColor: Colors.white,
+          content: Text("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),

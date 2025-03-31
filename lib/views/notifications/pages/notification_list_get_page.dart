@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/views/chat/pages/chat_room_page.dart';
+import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.dart';
+import 'package:mbea_ssi3_front/views/exchange/pages/meet_up_page.dart';
+import 'package:mbea_ssi3_front/views/exchangeList/pages/exchange_detail.dart';
 import '../../chat/pages/chat_page.dart';
 import '../../post/pages/post_detail.dart';
 import '../../profile/controllers/get_profile_controller.dart';
@@ -11,12 +15,17 @@ class NotificationListGetPage extends StatefulWidget {
   const NotificationListGetPage({super.key});
 
   @override
-  State<NotificationListGetPage> createState() => _NotificationListGetPageState();
+  State<NotificationListGetPage> createState() =>
+      _NotificationListGetPageState();
 }
 
-class _NotificationListGetPageState extends State<NotificationListGetPage> with SingleTickerProviderStateMixin {
-  final NotificationController notificationController = Get.put(NotificationController());
-  final UserProfileController userProfileController = Get.put(UserProfileController());
+class _NotificationListGetPageState extends State<NotificationListGetPage>
+    with SingleTickerProviderStateMixin {
+  final NotificationController notificationController =
+      Get.put(NotificationController());
+  final UserProfileController userProfileController =
+      Get.put(UserProfileController());
+  final ExchangeController exchangeController = Get.put(ExchangeController());
   late TabController _tabController;
 
   final List<Map<String, String>> notificationTypes = [
@@ -29,7 +38,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: notificationTypes.length, vsync: this);
+    _tabController =
+        TabController(length: notificationTypes.length, vsync: this);
     _tabController.addListener(_onTabChanged);
     _fetchNotificationsForTab(0); // Fetch notifications for the first tab
   }
@@ -41,7 +51,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
 
   void _fetchNotificationsForTab(int index) {
     final apiType = notificationTypes[index]['api']!;
-    notificationController.setNotificationType(apiType);  // ส่งค่า apiType ที่ได้จากแท็บ
+    notificationController
+        .setNotificationType(apiType); // ส่งค่า apiType ที่ได้จากแท็บ
   }
 
   @override
@@ -57,46 +68,48 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("การแจ้งเตือน"),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          leading: IconButton(
+            title: const Text("การแจ้งเตือน"),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
-          elevation: 0,
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(48),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                labelColor: Constants.secondaryColor,
-                unselectedLabelColor: Colors.grey,
-                indicator: UnderlineTabIndicator(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(width: 3, color: Constants.secondaryColor),
-                  insets: const EdgeInsets.symmetric(horizontal: 5),
+            elevation: 0,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(48),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  labelColor: Constants.secondaryColor,
+                  unselectedLabelColor: Colors.grey,
+                  indicator: UnderlineTabIndicator(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide:
+                        BorderSide(width: 3, color: Constants.secondaryColor),
+                    insets: const EdgeInsets.symmetric(horizontal: 5),
+                  ),
+                  dividerColor: Colors.transparent,
+                  overlayColor: WidgetStateProperty.all(Colors.transparent),
+                  tabAlignment: TabAlignment.center, // ทำให้แท็บอยู่ตรงกลาง
+                  labelPadding: EdgeInsets.symmetric(
+                      horizontal: 16), // เว้นระยะห่างด้านซ้ายและขวาของแต่ละแท็บ
+                  tabs: notificationTypes.map((type) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 13), // เว้นระยะห่างให้เท่ากันระหว่างแท็บ
+                      child: Tab(
+                        text: type['display'],
+                      ),
+                    );
+                  }).toList(),
                 ),
-                dividerColor: Colors.transparent,
-                overlayColor: WidgetStateProperty.all(Colors.transparent),
-                tabAlignment: TabAlignment.center, // ทำให้แท็บอยู่ตรงกลาง
-                labelPadding: EdgeInsets.symmetric(horizontal: 16), // เว้นระยะห่างด้านซ้ายและขวาของแต่ละแท็บ
-                tabs: notificationTypes.map((type) {
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 13), // เว้นระยะห่างให้เท่ากันระหว่างแท็บ
-                    child: Tab(
-                      text: type['display'],
-                    ),
-                  );
-                }).toList(),
               ),
-            ),
-          )
-        ),
+            )),
         body: TabBarView(
           controller: _tabController,
           children: List.generate(notificationTypes.length, (index) {
@@ -104,7 +117,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
               color: Colors.white,
               backgroundColor: Constants.secondaryColor,
               onRefresh: () async {
-                _fetchNotificationsForTab(index); // Refresh the data for the current tab
+                _fetchNotificationsForTab(
+                    index); // Refresh the data for the current tab
               },
               child: _buildNotificationList(),
             );
@@ -136,7 +150,9 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
           final notification = notificationController.notifications[index];
 
           // Check if the notification is of type 'offer' and has a related post ID
-          if (notification.relatedType == 'offer' && notification.relatedPostId != null && notification.relatedPostId != "") {
+          if (notification.relatedType == 'offer' &&
+              notification.relatedPostId != null &&
+              notification.relatedPostId != "") {
             return GestureDetector(
               onTap: () {
                 Get.snackbar('postId', notification.relatedPostId);
@@ -146,7 +162,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
                     builder: (context) => PostDetailPage(
                       postId: notification.relatedPostId,
                       username: userProfile.username,
-                      userImageUrl: userProfile.imageUrl.toString(), // Pass relatePostId
+                      userImageUrl:
+                          userProfile.imageUrl.toString(), // Pass relatePostId
                     ),
                   ),
                 );
@@ -156,15 +173,118 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
           }
 
           // Check if the notification is of type 'chat'
-          if (notification.relatedType == 'chat') {
+          if (notification.relatedType == 'chat' &&
+              notification.relatedEntityId != null &&
+              notification.relatedEntityId != "") {
             return GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ChatPage(), // Navigate to ChatListPage
+                    builder: (context) => ChatRoom(
+                      roomID: notification.relatedEntityId,
+                    ),
                   ),
                 );
+              },
+              child: _buildNotificationItem(notification),
+            );
+          }
+
+          if (notification.relatedType == 'meeting_point' &&
+              notification.relatedEntityId != null &&
+              notification.relatedEntityId != "") {
+            return GestureDetector(
+              onTap: () async {
+                await exchangeController
+                    .fetchExchangeDetails(notification.relatedEntityId);
+                switch (exchangeController.exchange.value!.exchangeStage) {
+                  case 2:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MeetUpPage(
+                          exchangeID: notification.relatedEntityId,
+                          currentStep: 1,
+                          user: exchangeController.exchange.value!.isOwnerPost
+                              ? Payer.post
+                              : Payer.offer,
+                          postID: exchangeController.exchange.value!.postId,
+                          offerID: exchangeController.exchange.value!.offerId,
+                        ),
+                      ),
+                    );
+                    break;
+                  case 3:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MeetUpPage(
+                          exchangeID: notification.relatedEntityId,
+                          currentStep: 2,
+                          user: exchangeController.exchange.value!.isOwnerPost
+                              ? Payer.post
+                              : Payer.offer,
+                          postID: exchangeController.exchange.value!.postId,
+                          offerID: exchangeController.exchange.value!.offerId,
+                        ),
+                      ),
+                    );
+                    break;
+                  case 4:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MeetUpPage(
+                          exchangeID: notification.relatedEntityId,
+                          currentStep: 3,
+                          user: exchangeController.exchange.value!.isOwnerPost
+                              ? Payer.post
+                              : Payer.offer,
+                          postID: exchangeController.exchange.value!.postId,
+                          offerID: exchangeController.exchange.value!.offerId,
+                        ),
+                      ),
+                    );
+                    break;
+                  case 5:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExchangeDetail(
+                          exchangeID: notification.relatedEntityId,
+                          status: true,
+                        ),
+                      ),
+                    );
+                    break;
+                  case 6:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExchangeDetail(
+                          exchangeID: notification.relatedEntityId,
+                          status: false,
+                        ),
+                      ),
+                    );
+                    break;
+                  default:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MeetUpPage(
+                          exchangeID: notification.relatedEntityId,
+                          currentStep: 1,
+                          user: exchangeController.exchange.value!.isOwnerPost
+                              ? Payer.post
+                              : Payer.offer,
+                          postID: exchangeController.exchange.value!.postId,
+                          offerID: exchangeController.exchange.value!.offerId,
+                        ),
+                      ),
+                    );
+                }
               },
               child: _buildNotificationItem(notification),
             );
@@ -179,7 +299,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
   // Helper method to build notification item
   Widget _buildNotificationItem(notification) {
     DateTime createdDate = notification.createdAt;
-    String formattedDate = DateFormat('dd MMM yyyy, hh:mm a').format(createdDate);
+    String formattedDate =
+        DateFormat('dd MMM yyyy, hh:mm a').format(createdDate);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -212,14 +333,16 @@ class _NotificationListGetPageState extends State<NotificationListGetPage> with 
                   children: [
                     Text(
                       notification.message,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 15),
                     ),
                     const SizedBox(height: 10),
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
                         formattedDate,
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ),
                   ],

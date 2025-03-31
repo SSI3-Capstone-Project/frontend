@@ -130,8 +130,6 @@ class _ChatPageState extends State<ChatPage> {
                         MaterialPageRoute(
                           builder: (context) => ChatRoom(
                             roomID: item.id.toString(),
-                            anotherUsername: item.username.toString(),
-                            anotherUserImage: item.profile.toString(),
                           ),
                         ),
                       );

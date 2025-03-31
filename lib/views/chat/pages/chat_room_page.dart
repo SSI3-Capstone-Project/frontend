@@ -18,14 +18,10 @@ import 'package:intl/date_symbol_data_local.dart';
 
 class ChatRoom extends StatefulWidget {
   final String roomID;
-  final String anotherUsername;
-  final String anotherUserImage;
-  const ChatRoom(
-      {Key? key,
-      required this.roomID,
-      required this.anotherUsername,
-      required this.anotherUserImage})
-      : super(key: key);
+  const ChatRoom({
+    Key? key,
+    required this.roomID,
+  }) : super(key: key);
 
   @override
   State<ChatRoom> createState() => _ChatRoomState();
@@ -73,28 +69,31 @@ class _ChatRoomState extends State<ChatRoom> {
             Get.back();
           },
         ),
-        title: Row(
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundImage: NetworkImage(widget.anotherUserImage),
-            ),
-            const SizedBox(width: 10),
-            Text(widget.anotherUsername,
-                style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-            const SizedBox(width: 10),
-            Text(
-                productDetailController.postDetail.value?.username ==
-                        widget.anotherUsername
-                    ? "• เจ้าของโพสต์"
-                    : "• เจ้าของข้อเสนอ",
-                style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.bold)),
-          ],
-        ),
+        title: Obx(() {
+          return Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundImage:
+                    NetworkImage(chatController.otherUerImageProfile.string),
+              ),
+              const SizedBox(width: 10),
+              Text(chatController.otherUername.string,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 10),
+              Text(
+                  productDetailController.postDetail.value?.username ==
+                          chatController.otherUername.string
+                      ? "• เจ้าของโพสต์"
+                      : "• เจ้าของข้อเสนอ",
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.bold)),
+            ],
+          );
+        }),
         actions: [
           TextButton(
             onPressed: () {
@@ -170,7 +169,7 @@ class _ChatRoomState extends State<ChatRoom> {
                       }
                       if (productDetailController.postDetail.value != null &&
                           productDetailController.postDetail.value?.username ==
-                              widget.anotherUsername) {
+                              chatController.otherUername.string) {
                         // เราเป็นเจ้าของ Offer
                         if (chatController.isExchanged.value) {
                           if (exchangeController
@@ -293,7 +292,7 @@ class _ChatRoomState extends State<ChatRoom> {
                           chatController.isExchanged.value ||
                                   productDetailController
                                           .postDetail.value?.username ==
-                                      widget.anotherUsername
+                                      chatController.otherUername.string
                               ? "ยืนยันการแลกเปลี่ยน"
                               : "สร้างการแลกเปลี่ยน",
                           style: TextStyle(

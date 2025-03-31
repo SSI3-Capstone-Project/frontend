@@ -46,11 +46,13 @@ class CardCreateController extends GetxController {
         if (tokenId.value.isNotEmpty) {
           Get.snackbar(
               "Success", "Token created successfully: ${tokenId.value}");
-          bool isCreated = await createCreditCard(tokenId.value);
-          if (isCreated) {
+          int status = await createCreditCard(tokenId.value);
+          if (status == 200) {
             return 200;
-          } else {
+          } else if (status == 409) {
             return 409;
+          } else {
+            return 500;
           }
         }
       } else if (response.statusCode == 400) {
@@ -69,11 +71,11 @@ class CardCreateController extends GetxController {
     return 500;
   }
 
-  Future<bool> createCreditCard(String cardToken) async {
+  Future<int> createCreditCard(String cardToken) async {
     isLoading.value = true;
     if (tokenController.accessToken.value == null) {
       isLoading.value = false;
-      return false;
+      return 500;
     }
     final token = tokenController.accessToken.value;
     final url = Uri.parse('${dotenv.env['API_URL']}/user/credit-cards');
@@ -91,23 +93,23 @@ class CardCreateController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.snackbar("Success", "Credit card added successfully");
         isLoading.value = false;
-        return true;
+        return 200;
       } else if (response.statusCode == 409) {
         Get.snackbar('error', 'duplicate data');
         isLoading(false);
-        return false;
+        return 409;
       } else {
         var errorData = response.body;
         print(
             'Failed to add credit card: ${response.statusCode}, Error: $errorData');
         Get.snackbar("Error", "Failed to add credit card");
         isLoading.value = false;
-        return false;
+        return 500;
       }
     } catch (e) {
       print('Error: $e');
       isLoading.value = false;
-      return false;
+      return 500;
     }
   }
 }

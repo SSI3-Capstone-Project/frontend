@@ -366,8 +366,6 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                                     MaterialPageRoute(
                                       builder: (context) => ChatRoom(
                                         roomID: result,
-                                        anotherUsername: widget.username,
-                                        anotherUserImage: widget.userImage,
                                       ),
                                     ),
                                   );
