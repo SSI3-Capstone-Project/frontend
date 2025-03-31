@@ -116,7 +116,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
       return false;
     }
 
-    bool isSuccess = await createCardController.createCardToken( // ✅ ใช้ instance ที่ถูกต้อง
+    int status = await createCardController.createCardToken( // ✅ ใช้ instance ที่ถูกต้อง
       name: cardNameController.text,
       number: cardNumberController.text,
       expirationMonth: expiryParts[0],
@@ -125,6 +125,26 @@ class _CardCreatePageState extends State<CardCreatePage> {
       postalCode: "10200",
       securityCode: cvvController.text,
     );
+    bool isSuccess = false;
+    if(status == 200) {
+      isSuccess = true;
+    } else if (status == 400) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("ข้อมูลบัตรไม่ถูกต้อง"),
+          content: Text("กรุณากรอกข้อมูลใหม่อีกครั้ง"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("ตกลง"),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Get.snackbar("Error", "Failed to create token: ${status}");
 
     return isSuccess;
   }
