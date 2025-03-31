@@ -34,6 +34,18 @@ class _UserReviewSectionState extends State<UserReviewSection> {
   final int maxCharacters = 200;
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.ratingController.setRating(0);
+      widget.reviewController.clear();
+      widget.mediaList.clear();
+      widget.onMediaChanged(widget.mediaList);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -210,15 +222,22 @@ class _UserReviewSectionState extends State<UserReviewSection> {
                 alignment: Alignment.centerLeft,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Constants.primaryColor,
+                    color: widget.mediaList.length >= 5
+                        ? Colors.grey
+                        : Constants.primaryColor,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    onPressed: _pickMedia,
-                    tooltip: "แนบไฟล์รูปภาพหรือวิดีโอ",
+                    onPressed: widget.mediaList.length >= 5 ? null : _pickMedia,
+                    tooltip: widget.mediaList.length >= 5
+                        ? "ไม่สามารถแนบไฟล์ได้เกิน 5 รายการ"
+                        : "แนบไฟล์รูปภาพหรือวิดีโอ",
                     icon: Transform.rotate(
                       angle: pi / 4,
-                      child: const Icon(Icons.attach_file, color: Colors.white),
+                      child: Icon(
+                        Icons.attach_file,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
