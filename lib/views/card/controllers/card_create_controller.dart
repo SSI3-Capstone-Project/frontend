@@ -9,7 +9,7 @@ class CardCreateController extends GetxController {
   var isLoading = false.obs;
   var tokenId = ''.obs;
 
-  Future<bool> createCardToken({
+  Future<int> createCardToken({
     required String name,
     required String number,
     required String expirationMonth,
@@ -46,11 +46,14 @@ class CardCreateController extends GetxController {
         if (tokenId.value.isNotEmpty) {
           Get.snackbar("Success", "Token created successfully: ${tokenId.value}");
           await createCreditCard(tokenId.value);
-          return true;
+          return 200;
         }
+      } else if (response.statusCode == 400) {
+        Get.snackbar("Error", "Invalid card, Please fill in again");
+        return 400;
       } else {
         Get.snackbar("Error", "Failed to create token: ${response.body}");
-        return false;
+        return 500;
       }
     } catch (e) {
       Get.snackbar("Error", "An error occurred: $e");
@@ -58,7 +61,7 @@ class CardCreateController extends GetxController {
       isLoading(false);
     }
 
-    return false;
+    return 500;
   }
 
   Future<bool> createCreditCard(String cardToken) async {
