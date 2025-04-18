@@ -48,6 +48,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
   void _onTabChanged() {
     if (_tabController.indexIsChanging) return;
     _fetchNotificationsForTab(_tabController.index);
+    // Update the current tab index in the controller
+    notificationUpdateController.currentTabIndex.value = _tabController.index;
   }
 
   void _fetchNotificationsForTab(int index) {
@@ -155,7 +157,7 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
               notification.relatedPostId != "") {
             return GestureDetector(
               onTap: () {
-                notificationUpdateController.markNotificationAsRead(notification.id);
+                notificationUpdateController.markNotificationAsRead(notification.id, "offer");
                 Get.snackbar('postId', notification.relatedPostId);
                 Navigator.push(
                   context,
@@ -178,7 +180,7 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
               notification.relatedEntityId != "") {
             return GestureDetector(
               onTap: () {
-                notificationUpdateController.markNotificationAsRead(notification.id);
+                notificationUpdateController.markNotificationAsRead(notification.id, "chat");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -196,11 +198,11 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
               notification.relatedEntityId != "") {
             return GestureDetector(
               onTap: () async {
-                notificationUpdateController.markNotificationAsRead(notification.id);
                 await exchangeController
                     .fetchExchangeDetails(notification.relatedEntityId);
                 switch (exchangeController.exchange.value!.exchangeStage) {
                   case 2:
+                    notificationUpdateController.markNotificationAsRead(notification.id, "meeting_point");
                     Navigator.push(
                       context,
                       MaterialPageRoute(
