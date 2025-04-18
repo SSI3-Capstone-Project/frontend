@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart';
+import 'package:mbea_ssi3_front/views/home/pages/product_detail_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
-import '../../home/pages/product_detail_page.dart';
 import '../controllers/sent_offer_posts_list_controller.dart';
 import '../models/sent_offer_posts_list_model.dart';
 
@@ -18,11 +19,13 @@ class SentOfferPostsListPage extends StatefulWidget {
 
 class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
   final SentOfferPostsListController controller = Get.put(SentOfferPostsListController());
-
+  final OfferDetailController offerDetailController = Get.put(OfferDetailController());
+  
   @override
   void initState() {
     super.initState();
     controller.fetchSentOfferPosts(widget.offerId);
+    offerDetailController.fetchOfferDetail(widget.offerId);
   }
 
   @override
@@ -47,58 +50,193 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          child: Obx(() {
-            if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (controller.sentOfferPosts.isEmpty) {
-              return const Center(
-                child: Text(
-                  "ยังไม่มีโพสต์ที่ยื่นข้อเสนอ",
-                  style: TextStyle(fontSize: 16),
-                ),
-              );
-            }
-
-            return RefreshIndicator(
-              onRefresh: () async {
-                await controller.fetchSentOfferPosts(widget.offerId);
-              },
-              color: Colors.white,
-              backgroundColor: Constants.secondaryColor,
-              child: StaggeredGridView.countBuilder(
-                padding: const EdgeInsets.only(top: 10),
-                crossAxisCount: 4,
-                mainAxisSpacing: 22,
-                crossAxisSpacing: 22,
-                itemCount: controller.sentOfferPosts.length,
-                itemBuilder: (context, index) {
-                  final item = controller.sentOfferPosts[index];
-                  return GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductDetailPage(
-                            postId: item.postId,
-                            // username: item.username,
-                            // userImageUrl: item.userImageUrl,
-                          ),
+          child: Column(
+            children: [
+              Obx(() {
+                if (offerDetailController.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (offerDetailController.offerDetail.value == null) {
+                  return const SizedBox.shrink();
+                }
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 0.5,
+                        blurRadius: 6,
+                        offset: const Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                offerDetailController.offerDetail!.value!.coverImage,
+                                width: 82,
+                                height: 72,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          offerDetailController.offerDetail!.value!.title,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              const BorderRadius.all(Radius.circular(30)),
+                                          color: Constants.primaryColor,
+                                        ),
+                                        child: Text(
+                                          offerDetailController.offerDetail!.value!.subCollectionName.length > 10
+                                              ? '${offerDetailController.offerDetail!.value!.subCollectionName.substring(0, 10)}...'
+                                              : offerDetailController.offerDetail!.value!.subCollectionName,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    offerDetailController.offerDetail!.value!.description.length > 45
+                                        ? '${offerDetailController.offerDetail!.value!.description.substring(0, 35)}...'
+                                        : offerDetailController.offerDetail!.value!.description,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[800],
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-
-                      if (result == true) {
-                        await controller.fetchSentOfferPosts(widget.offerId);
-                      }
-                    },
-                    child: _buildGridItem(item),
-                  );
-                },
-                staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'ค้นหา',
+                  hintStyle: TextStyle(color: Colors.grey[600]),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    size: 25,
+                    color: Colors.grey,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
               ),
-            );
-          }),
+              const SizedBox(height: 20),
+              Expanded(
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (controller.sentOfferPosts.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "ยังไม่มีโพสต์ที่ยื่นข้อเสนอ",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      await controller.fetchSentOfferPosts(widget.offerId);
+                    },
+                    color: Colors.white,
+                    backgroundColor: Constants.secondaryColor,
+                    child: StaggeredGridView.countBuilder(
+                      padding: const EdgeInsets.only(top: 10),
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 22,
+                      crossAxisSpacing: 22,
+                      itemCount: controller.sentOfferPosts.length,
+                      itemBuilder: (context, index) {
+                        final item = controller.sentOfferPosts[index];
+                        return GestureDetector(
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductDetailPage(
+                                  postId: item.postId,
+                                ),
+                              ),
+                            );
+
+                            if (result == true) {
+                              await controller.fetchSentOfferPosts(widget.offerId);
+                            }
+                          },
+                          child: _buildGridItem(item),
+                        );
+                      },
+                      staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -126,7 +264,6 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
             padding: const EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
                   onTap: () {},
@@ -189,8 +326,7 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                           color: Constants.secondaryColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         child: Text(
                           item.subCollectionName.length > 10
                               ? '${item.subCollectionName.substring(0, 10)}...'
