@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
-import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/views/favoritePosts/pages/favorite_posts.dart';
@@ -71,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (postController.isLoading.value) {
                         return Center(child: CircularProgressIndicator());
                       }
-                      if (!postController.postList.isEmpty) {
+                      if (postController.postList.isNotEmpty) {
                         return _buildStaggeredGrid(
                           postController.postList,
                           (post) => PostDetailPage(
@@ -90,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (offerController.isLoading.value) {
                         return Center(child: CircularProgressIndicator());
                       }
-                      if (!offerController.offerList.isEmpty) {
+                      if (offerController.offerList.isNotEmpty) {
                         return _buildOfferList(
                           offerController.offerList,
                           (offer) => OfferDetailPage(offerId: offer.id),
@@ -189,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _offerCard(Offers item) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
