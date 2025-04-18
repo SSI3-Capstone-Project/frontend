@@ -20,7 +20,8 @@ class SentOfferPostsListPage extends StatefulWidget {
 class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
   final SentOfferPostsListController controller = Get.put(SentOfferPostsListController());
   final OfferDetailController offerDetailController = Get.put(OfferDetailController());
-  
+  final TextEditingController searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -154,33 +155,61 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                   ),
                 );
               }),
-              const SizedBox(height: 20),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'ค้นหา',
-                  hintStyle: TextStyle(color: Colors.grey[600]),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    size: 25,
-                    color: Colors.grey,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'ค้นหา',
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          size: 25,
+                          color: Colors.grey,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(15),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade300,
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      final searchText = searchController.text.trim();
+                      controller.fetchSentOfferPosts(widget.offerId, postTitle: searchText); // ใส่ offerId ที่ต้องการ
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants.primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(15),
+                    child: Text(
+                      'ค้นหา',
+                      style: TextStyle(
+                        color: Colors.white, // หรือเปลี่ยนเป็นสีที่ต้องการ
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: 20),
               Expanded(

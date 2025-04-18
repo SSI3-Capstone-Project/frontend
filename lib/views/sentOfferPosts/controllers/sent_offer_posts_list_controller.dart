@@ -10,7 +10,7 @@ class SentOfferPostsListController extends GetxController {
   var sentOfferPosts = <GetSentOfferPostList>[].obs;
   var isLoading = false.obs;
 
-  Future<void> fetchSentOfferPosts(String offerId) async {
+  Future<void> fetchSentOfferPosts(String offerId, {String? postTitle}) async {
     try {
       isLoading(true);
       if (tokenController.accessToken.value == null) {
@@ -18,10 +18,15 @@ class SentOfferPostsListController extends GetxController {
       }
 
       final token = tokenController.accessToken.value;
-      final url = '${dotenv.env['API_URL']}/offers/$offerId/posts';
+
+      // สร้าง URI โดยเช็คว่ามี postTitle หรือไม่
+      final uri = Uri.parse('${dotenv.env['API_URL']}/offers/$offerId/posts')
+          .replace(queryParameters: postTitle != null && postTitle.isNotEmpty
+          ? {'post_title': postTitle}
+          : null);
 
       final response = await http.get(
-        Uri.parse(url),
+        uri,
         headers: {
           'Authorization': 'Bearer $token',
         },
