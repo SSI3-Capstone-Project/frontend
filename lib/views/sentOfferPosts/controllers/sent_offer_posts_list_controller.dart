@@ -1,0 +1,43 @@
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:mbea_ssi3_front/controller/token_controller.dart';
+import '../models/sent_offer_posts_list_model.dart';
+
+class SentOfferPostsListController extends GetxController {
+  final tokenController = Get.find<TokenController>();
+  var sentOfferPosts = <GetSentOfferPostList>[].obs;
+  var isLoading = false.obs;
+
+  Future<void> fetchSentOfferPosts(String offerId) async {
+    try {
+      isLoading(true);
+      if (tokenController.accessToken.value == null) {
+        return;
+      }
+
+      final token = tokenController.accessToken.value;
+      final url = '${dotenv.env['API_URL']}/offers/$offerId/posts';
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        var responseData = GetSentOfferPostListResponse.fromJson(jsonData);
+        sentOfferPosts.value = responseData.data;
+      } else {
+        Get.snackbar('Error', 'Failed to load sent offer posts');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An error occurred while fetching sent offer posts');
+    } finally {
+      isLoading(false);
+    }
+  }
+}
