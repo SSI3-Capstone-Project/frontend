@@ -398,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildTabContainer() {
     return Container(
       // margin: EdgeInsets.symmetric(horizontal: 20.0),
-      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
@@ -432,19 +432,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildTabItem(String label, bool isSelected, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: isSelected ? Constants.secondaryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          decoration: BoxDecoration(
+            color: isSelected ? Constants.secondaryColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
         ),
       ),
@@ -594,7 +597,7 @@ class _ProfilePageState extends State<ProfilePage> {
           }
         },
         child: Container(
-          width: 170,
+          width: 180,
           height: 70,
           decoration: BoxDecoration(
             color: Colors.white,
