@@ -20,6 +20,8 @@ class _ExchangeListState extends State<ExchangeList>
       Get.put(ExchangeListController());
   late TabController _tabController;
   final ExchangeController exchangeController = Get.put(ExchangeController());
+  final TextEditingController searchController = TextEditingController();
+  final RxString searchText = ''.obs;
 
   final List<String?> statusList = [
     null,
@@ -36,10 +38,22 @@ class _ExchangeListState extends State<ExchangeList>
     _tabController = TabController(length: statusList.length, vsync: this);
     _tabController.addListener(_onTabChanged);
     _fetchExchangesForTab(0); // โหลดข้อมูลของแท็บแรก
+
+    // debounce: ค้นหาเมื่อหยุดพิมพ์เกิน 500ms
+    debounce(searchText, (val) {
+      final currentStatus = statusList[_tabController.index] ?? "";
+      fetchExchangeList(status: currentStatus, username: val.trim());
+    }, time: const Duration(milliseconds: 500));
+  }
+
+  Future<void> fetchExchangeList({String status = "", String? username}) async {
+    await exchangeListController.fetchExchangeList(status: status, username: username);
   }
 
   void _onTabChanged() {
     if (_tabController.indexIsChanging) return;
+    searchController.clear();      // ล้างช่องค้นหาเมื่อเปลี่ยนแท็บ
+    searchText.value = '';         // ล้างค่า searchText เพื่อไม่ให้ debounce ทำงานต่อ
     _fetchExchangesForTab(_tabController.index);
   }
 
@@ -70,7 +84,7 @@ class _ExchangeListState extends State<ExchangeList>
                 indicator: UnderlineTabIndicator(
                   borderRadius: BorderRadius.circular(10),
                   borderSide:
-                      BorderSide(width: 3, color: Constants.secondaryColor),
+                  BorderSide(width: 3, color: Constants.secondaryColor),
                   insets: const EdgeInsets.symmetric(horizontal: 5),
                 ),
                 dividerColor: Colors.transparent,
@@ -88,18 +102,66 @@ class _ExchangeListState extends State<ExchangeList>
             ),
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: List.generate(statusList.length, (index) {
-            return RefreshIndicator(
-              color: Colors.white,
-              backgroundColor: Constants.secondaryColor,
-              onRefresh: () async {
-                _fetchExchangesForTab(index); // รีเฟรชข้อมูลของแท็บที่กำลังแสดง
-              },
-              child: _buildExchangeList(),
-            );
-          }),
+        body: Column(
+          children: [
+            // Search bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'ค้นหารายการแลกเปลี่ยน...',
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          size: 25,
+                          color: Colors.grey,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 20),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        searchText.value = value;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Tab content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: List.generate(statusList.length, (index) {
+                  return RefreshIndicator(
+                    color: Colors.white,
+                    backgroundColor: Constants.secondaryColor,
+                    onRefresh: () async {
+                      _fetchExchangesForTab(index);
+                    },
+                    child: _buildExchangeList(),
+                  );
+                }),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -117,46 +179,6 @@ class _ExchangeListState extends State<ExchangeList>
 
       return Column(
         children: [
-          // ช่องค้นหา
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'ค้นหารายการแลกเปลี่ยน...',
-                      hintStyle: TextStyle(color: Colors.grey[600]),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        size: 25,
-                        color: Colors.grey,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      // ใส่ logic การค้นหาภายหลังได้
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           // รายการแลกเปลี่ยน
           Expanded(
             child: ListView.builder(
