@@ -525,28 +525,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
-              Spacer(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    "42", // ตัวเลขที่ต้องการ
-                    style: TextStyle(
-                      color: Colors.white, // สีของตัวเลข
-                      fontSize: 17, // ขนาดตัวอักษร
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    "trades", // ตัวเลขที่ต้องการ
-                    style: TextStyle(
-                        color: Colors.white, // สีของตัวเลข
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500 // ขนาดตัวอักษร
-                        ),
-                  )
-                ],
-              )
             ],
           ),
         ));
