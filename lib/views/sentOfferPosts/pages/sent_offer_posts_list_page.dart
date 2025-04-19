@@ -196,7 +196,7 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Constants.primaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
