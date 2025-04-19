@@ -21,12 +21,18 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
   final SentOfferPostsListController controller = Get.put(SentOfferPostsListController());
   final OfferDetailController offerDetailController = Get.put(OfferDetailController());
   final TextEditingController searchController = TextEditingController();
+  final RxString searchText = ''.obs;
 
   @override
   void initState() {
     super.initState();
     controller.fetchSentOfferPosts(widget.offerId);
     offerDetailController.fetchOfferDetail(widget.offerId);
+
+    // debounce: ค้นหาเมื่อหยุดพิมพ์เกิน 500ms
+    debounce(searchText, (val) {
+      controller.fetchSentOfferPosts(widget.offerId, postTitle: val.trim());
+    }, time: const Duration(milliseconds: 500));
   }
 
   @override
@@ -161,6 +167,9 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                   Expanded(
                     child: TextField(
                       controller: searchController,
+                      onChanged: (value) {
+                        controller.fetchSentOfferPosts(widget.offerId, postTitle: value.trim());
+                      },
                       decoration: InputDecoration(
                         hintText: 'ค้นหา',
                         hintStyle: TextStyle(color: Colors.grey[600]),
@@ -171,8 +180,7 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.grey.shade300,
@@ -185,27 +193,6 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                           ),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      final searchText = searchController.text.trim();
-                      controller.fetchSentOfferPosts(widget.offerId, postTitle: searchText); // ใส่ offerId ที่ต้องการ
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Constants.primaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 17, horizontal: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: Text(
-                      'ค้นหา',
-                      style: TextStyle(
-                        color: Colors.white, // หรือเปลี่ยนเป็นสีที่ต้องการ
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
