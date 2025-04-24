@@ -538,24 +538,8 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี",
-                user.id),
+            _buildBox("คะแนน", Icons.star, user.rating != null && user.rating != 0 ? "${user.rating}/5" : "ยังไม่มีคะแนนรีวิว", user.id),
             _buildBox("รายการโปรด", Icons.favorite, "", user.id),
-          ],
-        ),
-        SizedBox(height: 10), // เว้นระยะห่างระหว่างแถว
-        // แถวที่สอง
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildBox(
-                "คะแนน",
-                Icons.star,
-                user.rating != null && user.rating != 0
-                    ? "${user.rating}/5"
-                    : "ยังไม่มีคะแนนรีวิว",
-                user.id),
-            _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, "", user.id),
           ],
         ),
       ],
