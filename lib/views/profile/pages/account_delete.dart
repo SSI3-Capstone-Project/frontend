@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/authen/pages/login_page.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/delete_account_controller.dart';
@@ -16,8 +14,8 @@ class DeleteAccount extends StatefulWidget {
 class _DeleteAccountState extends State<DeleteAccount> {
   final DeleteAccountController deleteAccountController =
       Get.put(DeleteAccountController());
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool showConfirmationPage = false; // ใช้สำหรับควบคุมหน้าที่แสดง
 
@@ -79,7 +77,8 @@ class _DeleteAccountState extends State<DeleteAccount> {
         ),
         SizedBox(height: 16), // เพิ่มระยะห่างระหว่างข้อความกับปุ่ม
         SizedBox(
-          width: double.infinity, // ขยายปุ่มให้เต็มพื้นที่
+          width: double.infinity,
+          height: 45,
           child: ElevatedButton(
             onPressed: () {
               setState(() {
@@ -87,12 +86,9 @@ class _DeleteAccountState extends State<DeleteAccount> {
               });
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  Constants.secondaryColor, // กำหนดสีของปุ่มเป็นสีส้ม
-              padding:
-                  EdgeInsets.symmetric(vertical: 10), // เพิ่มความสูงของปุ่ม
+              backgroundColor: Constants.primaryColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
             child: Text(
@@ -124,7 +120,7 @@ class _DeleteAccountState extends State<DeleteAccount> {
             label: "รหัสผ่าน",
             field: "passwordField",
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 20),
           _buildPasswordField(
             controller: _confirmPasswordController,
             label: "ยืนยันรหัสผ่าน",
@@ -134,33 +130,52 @@ class _DeleteAccountState extends State<DeleteAccount> {
           Row(
             children: [
               Expanded(
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      showConfirmationPage = false; // ย้อนกลับไปหน้าแรก
-                    });
-                  },
-                  child: Text("ย้อนกลับ"),
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                       _showConfirmationDialog();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Constants.secondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  height: 45,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showConfirmationPage = false; // ย้อนกลับไปหน้าแรก
+                      });
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.black87,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      "ย้อนกลับ",
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
-                  child: Text("ยืนยัน", style: TextStyle(color: Colors.white)),
+                ),
+              ),
+              const SizedBox(width: 10), // เพิ่มระยะห่างระหว่างปุ่ม
+              Expanded(
+                child: SizedBox(
+                  height: 45,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        _showConfirmationDialog();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      "ยืนยัน",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
                 ),
               ),
             ],
-          ),
+          )
         ],
       ),
     );
@@ -178,9 +193,19 @@ class _DeleteAccountState extends State<DeleteAccount> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // ปิดกล่องยืนยัน
+                setState(() {
+                  Navigator.of(context).pop(); // ย้อนกลับไปหน้าแรก
+                });
               },
-              child: Text("ยกเลิก"),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black87,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                "ย้อนกลับ",
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -188,7 +213,10 @@ class _DeleteAccountState extends State<DeleteAccount> {
                 _deleteAccount(_passwordController.text); // ดำเนินการลบบัญชี
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Constants.secondaryColor,
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               child: Text("ยืนยัน", style: TextStyle(color: Colors.white)),
             ),
@@ -202,31 +230,30 @@ class _DeleteAccountState extends State<DeleteAccount> {
     required TextEditingController controller,
     required String label,
     required String field,
-    String? errorText,
   }) {
     return TextFormField(
       controller: controller,
-      obscureText: true, // ซ่อนรหัสผ่านที่กรอก
-      keyboardType: TextInputType.text,
-      decoration: InputDecoration(
-        labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        errorText: errorText,
-      ),
+      obscureText: true,
       validator: (value) {
-        if (value == null || value.isEmpty) return 'กรุณากรอก$label';
-        if (!RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d!@#\$&*~]{8,}$')
-            .hasMatch(value)) {
-          return 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร\nและประกอบด้วยตัวอักษร a-z, A-Z, และ 0-9';
+        if (value == null || value.isEmpty) {
+          return 'กรุณากรอกรหัสผ่าน';
         }
-        if (field == "confirmPasswordField" &&
-            _confirmPasswordController.text != _passwordController.text)
-          return 'กรุณากรอกรหัสผ่านให้ตรงกัน';
         return null;
       },
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6), // ปรับจาก 10 → 6
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: BorderSide(color: Colors.grey.shade400),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: BorderSide(width: 2),
+        ),
+      ),
     );
   }
 
