@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../common/constants.dart';
 import '../controllers/card_details_get_controller.dart';
 import '../controllers/card_edit_controller.dart';
-import '../controllers/card_list_get_controller.dart';
 
 class EditCardDetailsPage extends StatefulWidget {
   final String cardId;
@@ -174,7 +172,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
               const SizedBox(height: 24),
               Obx(() => SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 45,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isSaveButtonEnabled.value ? Constants.primaryColor : Colors.grey,
