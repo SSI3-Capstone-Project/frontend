@@ -13,6 +13,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 import 'package:mbea_ssi3_front/views/offer/controllers/update_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/post/controllers/update_post_controller.dart';
+
+import 'common/constants.dart';
 // import 'package:mbea_ssi3_front/views/mainScreen/pages/layout_page.dart';
 
 // void main() async {
@@ -54,7 +56,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           fontFamily: 'Sarabun',
           primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          inputDecorationTheme: InputDecorationTheme(
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Constants.primaryColor, width: 2),
+             ),
+        ),),
       home: Obx(() {
         final tokenController = Get.find<TokenController>();
         return tokenController.accessToken.value != null
