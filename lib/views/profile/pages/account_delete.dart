@@ -234,16 +234,21 @@ class _DeleteAccountState extends State<DeleteAccount> {
     return TextFormField(
       controller: controller,
       obscureText: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction, // ✅ เพิ่มตรงนี้
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'กรุณากรอกรหัสผ่าน';
+        }
+        if (field == "confirmPasswordField" &&
+            value != _passwordController.text) {
+          return 'รหัสผ่านต้องตรงกัน';
         }
         return null;
       },
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6), // ปรับจาก 10 → 6
+          borderRadius: BorderRadius.circular(6),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
@@ -251,7 +256,18 @@ class _DeleteAccountState extends State<DeleteAccount> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(width: 2),
+          borderSide: BorderSide(
+            color: Constants.primaryColor,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: BorderSide(color: Colors.red, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: BorderSide(color: Colors.red, width: 2),
         ),
       ),
     );
