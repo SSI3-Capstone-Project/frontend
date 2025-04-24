@@ -13,7 +13,7 @@ class DeleteAccount extends StatefulWidget {
 
 class _DeleteAccountState extends State<DeleteAccount> {
   final DeleteAccountController deleteAccountController =
-      Get.put(DeleteAccountController());
+  Get.put(DeleteAccountController());
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -67,27 +67,9 @@ class _DeleteAccountState extends State<DeleteAccount> {
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 24.0, vertical: 18),
           color: Colors.white,
-          child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 500), // เพิ่มระยะเวลาให้ลื่นขึ้น
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              // ใช้การรวมกันของ Fade และ Scale Transition
-              return FadeTransition(
-                opacity: animation,
-                child: ScaleTransition(
-                  scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeInOut, // ทำให้การเคลื่อนไหวเนียนขึ้น
-                    ),
-                  ),
-                  child: child,
-                ),
-              );
-            },
-            child: showConfirmationPage
-                ? _buildConfirmationForm()
-                : _buildDeleteConfirmationMessage(),
-          ),
+          child: showConfirmationPage
+              ? _buildConfirmationForm()
+              : _buildDeleteConfirmationMessage(),
         ),
       ),
     );
