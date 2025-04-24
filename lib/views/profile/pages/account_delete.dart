@@ -18,6 +18,34 @@ class _DeleteAccountState extends State<DeleteAccount> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool showConfirmationPage = false; // ใช้สำหรับควบคุมหน้าที่แสดง
+  late FocusNode _passwordFocusNode;
+  late FocusNode _confirmPasswordFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordFocusNode = FocusNode();
+    _confirmPasswordFocusNode = FocusNode();
+
+    _passwordFocusNode.addListener(() {
+      if (!_passwordFocusNode.hasFocus) {
+        _formKey.currentState?.validate();
+      }
+    });
+
+    _confirmPasswordFocusNode.addListener(() {
+      if (!_confirmPasswordFocusNode.hasFocus) {
+        _formKey.currentState?.validate();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _passwordFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,12 +147,14 @@ class _DeleteAccountState extends State<DeleteAccount> {
             controller: _passwordController,
             label: "รหัสผ่าน",
             field: "passwordField",
+            focusNode: _passwordFocusNode,
           ),
           SizedBox(height: 20),
           _buildPasswordField(
             controller: _confirmPasswordController,
             label: "ยืนยันรหัสผ่าน",
             field: "confirmPasswordField",
+            focusNode: _confirmPasswordFocusNode,
           ),
           SizedBox(height: 20),
           Row(
@@ -230,9 +260,11 @@ class _DeleteAccountState extends State<DeleteAccount> {
     required TextEditingController controller,
     required String label,
     required String field,
+    required FocusNode focusNode,
   }) {
     return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       obscureText: true,
       autovalidateMode: AutovalidateMode.onUserInteraction, // ✅ เพิ่มตรงนี้
       validator: (value) {
