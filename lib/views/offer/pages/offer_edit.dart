@@ -437,12 +437,14 @@ class _EditOfferFormState extends State<EditOfferForm> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
         ),
         contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+            EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
       ),
       validator: validator,
     );
@@ -462,10 +464,13 @@ class _EditOfferFormState extends State<EditOfferForm> {
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: const TextStyle(
+              fontSize: 14,
+            ),
             contentPadding:
-                EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+                EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.grey.shade600),
             ),
           ),
@@ -630,7 +635,8 @@ class _EditOfferFormState extends State<EditOfferForm> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        width: 150,
+        width: double.infinity,
+        height: 50,
         child: ElevatedButton(
           onPressed: isEdited
               ? () async {

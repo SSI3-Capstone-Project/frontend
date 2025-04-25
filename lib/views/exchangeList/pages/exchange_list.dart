@@ -54,7 +54,10 @@ class _ExchangeListState extends State<ExchangeList>
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("รายการแลกเปลี่ยน"),
+          title: const Text(
+            "รายการแลกเปลี่ยน",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+          ),
           backgroundColor: Colors.white,
           centerTitle: true,
           elevation: 0,

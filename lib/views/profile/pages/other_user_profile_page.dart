@@ -6,7 +6,6 @@ import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/views/exchange/pages/exchange_page.dart';
 import 'package:mbea_ssi3_front/views/profile/models/other_user_profile_model.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
 import 'package:mbea_ssi3_front/views/profile/controllers/other_user_profile_controller.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 

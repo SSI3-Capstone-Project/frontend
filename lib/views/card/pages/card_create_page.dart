@@ -189,7 +189,10 @@ class _CardCreatePageState extends State<CardCreatePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("เพิ่มวิธีการชำระเงิน"),
+        title: const Text(
+          "เพิ่มวิธีการชำระเงิน",
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        ),
         backgroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -299,7 +302,10 @@ class _CardCreatePageState extends State<CardCreatePage> {
                 },
                 child: const Text(
                   "เพิ่มวิธีการชำระเงินนี้",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),

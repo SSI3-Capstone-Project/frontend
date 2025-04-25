@@ -19,7 +19,8 @@ class CardDetailsPage extends StatefulWidget {
 }
 
 class _CardDetailsPageState extends State<CardDetailsPage> {
-  final GetOmiseCustomerCardDetailController cardDetailController = Get.put(GetOmiseCustomerCardDetailController());
+  final GetOmiseCustomerCardDetailController cardDetailController =
+      Get.put(GetOmiseCustomerCardDetailController());
   final cardListController = Get.find<CardListController>();
 
   @override
@@ -33,7 +34,10 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("รายละเอียดบัตร"),
+        title: const Text(
+          "รายละเอียดบัตร",
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        ),
         backgroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -145,7 +149,10 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                         ),
                         child: const Text(
                           "ลบ",
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -159,7 +166,8 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EditCardDetailsPage(cardId: card.cardId),
+                              builder: (context) =>
+                                  EditCardDetailsPage(cardId: card.cardId),
                             ),
                           );
                           print("แก้ไขบัตร ${card.cardHolderName}");
@@ -172,7 +180,10 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                         ),
                         child: const Text(
                           "แก้ไข",
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -232,4 +243,3 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
     );
   }
 }
-

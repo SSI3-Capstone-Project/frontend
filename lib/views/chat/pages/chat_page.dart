@@ -34,7 +34,7 @@ class _ChatPageState extends State<ChatPage> {
         surfaceTintColor: Colors.white,
         title: const Text(
           'แชท',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
       ),
       body: SafeArea(

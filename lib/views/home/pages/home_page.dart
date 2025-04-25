@@ -1,13 +1,15 @@
-
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/model/brand_model.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/brand_controller.dart';
 import 'package:mbea_ssi3_front/views/home/controllers/product_controller.dart';
 import 'package:mbea_ssi3_front/views/home/pages/product_detail_page.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_grid_view.dart';
 import 'package:staggered_grid_view_flutter/widgets/staggered_tile.dart';
-
+import 'package:dropdown_button2/dropdown_button2.dart';
 import '../../notifications/pages/notification_list_get_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,12 +21,36 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ProductController productController = Get.put(ProductController());
-  final BrandControllerTwo brandController = Get.put(BrandControllerTwo());
+  final BrandController brandController = Get.put(BrandController());
+  final TextEditingController _brandSearchController = TextEditingController();
+  final TextEditingController _collectionSearchController =
+      TextEditingController();
+  final TextEditingController _subCollectionSearchController =
+      TextEditingController();
+
+  final TextEditingController _searchController = TextEditingController();
+  final RxString searchText = ''.obs;
+
   int _selectedCategoryIndex = 0;
+  Brand? _selectedBrand;
+  Collection? _selectedCollection;
+  SubCollection? _selectedSubCollection;
 
   @override
   void initState() {
     super.initState();
+
+    debounce(searchText, (val) {
+      productController.fetchProducts(title: val.trim());
+    }, time: const Duration(milliseconds: 500));
+  }
+
+  @override
+  void dispose() {
+    _brandSearchController.dispose();
+    _collectionSearchController.dispose();
+    _subCollectionSearchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,19 +80,19 @@ class _HomePageState extends State<HomePage> {
             ),
 
             // for category
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildCategoryItem('ทั้งหมด', 0),
-                _buildCategoryItem('แนะนำ', 1),
-                _buildCategoryItem('ที่นิยม', 2),
-                _buildCategoryItem('มาใหม่', 3),
-                _buildCategoryItem('ที่คุณถูกใจ', 4),
-              ],
-            ),
-            const SizedBox(
-              height: 25,
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     _buildCategoryItem('ทั้งหมด', 0),
+            //     _buildCategoryItem('แนะนำ', 1),
+            //     _buildCategoryItem('ที่นิยม', 2),
+            //     _buildCategoryItem('มาใหม่', 3),
+            //     _buildCategoryItem('ที่คุณถูกใจ', 4),
+            //   ],
+            // ),
+            // const SizedBox(
+            //   height: 25,
+            // ),
 
             // Wrap Expanded with Obx to observe the changes only here
             Expanded(
@@ -82,7 +108,24 @@ class _HomePageState extends State<HomePage> {
                   return RefreshIndicator(
                     onRefresh: () async {
                       // Call the refresh function in ProductController
-                      await productController.fetchProducts();
+                      if (_selectedSubCollection != null) {
+                        await productController.fetchProducts(
+                          brandName: _selectedBrand?.name,
+                          collectionName: _selectedCollection?.name,
+                          subCollectionName: _selectedSubCollection?.name,
+                        );
+                      } else if (_selectedCollection != null) {
+                        await productController.fetchProducts(
+                          brandName: _selectedBrand?.name,
+                          collectionName: _selectedCollection?.name,
+                        );
+                      } else if (_selectedBrand != null) {
+                        await productController.fetchProducts(
+                          brandName: _selectedBrand?.name,
+                        );
+                      } else {
+                        await productController.fetchProducts();
+                      }
                     },
                     color: Colors.white, // Refresh icon color
                     backgroundColor: Constants.secondaryColor,
@@ -281,6 +324,10 @@ class _HomePageState extends State<HomePage> {
   Widget searchField() {
     return Expanded(
       child: TextField(
+        controller: _searchController,
+        onChanged: (value) {
+          productController.fetchProducts(title: value.trim());
+        },
         decoration: InputDecoration(
           hintText: 'ค้นหา',
           hintStyle: TextStyle(color: Colors.grey[600]),
@@ -313,95 +360,346 @@ class _HomePageState extends State<HomePage> {
   Widget shortItemsButton() {
     return InkWell(
       onTap: () {
-        // Show a popup with a blurred background
-        // showDialog(
-        //   context: context,
-        //   builder: (BuildContext context) {
-        //     return Stack(
-        //       children: [
-        //         // Blurred background
-        //         // BackdropFilter(
-        //         //   filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-        //         //   child: Container(
-        //         //     color: Colors.black.withOpacity(0.5),
-        //         //   ),
-        //         // ),
-        //         Center(
-        //           child: AlertDialog(
-        //             shape: RoundedRectangleBorder(
-        //               borderRadius: BorderRadius.circular(15.0),
-        //             ),
-        //             title: const Text(
-        //               "แบรนด์",
-        //               style:
-        //                   TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        //               textAlign: TextAlign.center,
-        //             ),
-        //             content: SingleChildScrollView(
-        //               child: Wrap(
-        //                 spacing: 8.0,
-        //                 children: brandController.selectedBrands.keys
-        //                     .map((String brand) {
-        //                   return Obx(() {
-        //                     return FilterChip(
-        //                       labelStyle: TextStyle(
-        //                         color: brandController.selectedBrands[brand]!
-        //                             ? Colors.white
-        //                             : Colors
-        //                                 .black, // สีของตัวอักษรเมื่อถูกเลือก
-        //                       ),
-        //                       label: Text(brand),
-        //                       selected: brandController.selectedBrands[brand]!,
-        //                       onSelected: (bool selected) {
-        //                         brandController.toggleBrandSelection(
-        //                             brand, selected);
-        //                       },
-        //                       selectedColor: Constants.secondaryColor,
-        //                       checkmarkColor: Colors.white,
-        //                     );
-        //                   });
-        //                 }).toList(),
-        //               ),
-        //             ),
-        //             actions: [
-        //               TextButton(
-        //                 style: TextButton.styleFrom(
-        //                     backgroundColor:
-        //                         Constants.primaryColor, // สีพื้นหลังของปุ่ม
-        //                     foregroundColor: Colors.white,
-        //                     padding: EdgeInsets.all(0.5) // สีของตัวอักษร
-        //                     ),
-        //                 onPressed: () {
-        //                   // แสดงแบรนด์ที่เลือกในคอนโซล
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            Brand? selectedBrand = _selectedBrand;
+            Collection? selectedCollection = _selectedCollection;
+            SubCollection? selectedSubCollection = _selectedSubCollection;
 
-        //                   Navigator.of(context).pop();
-        //                   final selected = brandController
-        //                       .selectedBrands.entries
-        //                       .where((entry) => entry
-        //                           .value) // กรองเฉพาะแบรนด์ที่ถูกเลือก (true)
-        //                       .map((entry) =>
-        //                           entry.key) // แปลงจาก MapEntry เป็นชื่อแบรนด์
-        //                       .toList();
-        //                   print("Selected Brands: $selected");
-        //                 },
-        //                 child: const Text(
-        //                   "ยืนยัน",
-        //                   style: TextStyle(
-        //                       fontSize: 14, fontWeight: FontWeight.w600),
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         ),
-        //       ],
-        //     );
-        //   },
-        // );
+            return Center(
+              child: AlertDialog(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                title: const Text(
+                  "ตัวกรองการค้นหา",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                content: Obx(() {
+                  final brands = brandController.brands.toList();
+
+                  return StatefulBuilder(
+                    builder: (context, setStateDialog) {
+                      final collections = selectedBrand?.collections ?? [];
+                      final subCollections =
+                          selectedCollection?.subCollections ?? [];
+
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          /// 🔵 Brand Dropdown
+                          DropdownButtonHideUnderline(
+                            child: DropdownButtonFormField2<Brand>(
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                labelText: "แบรนด์",
+                                labelStyle: TextStyle(fontSize: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              value: selectedBrand,
+                              items: brands.map((brand) {
+                                return DropdownMenuItem(
+                                  value: brand,
+                                  child: Text(brand.name,
+                                      style: const TextStyle(fontSize: 12)),
+                                );
+                              }).toList(),
+                              onChanged: (brand) {
+                                setStateDialog(() {
+                                  selectedBrand = brand;
+                                  selectedCollection = null;
+                                  selectedSubCollection = null;
+                                });
+                              },
+                              dropdownStyleData: DropdownStyleData(
+                                maxHeight: 200,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                              ),
+                              dropdownSearchData: DropdownSearchData(
+                                searchController: _brandSearchController,
+                                searchInnerWidget: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: SizedBox(
+                                    height: 40,
+                                    child: TextFormField(
+                                      controller: _brandSearchController,
+                                      decoration: InputDecoration(
+                                        hintText: 'ค้นหาแบรนด์...',
+                                        hintStyle: TextStyle(fontSize: 12),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                searchInnerWidgetHeight: 60,
+                                searchMatchFn: (item, searchValue) {
+                                  return item.value!.name
+                                      .toLowerCase()
+                                      .contains(searchValue.toLowerCase());
+                                },
+                              ),
+                            ),
+                          ),
+                          if (collections.isNotEmpty)
+                            const SizedBox(height: 10),
+
+                          /// 🟠 Collection Dropdown
+                          if (collections.isNotEmpty)
+                            DropdownButtonHideUnderline(
+                              child: DropdownButtonFormField2<Collection>(
+                                isExpanded: true,
+                                decoration: InputDecoration(
+                                  labelText: "คอลเลกชัน",
+                                  labelStyle: TextStyle(fontSize: 12),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                value: selectedCollection,
+                                items: collections.map((collection) {
+                                  return DropdownMenuItem(
+                                    value: collection,
+                                    child: Text(collection.name,
+                                        style: const TextStyle(fontSize: 12)),
+                                  );
+                                }).toList(),
+                                onChanged: (collection) {
+                                  setStateDialog(() {
+                                    selectedCollection = collection;
+                                    selectedSubCollection = null;
+                                  });
+                                },
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 200,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                dropdownSearchData: DropdownSearchData(
+                                  searchController: _collectionSearchController,
+                                  searchInnerWidget: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: SizedBox(
+                                      height: 40,
+                                      child: TextFormField(
+                                        controller: _collectionSearchController,
+                                        decoration: InputDecoration(
+                                          hintText: 'ค้นหาคอลเลกชัน...',
+                                          hintStyle: TextStyle(fontSize: 12),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  searchInnerWidgetHeight: 60,
+                                  searchMatchFn: (item, searchValue) {
+                                    return item.value!.name
+                                        .toLowerCase()
+                                        .contains(searchValue.toLowerCase());
+                                  },
+                                ),
+                              ),
+                            )
+                          else if (selectedBrand != null)
+                            const Text(
+                              "ไม่มีคอลเลกชัน",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          if (subCollections.isNotEmpty)
+                            const SizedBox(height: 10),
+
+                          /// 🟢 SubCollection Dropdown
+                          if (subCollections.isNotEmpty)
+                            DropdownButtonHideUnderline(
+                              child: DropdownButtonFormField2<SubCollection>(
+                                isExpanded: true,
+                                decoration: InputDecoration(
+                                  labelText: "ซับคอลเลกชัน",
+                                  labelStyle: TextStyle(fontSize: 12),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                value: selectedSubCollection,
+                                items: subCollections.map((sub) {
+                                  return DropdownMenuItem(
+                                    value: sub,
+                                    child: Text(sub.name,
+                                        style: const TextStyle(fontSize: 12)),
+                                  );
+                                }).toList(),
+                                onChanged: (sub) {
+                                  setStateDialog(() {
+                                    selectedSubCollection = sub;
+                                  });
+                                },
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 200,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                dropdownSearchData: DropdownSearchData(
+                                  searchController:
+                                      _subCollectionSearchController,
+                                  searchInnerWidget: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: SizedBox(
+                                      height: 40,
+                                      child: TextFormField(
+                                        controller:
+                                            _subCollectionSearchController,
+                                        decoration: InputDecoration(
+                                          hintText: 'ค้นหาซับคอลเลกชัน...',
+                                          hintStyle: TextStyle(fontSize: 12),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  searchInnerWidgetHeight: 5,
+                                  searchMatchFn: (item, searchValue) {
+                                    return item.value!.name
+                                        .toLowerCase()
+                                        .contains(searchValue.toLowerCase());
+                                  },
+                                ),
+                              ),
+                            )
+                          else if (selectedCollection != null)
+                            const Text(
+                              "ไม่มีซับคอลเลกชัน",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                        ],
+                      );
+                    },
+                  );
+                }),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Constants.secondaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            _selectedBrand = null;
+                            _selectedCollection = null;
+                            _selectedSubCollection = null;
+                          });
+
+                          if (_selectedSubCollection != null) {
+                            await productController.fetchProducts(
+                              brandName: _selectedBrand?.name,
+                              collectionName: _selectedCollection?.name,
+                              subCollectionName: _selectedSubCollection?.name,
+                            );
+                          } else if (_selectedCollection != null) {
+                            await productController.fetchProducts(
+                              brandName: _selectedBrand?.name,
+                              collectionName: _selectedCollection?.name,
+                            );
+                          } else if (_selectedBrand != null) {
+                            await productController.fetchProducts(
+                              brandName: _selectedBrand?.name,
+                            );
+                          } else {
+                            await productController.fetchProducts();
+                          }
+                        },
+                        child: const Text(
+                          "ล้าง",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: Constants.primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            _selectedBrand = selectedBrand;
+                            _selectedCollection = selectedCollection;
+                            _selectedSubCollection = selectedSubCollection;
+                          });
+
+                          if (_selectedSubCollection != null) {
+                            await productController.fetchProducts(
+                              brandName: _selectedBrand?.name,
+                              collectionName: _selectedCollection?.name,
+                              subCollectionName: _selectedSubCollection?.name,
+                            );
+                          } else if (_selectedCollection != null) {
+                            await productController.fetchProducts(
+                              brandName: _selectedBrand?.name,
+                              collectionName: _selectedCollection?.name,
+                            );
+                          } else if (_selectedBrand != null) {
+                            await productController.fetchProducts(
+                              brandName: _selectedBrand?.name,
+                            );
+                          } else {
+                            await productController.fetchProducts();
+                          }
+                        },
+                        child: const Text(
+                          "ยืนยัน",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w600),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
+          },
+        );
       },
       borderRadius: BorderRadius.circular(15),
       splashColor: Colors.white24,
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Constants.primaryColor,
           borderRadius: BorderRadius.circular(15),

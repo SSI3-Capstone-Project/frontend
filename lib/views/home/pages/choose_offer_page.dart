@@ -175,9 +175,11 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                           ),
                           SizedBox(width: 10),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 5),
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                               color: Constants.primaryColor,
                             ),
                             child: Text(
@@ -551,11 +553,11 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
             var result = await sendOfferController.addOffer(
                 postId: postId, offerId: offerID);
             if (result) {
-              Navigator.pop(context);
-              Navigator.pop(context);
-              Navigator.pop(context);
+              Navigator.pop(context, true);
+              Navigator.pop(context, true);
+              Navigator.pop(context, true);
             } else {
-              Navigator.pop(context);
+              Navigator.pop(context, true);
             }
           },
           style: ElevatedButton.styleFrom(

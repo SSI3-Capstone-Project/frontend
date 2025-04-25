@@ -40,8 +40,7 @@ class _AddressPageState extends State<AddressPage> {
         backgroundColor: Colors.white,
         title: const Text(
           'จัดการที่อยู่',
-          style: TextStyle(
-              color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         // const Text(
         //   'จัดการที่อยู่',
@@ -60,30 +59,46 @@ class _AddressPageState extends State<AddressPage> {
         if (addressController.addressList.isEmpty) {
           return Container(
             color: Colors.white,
-            child: Center(
-              child: Stack(children: [
+            width: double.infinity,
+            height: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Spacer(),
+                const Text(
+                  'ยังไม่มีที่อยู่ กรุณาเพิ่มที่อยู่ของท่าน',
+                  textAlign: TextAlign.center,
+                ),
+                const Spacer(),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 30),
-                  child: ElevatedButton(
-                    onPressed: _createAddress,
-                    style: ElevatedButton.styleFrom(
-                      fixedSize:
-                          const Size(150, 15), // กำหนดขนาดตายตัว (กว้าง x สูง)
-                      backgroundColor: Constants.secondaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  padding: const EdgeInsets.only(bottom: 30),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _createAddress,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            'เพิ่มที่อยู่ใหม่',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'เพิ่มที่อยู่ใหม่',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-              ]),
+              ],
             ),
           );
         }
@@ -109,22 +124,26 @@ class _AddressPageState extends State<AddressPage> {
                   child: Stack(children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 30),
-                      child: ElevatedButton(
-                        onPressed: _createAddress,
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: const Size(
-                              150, 15), // กำหนดขนาดตายตัว (กว้าง x สูง)
-                          backgroundColor: Constants.secondaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _createAddress,
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: const Size(
+                                150, 15), // กำหนดขนาดตายตัว (กว้าง x สูง)
+                            backgroundColor: Constants.primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          'เพิ่มที่อยู่ใหม่',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
+                          child: Text(
+                            'เพิ่มที่อยู่ใหม่',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ),
@@ -733,12 +752,14 @@ class _AddressPageState extends State<AddressPage> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(5),
         ),
         contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+            EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
       ),
       validator: validator,
     );
@@ -758,10 +779,13 @@ class _AddressPageState extends State<AddressPage> {
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: const TextStyle(
+              fontSize: 14,
+            ),
             contentPadding:
-                EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+                EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.grey.shade600),
             ),
           ),
@@ -794,49 +818,53 @@ class _AddressPageState extends State<AddressPage> {
   Widget _buildSubmitAddButton() {
     return Align(
       alignment: Alignment.center,
-      child: SizedBox(
-        width: 150,
-        child: ElevatedButton(
-          onPressed: () async {
-            int subDistrictId = 0;
-            if (selectedSubDistrict != null) {
-              subDistrictId = provinceController.provinces
-                      .firstWhere((b) => b.name == selectedProvince)
-                      .districts
-                      ?.firstWhere((c) => c.name == selectedMainDistrict)
-                      .subDistricts
-                      ?.firstWhere((sc) => sc.name == selectedSubDistrict)
-                      .id ??
-                  0;
-            }
-            if (_formKey.currentState!.validate()) {
-              var result = await addressController.addAddress(
-                  subDistrictId: subDistrictId,
-                  address: _mainAddress.text,
-                  isDefault:
-                      addressController.addressList.isEmpty ? true : isDefault);
-              print('Result from addAddress: $result');
-              if (mounted) {
-                if (result) {
-                  Get.snackbar('สำเร็จ', 'คุณได้เพิ่มที่อยู่ใหม่แล้ว');
-                  Navigator.pop(context);
-                } else {
-                  Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการเพิ่มที่อยู่');
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () async {
+              int subDistrictId = 0;
+              if (selectedSubDistrict != null) {
+                subDistrictId = provinceController.provinces
+                        .firstWhere((b) => b.name == selectedProvince)
+                        .districts
+                        ?.firstWhere((c) => c.name == selectedMainDistrict)
+                        .subDistricts
+                        ?.firstWhere((sc) => sc.name == selectedSubDistrict)
+                        .id ??
+                    0;
+              }
+              if (_formKey.currentState!.validate()) {
+                var result = await addressController.addAddress(
+                    subDistrictId: subDistrictId,
+                    address: _mainAddress.text,
+                    isDefault: addressController.addressList.isEmpty
+                        ? true
+                        : isDefault);
+                print('Result from addAddress: $result');
+                if (mounted) {
+                  if (result) {
+                    Get.snackbar('สำเร็จ', 'คุณได้เพิ่มที่อยู่ใหม่แล้ว');
+                    Navigator.pop(context);
+                  } else {
+                    Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการเพิ่มที่อยู่');
+                  }
                 }
               }
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Constants.primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Constants.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          ),
-          child: Text(
-            'เพิ่มที่อยู่',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            child: Text(
+              'เพิ่มที่อยู่',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),
@@ -846,56 +874,62 @@ class _AddressPageState extends State<AddressPage> {
   Widget _buildSubmitEditButton(String id, bool selectDefault) {
     return Align(
       alignment: Alignment.center,
-      child: SizedBox(
-        width: 150,
-        child: ElevatedButton(
-          onPressed: () async {
-            int subDistrictId = 0;
-            if (selectedSubDistrict != null) {
-              subDistrictId = provinceController.provinces
-                      .firstWhere((b) => b.name == selectedProvince)
-                      .districts
-                      ?.firstWhere((c) => c.name == selectedMainDistrict)
-                      .subDistricts
-                      ?.firstWhere((sc) => sc.name == selectedSubDistrict)
-                      .id ??
-                  0;
-            }
-            // if (subDistrictId == 0) {
-            //   Get.snackbar('แจ้งเตือน', 'กรุณากรอกที่อยู่ให้ครบ');
-            //   return;
-            // }
-            if (_formKey.currentState!.validate()) {
-              var result = await addressController.editAddress(
-                  id: id,
-                  subDistrictId: subDistrictId,
-                  address: _mainAddress.text,
-                  isDefault:
-                      addressController.addressList.isEmpty || selectDefault
-                          ? true
-                          : isDefault);
-              print('Result from addAddress: $result');
-              if (mounted) {
-                if (result) {
-                  Get.snackbar('สำเร็จ', 'คุณได้แก้ไขที่อยู่แล้ว');
-                  Navigator.pop(context);
-                } else {
-                  Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการแก้ไขที่อยู่');
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () async {
+              int subDistrictId = 0;
+              if (selectedSubDistrict != null) {
+                subDistrictId = provinceController.provinces
+                        .firstWhere((b) => b.name == selectedProvince)
+                        .districts
+                        ?.firstWhere((c) => c.name == selectedMainDistrict)
+                        .subDistricts
+                        ?.firstWhere((sc) => sc.name == selectedSubDistrict)
+                        .id ??
+                    0;
+              }
+              // if (subDistrictId == 0) {
+              //   Get.snackbar('แจ้งเตือน', 'กรุณากรอกที่อยู่ให้ครบ');
+              //   return;
+              // }
+              if (_formKey.currentState!.validate()) {
+                var result = await addressController.editAddress(
+                    id: id,
+                    subDistrictId: subDistrictId,
+                    address: _mainAddress.text,
+                    isDefault:
+                        addressController.addressList.isEmpty || selectDefault
+                            ? true
+                            : isDefault);
+                print('Result from addAddress: $result');
+                if (mounted) {
+                  if (result) {
+                    Get.snackbar('สำเร็จ', 'คุณได้แก้ไขที่อยู่แล้ว');
+                    Navigator.pop(context);
+                  } else {
+                    Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการแก้ไขที่อยู่');
+                  }
                 }
               }
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Constants.primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Constants.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          ),
-          child: Text(
-            'ยืนยัน',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            child: Text(
+              'ยืนยัน',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),

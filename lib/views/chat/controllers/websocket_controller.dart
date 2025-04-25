@@ -260,6 +260,74 @@ class ChatController extends GetxController {
     }
   }
 
+  Future<bool> sendVideo(File videoFile, String roomID) async {
+    if (_channel == null || !isWebSocketConnected.value) {
+      print("WebSocket ไม่ได้เชื่อมต่อ ไม่สามารถส่งไฟล์วิดีโอได้");
+      return false;
+    }
+
+    try {
+      if (tokenController.accessToken.value == null) {
+        print("ไม่มี access token");
+        return false;
+      }
+
+      final token = tokenController.accessToken.value;
+
+      // ตรวจสอบ MIME type ของวิดีโอ
+      String? mimeType = lookupMimeType(videoFile.path);
+      const allowedVideoTypes = {
+        "video/mp4": true,
+        "video/quicktime": true,
+        "video/x-msvideo": true,
+      };
+
+      if (mimeType == null || !allowedVideoTypes.containsKey(mimeType)) {
+        print("ประเภทไฟล์วิดีโอไม่รองรับ: $mimeType");
+        Get.snackbar(
+            'แจ้งเตือน', 'รองรับเฉพาะไฟล์ .mp4 / .mov / .avi เท่านั้น');
+        return false;
+      }
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${dotenv.env['API_URL']}/chatrooms/$roomID/messages'),
+      );
+      request.headers['Authorization'] = 'Bearer $token';
+
+      request.files.add(await http.MultipartFile.fromPath(
+        'file',
+        videoFile.path,
+        contentType: MediaType.parse(mimeType),
+      ));
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        print("อัปโหลดวิดีโอสำเร็จ!");
+        final jsonData = jsonDecode(response.body);
+
+        final data = jsonEncode({
+          "message": jsonData['data']['content'],
+          "type": 'file',
+          "timestamp": DateTime.now().toIso8601String(),
+        });
+
+        _channel!.sink.add(data);
+        return true;
+      } else {
+        Get.snackbar(
+            'แจ้งเตือน', 'อัปโหลดวิดีโอล้มเหลว: ${response.statusCode}');
+        print("เกิดข้อผิดพลาด: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("Exception: $e ใน sendVideo");
+      return false;
+    }
+  }
+
   /// ปิด WebSocket เมื่อไม่ใช้งาน
   void closeChatRoom() {
     chatRooms.clear();

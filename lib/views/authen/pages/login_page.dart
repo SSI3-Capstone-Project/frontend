@@ -57,15 +57,15 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'เข้าสู่ระบบ',
-          style: TextStyle(
-              color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
+          title: Text(
+            'เข้าสู่ระบบ',
+            style: TextStyle(
+                color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          automaticallyImplyLeading: false),
       body: SafeArea(
         child: Container(
           color: Colors.white,
@@ -86,18 +86,21 @@ class _LoginPageState extends State<LoginPage> {
                   isPassword: true,
                 ),
                 SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    backgroundColor: Constants.secondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants.secondaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'เข้าสู่ระบบ',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    child: Text(
+                      'เข้าสู่ระบบ',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -140,12 +143,14 @@ class _LoginPageState extends State<LoginPage> {
       obscureText: isPassword,
       decoration: InputDecoration(
         labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
         ),
         contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12),
+            EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {

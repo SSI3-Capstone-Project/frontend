@@ -29,7 +29,10 @@ class _CardListPageState extends State<CardListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("วิธีการชำระเงินของฉัน"),
+        title: const Text(
+          "วิธีการชำระเงินของฉัน",
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        ),
         backgroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -81,7 +84,10 @@ class _CardListPageState extends State<CardListPage> {
                       : null,
                   child: const Text(
                     "เพิ่มวิธีการชำระเงิน",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

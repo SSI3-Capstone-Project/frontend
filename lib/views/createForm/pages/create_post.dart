@@ -4,6 +4,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
@@ -117,7 +118,6 @@ class _CreatePostFormState extends State<CreatePostForm> {
         key: _formKey,
         child: ListView(
           children: [
-            SizedBox(height: 16),
             _buildTextFormField(
               controller: _productNameController,
               label: 'ชื่อสินค้า',
@@ -327,12 +327,14 @@ class _CreatePostFormState extends State<CreatePostForm> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
         ),
         contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+            EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
       ),
       validator: validator,
     );
@@ -352,10 +354,13 @@ class _CreatePostFormState extends State<CreatePostForm> {
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: const TextStyle(
+              fontSize: 14,
+            ),
             contentPadding:
-                EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+                EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.grey.shade600),
             ),
           ),
@@ -637,7 +642,8 @@ class _CreatePostFormState extends State<CreatePostForm> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        width: 150,
+        width: double.infinity,
+        height: 50,
         child: ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate() &&
@@ -727,7 +733,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
           },
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
+            backgroundColor: Constants.primaryColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -735,7 +741,8 @@ class _CreatePostFormState extends State<CreatePostForm> {
           ),
           child: Text(
             'ยืนยัน',
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
       ),

@@ -17,20 +17,48 @@ class ProductController extends GetxController {
     fetchProducts();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts({
+    String? brandName,
+    String? collectionName,
+    String? subCollectionName,
+    String? title, // ✅ เพิ่ม parameter title
+  }) async {
     try {
       isLoading(true);
       if (tokenController.accessToken.value == null) {
-        // Get.snackbar('Error', 'No access token found.');
         return;
       }
       final token = tokenController.accessToken.value;
+
+      final queryParams = <String, String>{};
+
+      if (brandName != null && brandName.isNotEmpty) {
+        queryParams['brand_name'] = brandName;
+
+        if (collectionName != null && collectionName.isNotEmpty) {
+          queryParams['collection_name'] = collectionName;
+
+          if (subCollectionName != null && subCollectionName.isNotEmpty) {
+            queryParams['sub_collection_name'] = subCollectionName;
+          }
+        }
+      }
+
+      // ✅ เพิ่มการตรวจสอบ title และใส่ลงใน queryParams ถ้ามี
+      if (title != null && title.isNotEmpty) {
+        queryParams['title'] = title;
+      }
+
+      final uri = Uri.parse('${dotenv.env['API_URL']}/posts')
+          .replace(queryParameters: queryParams);
+
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/posts'),
+        uri,
         headers: {
-          'Authorization': 'Bearer $token', // แนบ Bearer Token
+          'Authorization': 'Bearer $token',
         },
       );
+
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         var postData = jsonData['data'];
@@ -38,11 +66,8 @@ class ProductController extends GetxController {
           productList.value =
               postData.map((item) => Product.fromJson(item)).toList();
         } else {
-          productList.clear(); // Clear the list if no data is present
-          // Get.snackbar('แจ้งเตือน', 'ไม่พบโพสต์ในระบบ');
+          productList.clear();
         }
-        // productList.value =
-        //     jsonData.map((item) => Product.fromJson(item)).toList();
       } else {
         Get.snackbar('Error', 'Failed to load products');
       }
@@ -51,33 +76,3 @@ class ProductController extends GetxController {
     }
   }
 }
-
-
-  // Future<void> updateProduct(
-  //     String id, String title, String description) async {
-  //   try {
-  //     isLoading(true);
-  //     final response = await http.put(
-  //       Uri.parse('https://671e5d3c1dfc4299198215f1.mockapi.io/products/$id'),
-  //       headers: {'Content-Type': 'application/json; charset=UTF-8'},
-  //       body: jsonEncode({
-  //         'title': title,
-  //         'description': description,
-  //       }),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       int index = productList.indexWhere((product) => product.id == id);
-  //       if (index != -1) {
-  //         productList[index].title = title;
-  //         productList[index].description = description;
-  //         productList.refresh();
-  //       }
-  //       Get.snackbar('Success', 'Product updated successfully');
-  //     } else {
-  //       Get.snackbar('Error', 'Failed to update product');
-  //     }
-  //   } finally {
-  //     isLoading(false);
-  //   }
-  // }

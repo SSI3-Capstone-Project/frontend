@@ -5,6 +5,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/controller/province_controller.dart';
@@ -123,7 +124,6 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
         key: _formKey,
         child: ListView(
           children: [
-            SizedBox(height: 16),
             _buildTextFormField(
               controller: _productNameController,
               label: 'ชื่อสินค้า',
@@ -327,15 +327,17 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: widget.isSendOffer
-              ? BorderRadius.circular(12)
-              : BorderRadius.circular(20),
+              ? BorderRadius.circular(5)
+              : BorderRadius.circular(5),
         ),
         contentPadding: widget.isSendOffer
             ? EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12)
-            : EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+            : EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
       ),
       validator: validator,
     );
@@ -355,13 +357,16 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: const TextStyle(
+              fontSize: 14,
+            ),
             contentPadding: widget.isSendOffer
                 ? EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12)
-                : EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+                : EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
             border: OutlineInputBorder(
               borderRadius: widget.isSendOffer
-                  ? BorderRadius.circular(12)
-                  : BorderRadius.circular(20),
+                  ? BorderRadius.circular(5)
+                  : BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.grey.shade600),
             ),
           ),
@@ -621,7 +626,8 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        width: 150,
+        width: double.infinity,
+        height: 50,
         child: ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate() &&
@@ -693,9 +699,9 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                   if (widget.isSendOffer) {
                     sendOfferController.addOffer(
                         postId: widget.postId, offerId: result);
-                    Navigator.pop(context);
+                    Navigator.pop(context, true);
                   }
-                  Navigator.pop(context);
+                  Navigator.pop(context, true);
                 }
               }
               if (mounted) {
@@ -717,7 +723,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           },
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
+            backgroundColor: Constants.primaryColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -725,7 +731,8 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           ),
           child: Text(
             'ยืนยัน',
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
       ),

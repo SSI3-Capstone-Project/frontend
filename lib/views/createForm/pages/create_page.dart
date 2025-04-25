@@ -136,7 +136,7 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
         decoration: BoxDecoration(
           color: isSelected ? Constants.secondaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(15.0),

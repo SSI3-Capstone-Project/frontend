@@ -27,8 +27,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       appBar: AppBar(
         title: Text(
           'แก้ไขรหัสผ่าน',
-          style: TextStyle(
-              color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -66,18 +65,24 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   isConfirmPassword: true,
                 ),
                 SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    backgroundColor: Constants.secondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'เปลี่ยนรหัสผ่าน',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    child: Text(
+                      'เปลี่ยนรหัสผ่าน',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -108,13 +113,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
         hintText: hint,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
         ),
         contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12),
+            EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
         counterText: '',
       ),
       validator: (value) {

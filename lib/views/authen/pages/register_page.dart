@@ -437,7 +437,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               decoration: InputDecoration(
                                 hintText: "mail@gmail.com",
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
                                 prefixIcon: Icon(Icons.email),
                               ),
@@ -735,16 +735,18 @@ class _RegisterPageState extends State<RegisterPage> {
           : null,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
         hintText: hint,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
         ),
         contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12),
+            EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
         counterText: '',
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(
             color: Colors.grey.shade500, // สีของกรอบเมื่อปิดการใช้งาน
           ),
@@ -788,10 +790,13 @@ class _RegisterPageState extends State<RegisterPage> {
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: const TextStyle(
+              fontSize: 14,
+            ),
             contentPadding:
-                EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12),
+                EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.grey.shade600),
             ),
           ),
