@@ -26,7 +26,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
   final UserProfileController userProfileController =
       Get.put(UserProfileController());
   final ExchangeController exchangeController = Get.put(ExchangeController());
-  final NotificationUpdateController notificationUpdateController = Get.put(NotificationUpdateController());
+  final NotificationUpdateController notificationUpdateController =
+      Get.put(NotificationUpdateController());
   late TabController _tabController;
 
   final List<Map<String, String>> notificationTypes = [
@@ -157,8 +158,9 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
               notification.relatedPostId != "") {
             return GestureDetector(
               onTap: () {
-                notificationUpdateController.markNotificationAsRead(notification.id, "offer");
-                Get.snackbar('postId', notification.relatedPostId);
+                notificationUpdateController.markNotificationAsRead(
+                    notification.id, "offer");
+                // Get.snackbar('postId', notification.relatedPostId);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -180,7 +182,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
               notification.relatedEntityId != "") {
             return GestureDetector(
               onTap: () {
-                notificationUpdateController.markNotificationAsRead(notification.id, "chat");
+                notificationUpdateController.markNotificationAsRead(
+                    notification.id, "chat");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -202,7 +205,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
                     .fetchExchangeDetails(notification.relatedEntityId);
                 switch (exchangeController.exchange.value!.exchangeStage) {
                   case 2:
-                    notificationUpdateController.markNotificationAsRead(notification.id, "meeting_point");
+                    notificationUpdateController.markNotificationAsRead(
+                        notification.id, "meeting_point");
                     Navigator.push(
                       context,
                       MaterialPageRoute(

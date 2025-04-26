@@ -643,7 +643,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
       alignment: Alignment.center,
       child: SizedBox(
         width: double.infinity,
-        height: 50,
+        height: 45,
         child: ElevatedButton(
           onPressed: () async {
             if (_formKey.currentState!.validate() &&

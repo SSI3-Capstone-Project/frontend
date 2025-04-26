@@ -62,7 +62,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("แก้ไขโปรไฟล์"),
+        title: const Text(
+          "แก้ไขโปรไฟล์",
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+        ),
         backgroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -206,11 +209,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     value: ['male', 'female', 'other', 'non-identify']
-                        .contains(genderController.value)
+                            .contains(genderController.value)
                         ? genderController.value
                         : 'non-identify',
                     decoration: InputDecoration(
                       labelText: 'เพศ',
+                      labelStyle: const TextStyle(
+                        fontSize: 14,
+                      ),
+                      contentPadding: EdgeInsets.only(
+                          left: 30, right: 12, top: 14, bottom: 14),
                       filled: true, // ใช้ filled เพื่อกำหนดพื้นหลัง
                       fillColor: Colors.white, // กำหนดสีพื้นหลัง
                       border: OutlineInputBorder(
@@ -220,17 +228,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     dropdownColor: Colors.white,
                     items: ['male', 'female', 'other', 'non-identify']
                         .map((gender) => DropdownMenuItem(
-                      value: gender,
-                      child: Text(
-                        gender == 'male'
-                            ? 'ชาย'
-                            : gender == 'female'
-                            ? 'หญิง'
-                            : gender == 'other'
-                            ? 'อื่น ๆ'
-                            : 'ไม่ระบุ',
-                      ),
-                    ))
+                              value: gender,
+                              child: Text(
+                                gender == 'male'
+                                    ? 'ชาย'
+                                    : gender == 'female'
+                                        ? 'หญิง'
+                                        : gender == 'other'
+                                            ? 'อื่น ๆ'
+                                            : 'ไม่ระบุ',
+                              ),
+                            ))
                         .toList(),
                     onChanged: (value) {
                       setState(() {
@@ -248,18 +256,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           child: TextButton(
                             onPressed: () {
                               setState(() {
-                                Navigator.of(context).pop(); // ย้อนกลับไปหน้าเดิม
+                                Navigator.of(context)
+                                    .pop(); // ย้อนกลับไปหน้าเดิม
                               });
                             },
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.black87,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Constants.secondaryColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                             child: const Text(
                               "ยกเลิก",
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -271,37 +283,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           child: ElevatedButton(
                             onPressed: isEdited
                                 ? () async {
-                              if (_formKey.currentState!.validate()) {
-                                final profileData = UpdateProfileRequest(
-                                  username: usernameController.text,
-                                  firstname: firstnameController.text,
-                                  lastname: lastnameController.text,
-                                  email: emailController.text,
-                                  phone: phoneController.text,
-                                  gender: genderController.value,
-                                  imageUrl: profileImageFile?.path,
-                                );
+                                    if (_formKey.currentState!.validate()) {
+                                      final profileData = UpdateProfileRequest(
+                                        username: usernameController.text,
+                                        firstname: firstnameController.text,
+                                        lastname: lastnameController.text,
+                                        email: emailController.text,
+                                        phone: phoneController.text,
+                                        gender: genderController.value,
+                                        imageUrl: profileImageFile?.path,
+                                      );
 
-                                await updateProfileController.updateProfile(profileData);
-                                Navigator.pop(context);
-                              } else if (_isUsernameValid) {
-                                setState(() {
-                                  _usernameError = 'ชื่อนี้ถูกใช้งานแล้ว';
-                                  _isUsernameValid = false;
-                                });
-                              }
-                            }
+                                      await updateProfileController
+                                          .updateProfile(profileData);
+                                      Navigator.pop(context);
+                                    } else if (_isUsernameValid) {
+                                      setState(() {
+                                        _usernameError = 'ชื่อนี้ถูกใช้งานแล้ว';
+                                        _isUsernameValid = false;
+                                      });
+                                    }
+                                  }
                                 : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              isEdited ? Constants.primaryColor : Colors.grey,
+                              backgroundColor: isEdited
+                                  ? Constants.primaryColor
+                                  : Colors.grey,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                             child: const Text(
                               "แก้ไข",
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
                             ),
                           ),
                         ),
@@ -330,6 +345,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(
+          fontSize: 14,
+        ),
+        contentPadding:
+            EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(

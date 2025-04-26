@@ -636,7 +636,7 @@ class _EditOfferFormState extends State<EditOfferForm> {
       alignment: Alignment.center,
       child: SizedBox(
         width: double.infinity,
-        height: 50,
+        height: 45,
         child: ElevatedButton(
           onPressed: isEdited
               ? () async {

@@ -442,7 +442,7 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
       alignment: Alignment.center,
       child: SizedBox(
         width: double.infinity,
-        height: 50,
+        height: 45,
         child: ElevatedButton(
           onPressed: () async {
             var result = await sendOfferController.addOffer(

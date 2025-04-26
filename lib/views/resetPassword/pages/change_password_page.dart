@@ -67,7 +67,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 45,
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(

@@ -77,7 +77,7 @@ class _AddressPageState extends State<AddressPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: SizedBox(
                         width: double.infinity,
-                        height: 50,
+                        height: 45,
                         child: ElevatedButton(
                           onPressed: _createAddress,
                           style: ElevatedButton.styleFrom(
@@ -126,7 +126,7 @@ class _AddressPageState extends State<AddressPage> {
                       padding: const EdgeInsets.symmetric(vertical: 30),
                       child: SizedBox(
                         width: double.infinity,
-                        height: 50,
+                        height: 45,
                         child: ElevatedButton(
                           onPressed: _createAddress,
                           style: ElevatedButton.styleFrom(
@@ -822,7 +822,7 @@ class _AddressPageState extends State<AddressPage> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 45,
           child: ElevatedButton(
             onPressed: () async {
               int subDistrictId = 0;
@@ -878,7 +878,7 @@ class _AddressPageState extends State<AddressPage> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 45,
           child: ElevatedButton(
             onPressed: () async {
               int subDistrictId = 0;

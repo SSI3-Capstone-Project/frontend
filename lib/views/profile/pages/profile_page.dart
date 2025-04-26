@@ -455,30 +455,23 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildProfileContainer(UserProfile user) {
-    return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ProfileDetail(),
-            ),
-          );
-        },
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 17, vertical: 13),
-          decoration: BoxDecoration(
-            color: Constants.primaryColor, // สีพื้นหลัง
-            borderRadius: BorderRadius.circular(15), // ทำขอบมน
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black26, // สีของเงา (ปรับได้)
-                blurRadius: 10, // ระยะเบลอของเงา
-                offset: Offset(0, 4), // การเลื่อนตำแหน่งของเงา (X, Y)
-              ),
-            ],
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 17, vertical: 13),
+      decoration: BoxDecoration(
+        color: Constants.primaryColor, // สีพื้นหลัง
+        borderRadius: BorderRadius.circular(15), // ทำขอบมน
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26, // สีของเงา (ปรับได้)
+            blurRadius: 10, // ระยะเบลอของเงา
+            offset: Offset(0, 4), // การเลื่อนตำแหน่งของเงา (X, Y)
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
             children: [
               CircleAvatar(
                 radius: 41,
@@ -527,7 +520,29 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-        ));
+          SizedBox(
+            width: 50,
+            height: 50,
+            child: IconButton(
+              padding: EdgeInsets.zero, // ไม่ให้มี padding เกิน
+              icon: const Icon(
+                Icons.more_vert, // ไอคอนจุดสามจุดแนวตั้ง
+                size: 24,
+                color: Colors.white, // ขนาดไอคอน (ตามมาตรฐานพอดีใน 30x30)
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileDetail(),
+                  ),
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _buildMenuBox(UserProfile user) {
@@ -538,7 +553,13 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("คะแนน", Icons.star, user.rating != null && user.rating != 0 ? "${user.rating}/5" : "ยังไม่มีคะแนนรีวิว", user.id),
+            _buildBox(
+                "คะแนน",
+                Icons.star,
+                user.rating != null && user.rating != 0
+                    ? "${user.rating}/5"
+                    : "ยังไม่มีคะแนนรีวิว",
+                user.id),
             _buildBox("รายการโปรด", Icons.favorite, "", user.id),
           ],
         ),

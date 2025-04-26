@@ -1130,7 +1130,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         alignment: Alignment.center,
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 45,
           child: GestureDetector(
             onTap: () async {
               if (buttonType == 'สร้างข้อเสนอใหม่') {

@@ -18,8 +18,10 @@ class SentOfferPostsListPage extends StatefulWidget {
 }
 
 class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
-  final SentOfferPostsListController controller = Get.put(SentOfferPostsListController());
-  final OfferDetailController offerDetailController = Get.put(OfferDetailController());
+  final SentOfferPostsListController controller =
+      Get.put(SentOfferPostsListController());
+  final OfferDetailController offerDetailController =
+      Get.put(OfferDetailController());
   final TextEditingController searchController = TextEditingController();
   final RxString searchText = ''.obs;
 
@@ -92,7 +94,8 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                offerDetailController.offerDetail!.value!.coverImage,
+                                offerDetailController
+                                    .offerDetail!.value!.coverImage,
                                 width: 82,
                                 height: 72,
                                 fit: BoxFit.cover,
@@ -104,11 +107,13 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          offerDetailController.offerDetail!.value!.title,
+                                          offerDetailController
+                                              .offerDetail!.value!.title,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
@@ -122,14 +127,22 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 15, vertical: 5),
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              const BorderRadius.all(Radius.circular(30)),
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(30)),
                                           color: Constants.primaryColor,
                                         ),
                                         child: Text(
-                                          offerDetailController.offerDetail!.value!.subCollectionName.length > 10
+                                          offerDetailController
+                                                      .offerDetail!
+                                                      .value!
+                                                      .subCollectionName
+                                                      .length >
+                                                  10
                                               ? '${offerDetailController.offerDetail!.value!.subCollectionName.substring(0, 10)}...'
-                                              : offerDetailController.offerDetail!.value!.subCollectionName,
+                                              : offerDetailController
+                                                  .offerDetail!
+                                                  .value!
+                                                  .subCollectionName,
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
@@ -141,9 +154,12 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                                   ),
                                   const SizedBox(height: 5),
                                   Text(
-                                    offerDetailController.offerDetail!.value!.description.length > 45
+                                    offerDetailController.offerDetail!.value!
+                                                .description.length >
+                                            45
                                         ? '${offerDetailController.offerDetail!.value!.description.substring(0, 35)}...'
-                                        : offerDetailController.offerDetail!.value!.description,
+                                        : offerDetailController
+                                            .offerDetail!.value!.description,
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey[800],
@@ -168,7 +184,8 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                     child: TextField(
                       controller: searchController,
                       onChanged: (value) {
-                        controller.fetchSentOfferPosts(widget.offerId, postTitle: value.trim());
+                        controller.fetchSentOfferPosts(widget.offerId,
+                            postTitle: value.trim());
                       },
                       decoration: InputDecoration(
                         hintText: 'ค้นหา',
@@ -180,7 +197,8 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 20),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.grey.shade300,
@@ -240,13 +258,15 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                             );
 
                             if (result == true) {
-                              await controller.fetchSentOfferPosts(widget.offerId);
+                              await controller
+                                  .fetchSentOfferPosts(widget.offerId);
                             }
                           },
                           child: _buildGridItem(item),
                         );
                       },
-                      staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
+                      staggeredTileBuilder: (index) =>
+                          const StaggeredTile.fit(2),
                     ),
                   );
                 }),
@@ -342,7 +362,8 @@ class _SentOfferPostsListPageState extends State<SentOfferPostsListPage> {
                           color: Constants.secondaryColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         child: Text(
                           item.subCollectionName.length > 10
                               ? '${item.subCollectionName.substring(0, 10)}...'

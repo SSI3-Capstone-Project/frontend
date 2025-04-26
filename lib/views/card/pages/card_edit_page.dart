@@ -189,7 +189,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
               const SizedBox(height: 24),
               Obx(() => SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 45,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isSaveButtonEnabled.value

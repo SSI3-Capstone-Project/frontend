@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 45,
                   child: ElevatedButton(
                     onPressed: _submitForm,
                     style: ElevatedButton.styleFrom(
@@ -99,7 +99,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: Text(
                       'เข้าสู่ระบบ',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
