@@ -41,7 +41,7 @@ class PostsController extends GetxController {
           isLoading(false);
         } else {
           postList.clear(); // Clear the list if no data is present
-          Get.snackbar('แจ้งเตือน', 'สร้างโพสต์ของคุณ เพื่อเริ่มการแลกเปลี่ยน');
+          // Get.snackbar('แจ้งเตือน', 'สร้างโพสต์ของคุณ เพื่อเริ่มการแลกเปลี่ยน');
           isLoading(false);
         }
       } else {

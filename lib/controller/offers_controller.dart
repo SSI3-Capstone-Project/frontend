@@ -41,12 +41,11 @@ class OffersController extends GetxController {
               offerData.map((item) => Offers.fromJson(item)).toList();
         } else {
           offerList.clear(); // Clear the list if no data is present
-          Get.snackbar(
-              'แจ้งเตือน', 'สร้างข้อเสนอของคุณ เพื่อยืนให้กับโพสต์ที่สนใจ');
+          // Get.snackbar(
+          //     'แจ้งเตือน', 'สร้างข้อเสนอของคุณ เพื่อยืนให้กับโพสต์ที่สนใจ');
         }
         isLoading(false);
       } else {
-        print('adsadasdasdasdasdasdasd');
         Get.snackbar(
             'Error', 'Failed to load offers: ${response.reasonPhrase}');
         isLoading(false);

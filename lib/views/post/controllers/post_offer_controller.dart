@@ -36,7 +36,7 @@ class PostOfferController extends GetxController {
           isLoading(false);
         } else {
           offerList.clear(); // Clear the list if no data is present
-          Get.snackbar('แจ้งเตือน', 'ยังไม่พบข้อเสนอถูกที่ถูกยื่นมา');
+          // Get.snackbar('แจ้งเตือน', 'ยังไม่พบข้อเสนอถูกที่ถูกยื่นมา');
           isLoading(false);
         }
       } else {

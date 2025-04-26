@@ -238,9 +238,7 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                         alignment: Alignment.center,
                         child: Column(
                           children: [
-                            SizedBox(
-                              height: 30,
-                            ),
+                            SizedBox(height: 30),
                             Expanded(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -267,221 +265,117 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                                       .symmetric(
                                                       horizontal: 16),
                                                   child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
-                                                      Wrap(
-                                                        alignment: WrapAlignment
-                                                            .start, // จัดชิดซ้ายในแนวนอน
-                                                        runAlignment:
-                                                            WrapAlignment.start,
-                                                        spacing:
-                                                            8, // ระยะห่างระหว่าง children ในแนวนอน
-                                                        runSpacing: 6,
-                                                        children: [
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                offerDetail
-                                                                    .title,
-                                                                style: const TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .normal,
-                                                                    fontSize:
-                                                                        16),
-                                                                softWrap:
-                                                                    true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .visible,
-                                                              ),
-                                                            ],
+                                                      Text(
+                                                        offerDetail.title,
+                                                        style: const TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 12,
+                                                                vertical: 6),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Constants
+                                                              .primaryColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        child: Text(
+                                                          offerDetail
+                                                              .subCollectionName,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Colors.white,
                                                           ),
-                                                          SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Container(
-                                                                padding: const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        15,
-                                                                    vertical:
-                                                                        5),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      const BorderRadius
-                                                                          .all(
-                                                                          Radius.circular(
-                                                                              30)),
-                                                                  color: Constants
-                                                                      .primaryColor,
-                                                                ),
-                                                                child: Text(
-                                                                  offerDetail
-                                                                      .subCollectionName,
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                  softWrap:
-                                                                      true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .visible,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                          softWrap: true,
+                                                          overflow: TextOverflow
+                                                              .visible,
+                                                        ),
                                                       ),
                                                       const SizedBox(
                                                           height: 15),
                                                       Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
                                                         children: [
-                                                          Container(
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    horizontal:
-                                                                        15,
-                                                                    vertical:
-                                                                        6),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color:
-                                                                  Colors.white,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          20),
-                                                              boxShadow: [
-                                                                BoxShadow(
-                                                                  color: Colors
-                                                                      .black
-                                                                      .withOpacity(
-                                                                          0.1),
-                                                                  spreadRadius:
-                                                                      2,
-                                                                  blurRadius: 6,
-                                                                  offset:
-                                                                      Offset(
-                                                                          0, 0),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            child: Row(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: [
-                                                                Icon(
-                                                                  size: 21,
-                                                                  Icons
-                                                                      .location_on,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
-                                                                SizedBox(
-                                                                    width: 4),
-                                                                Text(
-                                                                  offerDetail
-                                                                      .location,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .black87,
-                                                                    fontSize:
-                                                                        12,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
+                                                          Icon(
+                                                            Icons.location_on,
+                                                            color:
+                                                                Colors.black54,
+                                                            size: 20,
                                                           ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                          height: 25),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
+                                                          const SizedBox(
+                                                              width: 6),
                                                           Expanded(
-                                                            // ใช้ Expanded เพื่อให้ข้อความสามารถปรับขนาดตามพื้นที่ที่เหลือ
                                                             child: Text(
                                                               offerDetail
-                                                                  .description,
+                                                                  .location,
                                                               style:
                                                                   const TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
+                                                                fontSize: 13,
+                                                                color: Colors
+                                                                    .black87,
                                                               ),
-                                                              softWrap:
-                                                                  true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                                              overflow: TextOverflow
-                                                                  .visible, // แสดงข้อความทั้งหมด
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                       const SizedBox(
-                                                          height: 25),
-
+                                                          height: 20),
+                                                      Text(
+                                                        offerDetail.description,
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
+                                                        maxLines: 5,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 20),
                                                       if (offerDetail.flaw !=
                                                           null)
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              'ตำหนิ : ${offerDetail.flaw}',
-                                                              style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Constants
-                                                                    .secondaryColor,
-                                                              ),
-                                                              softWrap:
-                                                                  true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .visible,
-                                                            ),
-                                                          ],
+                                                        Text(
+                                                          'ตำหนิ : ${offerDetail.flaw}',
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Constants
+                                                                .secondaryColor,
+                                                          ),
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
                                                       const SizedBox(
-                                                          height: 25),
-                                                      // _buildSubmitButton(
-                                                      //     widget.postId,
-                                                      //     offerDetail.id),
-                                                      // const SizedBox(height: 25),
-                                                      // _buildSubmitButton()
+                                                          height: 30),
                                                     ],
                                                   ),
-                                                )
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -493,8 +387,7 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                           right: 0,
                                           child: InkWell(
                                             onTap: () {
-                                              Navigator.pop(
-                                                  context); // ปิด Dialog
+                                              Navigator.pop(context);
                                             },
                                             child: _buildSubmitButton(
                                                 widget.postId, offerDetail.id),
@@ -514,18 +407,19 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                       ),
                     ),
                   ),
-                  // ปุ่ม X ที่มุมขวาบน
+                  // ปุ่ม X ปิด
                   Positioned(
                     right: 15,
                     top: 15,
                     child: InkWell(
                       onTap: () {
-                        Navigator.pop(context); // ปิด Dialog
+                        Navigator.pop(context);
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Constants.secondaryColor),
+                          shape: BoxShape.circle,
+                          color: Constants.secondaryColor,
+                        ),
                         child: Icon(
                           Icons.close,
                           size: 21,
@@ -547,7 +441,8 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        width: 150,
+        width: double.infinity,
+        height: 50,
         child: ElevatedButton(
           onPressed: () async {
             var result = await sendOfferController.addOffer(
