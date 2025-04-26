@@ -16,26 +16,37 @@ class ExchangeListController extends GetxController {
     fetchExchangeList();
   }
 
-  Future<void> fetchExchangeList({String status = ""}) async {
+  Future<void> fetchExchangeList({String status = "", String? username}) async {
     try {
       isLoading(true);
       if (tokenController.accessToken.value == null) {
         return;
       }
-      
+
       final token = tokenController.accessToken.value;
       String url = '${dotenv.env['API_URL']}/exchanges';
+
+      // เก็บ query parameters ใน list แล้วค่อยเอาไปรวม
+      List<String> queryParams = [];
+
       if (status.isNotEmpty) {
-        url += '?status=$status';
+        queryParams.add('status=$status');
       }
-      
+      if (username != null && username.isNotEmpty) {
+        queryParams.add('username=$username');
+      }
+
+      if (queryParams.isNotEmpty) {
+        url += '?${queryParams.join('&')}';
+      }
+
       final response = await http.get(
         Uri.parse(url),
         headers: {
           'Authorization': 'Bearer $token',
         },
       );
-      
+
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         var exchangeListData = jsonData['data'];

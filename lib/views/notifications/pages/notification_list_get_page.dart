@@ -6,7 +6,7 @@ import 'package:mbea_ssi3_front/views/chat/pages/chat_room_page.dart';
 import 'package:mbea_ssi3_front/views/exchange/controllers/exchange_controller.dart';
 import 'package:mbea_ssi3_front/views/exchange/pages/meet_up_page.dart';
 import 'package:mbea_ssi3_front/views/exchangeList/pages/exchange_detail.dart';
-import '../../chat/pages/chat_page.dart';
+import 'package:mbea_ssi3_front/views/notifications/controllers/notification_update_controller.dart';
 import '../../post/pages/post_detail.dart';
 import '../../profile/controllers/get_profile_controller.dart';
 import '../controllers/notification_list_get_controller.dart';
@@ -26,6 +26,7 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
   final UserProfileController userProfileController =
       Get.put(UserProfileController());
   final ExchangeController exchangeController = Get.put(ExchangeController());
+  final NotificationUpdateController notificationUpdateController = Get.put(NotificationUpdateController());
   late TabController _tabController;
 
   final List<Map<String, String>> notificationTypes = [
@@ -47,6 +48,8 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
   void _onTabChanged() {
     if (_tabController.indexIsChanging) return;
     _fetchNotificationsForTab(_tabController.index);
+    // Update the current tab index in the controller
+    notificationUpdateController.currentTabIndex.value = _tabController.index;
   }
 
   void _fetchNotificationsForTab(int index) {
@@ -151,10 +154,10 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
 
           // Check if the notification is of type 'offer' and has a related post ID
           if (notification.relatedType == 'offer' &&
-              notification.relatedPostId != null &&
               notification.relatedPostId != "") {
             return GestureDetector(
               onTap: () {
+                notificationUpdateController.markNotificationAsRead(notification.id, "offer");
                 Get.snackbar('postId', notification.relatedPostId);
                 Navigator.push(
                   context,
@@ -174,10 +177,10 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
 
           // Check if the notification is of type 'chat'
           if (notification.relatedType == 'chat' &&
-              notification.relatedEntityId != null &&
               notification.relatedEntityId != "") {
             return GestureDetector(
               onTap: () {
+                notificationUpdateController.markNotificationAsRead(notification.id, "chat");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -192,7 +195,6 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
           }
 
           if (notification.relatedType == 'meeting_point' &&
-              notification.relatedEntityId != null &&
               notification.relatedEntityId != "") {
             return GestureDetector(
               onTap: () async {
@@ -200,6 +202,7 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
                     .fetchExchangeDetails(notification.relatedEntityId);
                 switch (exchangeController.exchange.value!.exchangeStage) {
                   case 2:
+                    notificationUpdateController.markNotificationAsRead(notification.id, "meeting_point");
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -304,53 +307,64 @@ class _NotificationListGetPageState extends State<NotificationListGetPage>
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 6,
-            offset: const Offset(0, 4),
+      child: Stack(
+        children: [
+          // ตัวการ์ดการแจ้งเตือน
+          Card(
+            color: Colors.white,
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          notification.message,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            formattedDate,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
-      child: Card(
-        color: Colors.transparent,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        clipBehavior: Clip.hardEdge,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      notification.message,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                    const SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        formattedDate,
-                        style:
-                            const TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ),
-                  ],
+
+          // จุดกลมเล็กๆ สำหรับแสดงว่า unread
+          if (!notification.isRead)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
                 ),
               ),
-            ],
-          ),
-        ),
+            ),
+        ],
       ),
     );
   }

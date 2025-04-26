@@ -190,8 +190,6 @@ class _ProfileDetailState extends State<ProfileDetail> {
       "ที่อยู่ของคุณ",
       "วิธีการชำระเงิน",
       "บัญชีรับเงิน",
-      "ประวัติการแลก",
-      "รายงานปัญหา",
       "เปลี่ยนรหัสผ่าน",
       "ลบบัญชี",
       "ออกจากระบบ"
@@ -224,10 +222,6 @@ class _ProfileDetailState extends State<ProfileDetail> {
                   context,
                   MaterialPageRoute(builder: (context) => RecipientGetPage()),
                 );
-                break;
-              case "ประวัติการแลก":
-                break;
-              case "รายงานปัญหา":
                 break;
               case "เปลี่ยนรหัสผ่าน":
                 Navigator.push(

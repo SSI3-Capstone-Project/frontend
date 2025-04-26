@@ -206,28 +206,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     value: ['male', 'female', 'other', 'non-identify']
-                            .contains(genderController.value)
+                        .contains(genderController.value)
                         ? genderController.value
                         : 'non-identify',
                     decoration: InputDecoration(
                       labelText: 'เพศ',
+                      filled: true, // ใช้ filled เพื่อกำหนดพื้นหลัง
+                      fillColor: Colors.white, // กำหนดสีพื้นหลัง
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                     ),
+                    dropdownColor: Colors.white,
                     items: ['male', 'female', 'other', 'non-identify']
                         .map((gender) => DropdownMenuItem(
-                              value: gender,
-                              child: Text(
-                                gender == 'male'
-                                    ? 'ชาย'
-                                    : gender == 'female'
-                                        ? 'หญิง'
-                                        : gender == 'other'
-                                            ? 'อื่น ๆ'
-                                            : 'ไม่ระบุ',
-                              ),
-                            ))
+                      value: gender,
+                      child: Text(
+                        gender == 'male'
+                            ? 'ชาย'
+                            : gender == 'female'
+                            ? 'หญิง'
+                            : gender == 'other'
+                            ? 'อื่น ๆ'
+                            : 'ไม่ระบุ',
+                      ),
+                    ))
                         .toList(),
                     onChanged: (value) {
                       setState(() {
@@ -238,65 +241,70 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const SizedBox(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Constants.secondaryColor,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
+                      Expanded(
+                        child: SizedBox(
+                          height: 45,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                Navigator.of(context).pop(); // ย้อนกลับไปหน้าเดิม
+                              });
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.black87,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              "ยกเลิก",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
                         ),
-                        child: const Text('ยกเลิก',
-                            style: TextStyle(color: Colors.white)),
                       ),
-                      const SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: isEdited
-                            ? () async {
-                                if (_formKey.currentState!.validate()) {
-                                  // สร้างข้อมูลโปรไฟล์ที่อัปเดต
-                                  final profileData = UpdateProfileRequest(
-                                    username: usernameController.text,
-                                    firstname: firstnameController.text,
-                                    lastname: lastnameController.text,
-                                    email: emailController.text,
-                                    phone: phoneController.text,
-                                    gender: genderController.value,
-                                    imageUrl: profileImageFile
-                                        ?.path, // ส่ง path ของไฟล์หรือ null
-                                  );
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: SizedBox(
+                          height: 45,
+                          child: ElevatedButton(
+                            onPressed: isEdited
+                                ? () async {
+                              if (_formKey.currentState!.validate()) {
+                                final profileData = UpdateProfileRequest(
+                                  username: usernameController.text,
+                                  firstname: firstnameController.text,
+                                  lastname: lastnameController.text,
+                                  email: emailController.text,
+                                  phone: phoneController.text,
+                                  gender: genderController.value,
+                                  imageUrl: profileImageFile?.path,
+                                );
 
-                                  // เรียกใช้งานฟังก์ชัน updateProfile ใน Controller
-                                  await updateProfileController
-                                      .updateProfile(profileData);
-
-                                  // หลังจากอัปเดตสำเร็จกลับไปที่หน้าก่อนหน้า
-                                  Navigator.pop(
-                                      context); // เพิ่มการเรียก pop เพื่อกลับไปหน้าเดิม
-
-                                  // สามารถใช้ Snackbar หรือ Dialog เพื่อแจ้งผลการอัปเดต
-                                  // Get.snackbar('สำเร็จ',
-                                  //     'โปรไฟล์ของคุณได้รับการอัปเดตแล้ว',
-                                  //     snackPosition: SnackPosition.BOTTOM);
-                                } else if (_isUsernameValid) {
-                                  setState(() {
-                                    _usernameError = 'ชื่อนี้ถูกใช้งานแล้ว';
-                                    _isUsernameValid = false;
-                                  });
-                                }
+                                await updateProfileController.updateProfile(profileData);
+                                Navigator.pop(context);
+                              } else if (_isUsernameValid) {
+                                setState(() {
+                                  _usernameError = 'ชื่อนี้ถูกใช้งานแล้ว';
+                                  _isUsernameValid = false;
+                                });
                               }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
+                            }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
                               isEdited ? Constants.primaryColor : Colors.grey,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              "แก้ไข",
+                              style: TextStyle(color: Colors.white, fontSize: 16),
+                            ),
+                          ),
                         ),
-                        child: const Text('แก้ไข',
-                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -323,7 +331,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(
             color: _isFieldModified[field] == true ? Colors.green : Colors.grey,
           ),

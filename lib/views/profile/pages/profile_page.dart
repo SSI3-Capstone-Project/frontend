@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/common/constants.dart';
-import 'package:mbea_ssi3_front/controller/offer_detail_controller.dart';
 import 'package:mbea_ssi3_front/controller/posts_controller.dart';
 import 'package:mbea_ssi3_front/controller/offers_controller.dart';
 import 'package:mbea_ssi3_front/views/favoritePosts/pages/favorite_posts.dart';
@@ -71,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (postController.isLoading.value) {
                         return Center(child: CircularProgressIndicator());
                       }
-                      if (!postController.postList.isEmpty) {
+                      if (postController.postList.isNotEmpty) {
                         return _buildStaggeredGrid(
                           postController.postList,
                           (post) => PostDetailPage(
@@ -90,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (offerController.isLoading.value) {
                         return Center(child: CircularProgressIndicator());
                       }
-                      if (!offerController.offerList.isEmpty) {
+                      if (offerController.offerList.isNotEmpty) {
                         return _buildOfferList(
                           offerController.offerList,
                           (offer) => OfferDetailPage(offerId: offer.id),
@@ -189,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _offerCard(Offers item) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -399,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildTabContainer() {
     return Container(
       // margin: EdgeInsets.symmetric(horizontal: 20.0),
-      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
@@ -433,19 +432,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildTabItem(String label, bool isSelected, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: isSelected ? Constants.secondaryColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          decoration: BoxDecoration(
+            color: isSelected ? Constants.secondaryColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
         ),
       ),
@@ -523,28 +525,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
-              Spacer(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    "42", // ตัวเลขที่ต้องการ
-                    style: TextStyle(
-                      color: Colors.white, // สีของตัวเลข
-                      fontSize: 17, // ขนาดตัวอักษร
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Text(
-                    "trades", // ตัวเลขที่ต้องการ
-                    style: TextStyle(
-                        color: Colors.white, // สีของตัวเลข
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500 // ขนาดตัวอักษร
-                        ),
-                  )
-                ],
-              )
             ],
           ),
         ));
@@ -558,24 +538,8 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBox("จุดที่นัดพบได้", Icons.location_on, "ปากเกร็ด, นนทบุรี",
-                user.id),
+            _buildBox("คะแนน", Icons.star, user.rating != null && user.rating != 0 ? "${user.rating}/5" : "ยังไม่มีคะแนนรีวิว", user.id),
             _buildBox("รายการโปรด", Icons.favorite, "", user.id),
-          ],
-        ),
-        SizedBox(height: 10), // เว้นระยะห่างระหว่างแถว
-        // แถวที่สอง
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildBox(
-                "คะแนน",
-                Icons.star,
-                user.rating != null && user.rating != 0
-                    ? "${user.rating}/5"
-                    : "ยังไม่มีคะแนนรีวิว",
-                user.id),
-            _buildBox("โพสต์ที่ยื่นข้อเสนอ", Icons.post_add, "", user.id),
           ],
         ),
       ],
@@ -595,7 +559,7 @@ class _ProfilePageState extends State<ProfilePage> {
           }
         },
         child: Container(
-          width: 170,
+          width: 180,
           height: 70,
           decoration: BoxDecoration(
             color: Colors.white,

@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../../../common/constants.dart';
 import '../controllers/card_delete_controller.dart';
@@ -136,7 +134,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                 children: [
                   Expanded(
                     child: SizedBox(
-                      height: 40,
+                      height: 45,
                       child: TextButton(
                         onPressed: () {
                           showDeleteConfirmationDialog(context, card.cardId);
@@ -160,7 +158,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: SizedBox(
-                      height: 40,
+                      height: 45,
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../common/constants.dart';
 import '../controllers/card_details_get_controller.dart';
 import '../controllers/card_edit_controller.dart';
-import '../controllers/card_list_get_controller.dart';
 
 class EditCardDetailsPage extends StatefulWidget {
   final String cardId;

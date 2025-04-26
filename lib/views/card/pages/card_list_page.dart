@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../../../common/constants.dart';
 import '../controllers/card_list_get_controller.dart';
@@ -64,7 +62,7 @@ class _CardListPageState extends State<CardListPage> {
               padding: const EdgeInsets.all(15.0),
               child: SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 45,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Constants.primaryColor,
