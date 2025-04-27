@@ -135,7 +135,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: TextFormField(
                       controller: usernameController,
                       decoration: InputDecoration(
-                        labelText: 'ชื่อผู้ใช้งาน',
+                        labelText: 'ชื่อผู้ใช้งาน *',
                         labelStyle: TextStyle(
                           fontSize: 14,
                           color: Colors.grey, // สีเทาเข้มขึ้นเล็กน้อย
@@ -158,12 +158,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       style: TextStyle(color: Colors.grey.shade600), // สีข้อความเทาเข้มขึ้น
                       maxLength: 30,
+                      onChanged: _onFieldChanged,
                     ),
                   ),
                   const SizedBox(height: 10),
                   _buildTextFormField(
                     controller: firstnameController,
-                    label: 'ชื่อจริง',
+                    label: 'ชื่อจริง *',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกชื่อจริง';
@@ -177,7 +178,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const SizedBox(height: 10),
                   _buildTextFormField(
                     controller: lastnameController,
-                    label: 'นามสกุล',
+                    label: 'นามสกุล *',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกนามสกุล';
@@ -194,7 +195,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(
-                        labelText: 'อีเมล',
+                        labelText: 'อีเมล *',
                         labelStyle: TextStyle(
                           fontSize: 14,
                           color: Colors.grey, // สีเทาเข้มขึ้น
@@ -222,7 +223,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const SizedBox(height: 10),
                   _buildTextFormField(
                     controller: phoneController,
-                    label: 'เบอร์โทร',
+                    label: 'เบอร์โทร *',
                     validator: (value) {
                       if (value == null || !GetUtils.isPhoneNumber(value)) {
                         return 'กรุณากรอกเบอร์โทรที่ถูกต้อง';
@@ -243,7 +244,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ? genderController.value
                             : 'non-identify',
                         decoration: InputDecoration(
-                          labelText: 'เพศ',
+                          labelText: 'เพศ *',
                           labelStyle: const TextStyle(
                             fontSize: 14,
                           ),
