@@ -70,38 +70,43 @@ class _ExchangeListState extends State<ExchangeList>
         appBar: AppBar(
           title: const Text(
             "รายการแลกเปลี่ยน",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
           ),
           backgroundColor: Colors.white,
           centerTitle: true,
           elevation: 0,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                labelColor: Constants.secondaryColor,
-                unselectedLabelColor: Colors.grey,
-                indicator: UnderlineTabIndicator(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                  BorderSide(width: 3, color: Constants.secondaryColor),
-                  insets: const EdgeInsets.symmetric(horizontal: 5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    labelColor: Constants.secondaryColor,
+                    unselectedLabelColor: Colors.grey,
+                    indicator: UnderlineTabIndicator(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 3, color: Constants.secondaryColor),
+                      insets: EdgeInsets.zero, // <-- ตรงนี้
+                    ),
+                    dividerColor: Colors.transparent,
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    tabAlignment: TabAlignment.start,
+                    tabs: const [
+                      Tab(text: "รายการทั้งหมด"),
+                      Tab(text: "แลกเปลี่ยนอยู่"),
+                      Tab(text: "ระหว่างชำระเงิน"),
+                      Tab(text: "ยืนยันนัดหมายแล้ว"),
+                      Tab(text: "แลกเปลี่ยนสำเร็จ"),
+                      Tab(text: "ยกเลิกแลกเปลี่ยน"),
+                    ],
+                  ),
                 ),
-                dividerColor: Colors.transparent,
-                overlayColor: WidgetStateProperty.all(Colors.transparent),
-                tabAlignment: TabAlignment.start,
-                tabs: const [
-                  Tab(text: "รายการทั้งหมด"),
-                  Tab(text: "แลกเปลี่ยนอยู่"),
-                  Tab(text: "ระหว่างชำระเงิน"),
-                  Tab(text: "ยืนยันนัดหมายแล้ว"),
-                  Tab(text: "แลกเปลี่ยนสำเร็จ"),
-                  Tab(text: "ยกเลิกแลกเปลี่ยน"),
-                ],
-              ),
+                const SizedBox(height: 8), // <-- เพิ่มระยะห่างระหว่าง tab กับ search box
+              ],
             ),
           ),
         ),

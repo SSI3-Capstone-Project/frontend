@@ -193,7 +193,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
       appBar: AppBar(
         title: const Text(
           "เพิ่มวิธีการชำระเงิน",
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         backgroundColor: Colors.white,
         centerTitle: true,

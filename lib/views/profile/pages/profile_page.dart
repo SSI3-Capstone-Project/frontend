@@ -526,7 +526,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: IconButton(
               padding: EdgeInsets.zero, // ไม่ให้มี padding เกิน
               icon: const Icon(
-                Icons.more_vert, // ไอคอนจุดสามจุดแนวตั้ง
+                Icons.arrow_forward_ios, // ไอคอนจุดสามจุดแนวตั้ง
                 size: 24,
                 color: Colors.white, // ขนาดไอคอน (ตามมาตรฐานพอดีใน 30x30)
               ),
@@ -580,8 +580,8 @@ class _ProfilePageState extends State<ProfilePage> {
           }
         },
         child: Container(
-          width: 180,
-          height: 70,
+          width: 190,
+          height: 80,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
