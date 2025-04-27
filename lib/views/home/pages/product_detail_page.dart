@@ -197,38 +197,41 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   ),
                               ],
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                _sendOfferDialog();
-                              },
-                              child: IntrinsicWidth(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8, // ระยะห่างบน-ล่าง
-                                    horizontal: 20, // ระยะห่างซ้าย-ขวา
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Constants.secondaryColor,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4),
+                            if (userProfileController
+                                    .userProfile.value!.username !=
+                                productDetail.username)
+                              GestureDetector(
+                                onTap: () {
+                                  _sendOfferDialog();
+                                },
+                                child: IntrinsicWidth(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8, // ระยะห่างบน-ล่าง
+                                      horizontal: 20, // ระยะห่างซ้าย-ขวา
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Constants.secondaryColor,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Text(
+                                      'ยื่นข้อเสนอ',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    ],
-                                  ),
-                                  child: const Text(
-                                    'ยื่นข้อเสนอ',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
                           ],
                         ),
                       ),

@@ -366,8 +366,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             child: Text(
                               'ยืนยัน',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                           SizedBox(height: 16),
@@ -417,11 +419,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             SizedBox(height: 20),
                             // Title
                             Text(
-                              "ยืนยันอีเมลผ่านรหัส OTP",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+                              "กรุณากรอกอีเมลเพื่อสมัครและยืนยันตัวตน",
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.normal),
                             ),
-                            SizedBox(height: 8),
+                            SizedBox(height: 15),
                             // Subtitle
                             Text(
                               "ระบบจะส่งรหัสผ่านแบบใช้ครั้งเดียว (OTP) ไปยังที่อยู่อีเมลนี้",
@@ -436,8 +438,12 @@ class _RegisterPageState extends State<RegisterPage> {
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 hintText: "mail@gmail.com",
+                                hintStyle: TextStyle(
+                                  color: Colors.grey, // สีจางเองได้
+                                  fontSize: 14, // หรือปรับขนาดด้วย
+                                ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 prefixIcon: Icon(Icons.email),
                               ),
@@ -480,7 +486,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               child: Text(
                                 "ยืนยัน",
                                 style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           ],
@@ -495,11 +503,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                 // Title
                                 Text(
                                   "กรอกรหัสยืนยัน OTP ของท่าน",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal),
                                 ),
-                                SizedBox(height: 8),
+                                SizedBox(height: 15),
                                 // Description
                                 Text(
                                   "ระบบจะส่งรหัสผ่านแบบใช้ครั้งเดียวไปยังอีเมล ${_emailController.text} ของท่าน",
@@ -622,7 +630,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                   child: Text(
                                     "Verify OTP",
                                     style: TextStyle(
-                                        fontSize: 16, color: Colors.white),
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],
