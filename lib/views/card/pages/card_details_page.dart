@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../../../common/constants.dart';
@@ -34,7 +35,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       appBar: AppBar(
         title: const Text(
           "รายละเอียดบัตร",
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -79,12 +80,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      card.brand,
-                      style: const TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
+                    _buildBrandIcon(card.brand),
                     const SizedBox(height: 8),
                     Text(
                       card.cardHolderName,
@@ -240,4 +236,18 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       },
     );
   }
+
+  Widget _buildBrandIcon(String brand) {
+    switch (brand.toLowerCase()) {
+      case 'visa':
+        return SvgPicture.asset('assets/icons/visa.svg', width: 50, height: 50);
+      case 'mastercard':
+        return SvgPicture.asset('assets/icons/mastercard.svg', width: 50, height: 50);
+      case 'amex':
+        return SvgPicture.asset('assets/icons/amex.svg', width: 50, height: 50);
+      default:
+        return const Icon(Icons.credit_card, size: 40, color: Colors.grey);
+    }
+  }
+
 }
