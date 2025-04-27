@@ -580,8 +580,8 @@ class _ProfilePageState extends State<ProfilePage> {
           }
         },
         child: Container(
-          width: 180,
-          height: 70,
+          width: 190,
+          height: 80,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
