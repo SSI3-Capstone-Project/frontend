@@ -131,20 +131,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const SizedBox(height: 20),
                   IgnorePointer(
-                    ignoring: true, // ทำให้ฟิลด์ไม่สามารถแก้ไขได้
-                    child: _buildTextFormField(
+                    ignoring: true,
+                    child: TextFormField(
                       controller: usernameController,
-                      label: 'ชื่อผู้ใช้งาน',
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'กรุณากรอกชื่อผู้ใช้งาน';
-                        }
-                        return null;
-                      },
+                      decoration: InputDecoration(
+                        labelText: 'ชื่อผู้ใช้งาน',
+                        labelStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey, // สีเทาเข้มขึ้นเล็กน้อย
+                        ),
+                        contentPadding: EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
+                        filled: true,
+                        fillColor: Colors.grey.shade200, // สีพื้นหลังเทาเข้มขึ้น
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400, // สีขอบเทาเข้มขึ้น
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.grey.shade600), // สีข้อความเทาเข้มขึ้น
                       maxLength: 30,
-                      field: 'username',
-                      onChanged: _onFieldChanged,
-                      errorText: _usernameError,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -178,18 +191,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const SizedBox(height: 10),
                   IgnorePointer(
                     ignoring: true,
-                    child: _buildTextFormField(
+                    child: TextFormField(
                       controller: emailController,
-                      label: 'อีเมล',
-                      validator: (value) {
-                        if (value == null || !GetUtils.isEmail(value)) {
-                          return 'กรุณากรอกอีเมลที่ถูกต้อง';
-                        }
-                        return null;
-                      },
+                      decoration: InputDecoration(
+                        labelText: 'อีเมล',
+                        labelStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey, // สีเทาเข้มขึ้น
+                        ),
+                        contentPadding: EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
+                        filled: true,
+                        fillColor: Colors.grey.shade200, // สีพื้นหลังเทาเข้มขึ้น
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400, // สีขอบเทาเข้มขึ้น
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.grey.shade600), // สีข้อความเทาเข้มขึ้น
                       maxLength: 255,
-                      field: 'email',
-                      onChanged: _onFieldChanged,
                     ),
                   ),
                   const SizedBox(height: 10),
