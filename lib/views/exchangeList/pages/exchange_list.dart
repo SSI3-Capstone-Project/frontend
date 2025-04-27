@@ -88,6 +88,7 @@ class _ExchangeListState extends State<ExchangeList>
                     labelColor: Constants.secondaryColor,
                     unselectedLabelColor: Colors.grey,
                     indicator: UnderlineTabIndicator(
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(width: 3, color: Constants.secondaryColor),
                       insets: EdgeInsets.zero, // <-- ตรงนี้
                     ),
