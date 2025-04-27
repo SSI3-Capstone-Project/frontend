@@ -64,7 +64,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         title: const Text(
           "แก้ไขโปรไฟล์",
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -207,45 +207,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     onChanged: _onFieldChanged,
                   ),
                   const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: ['male', 'female', 'other', 'non-identify']
+                  DropdownButtonHideUnderline(
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButtonFormField<String>(
+                        value: ['male', 'female', 'other', 'non-identify']
                             .contains(genderController.value)
-                        ? genderController.value
-                        : 'non-identify',
-                    decoration: InputDecoration(
-                      labelText: 'เพศ',
-                      labelStyle: const TextStyle(
-                        fontSize: 14,
-                      ),
-                      contentPadding: EdgeInsets.only(
-                          left: 30, right: 12, top: 14, bottom: 14),
-                      filled: true, // ใช้ filled เพื่อกำหนดพื้นหลัง
-                      fillColor: Colors.white, // กำหนดสีพื้นหลัง
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
+                            ? genderController.value
+                            : 'non-identify',
+                        decoration: InputDecoration(
+                          labelText: 'เพศ',
+                          labelStyle: const TextStyle(
+                            fontSize: 14,
+                          ),
+                          contentPadding: EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        dropdownColor: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        menuMaxHeight: 200,
+                        items: ['male', 'female', 'other', 'non-identify']
+                            .map((gender) => DropdownMenuItem(
+                          value: gender,
+                          child: Text(
+                            gender == 'male'
+                                ? 'ชาย'
+                                : gender == 'female'
+                                ? 'หญิง'
+                                : gender == 'other'
+                                ? 'อื่น ๆ'
+                                : 'ไม่ระบุ',
+                          ),
+                        ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            genderController.value = value!;
+                            _onFieldChanged(genderController.value);
+                          });
+                        },
                       ),
                     ),
-                    dropdownColor: Colors.white,
-                    items: ['male', 'female', 'other', 'non-identify']
-                        .map((gender) => DropdownMenuItem(
-                              value: gender,
-                              child: Text(
-                                gender == 'male'
-                                    ? 'ชาย'
-                                    : gender == 'female'
-                                        ? 'หญิง'
-                                        : gender == 'other'
-                                            ? 'อื่น ๆ'
-                                            : 'ไม่ระบุ',
-                              ),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        genderController.value = value!;
-                        _onFieldChanged(genderController.value);
-                      });
-                    },
                   ),
                   const SizedBox(height: 20),
                   Row(
