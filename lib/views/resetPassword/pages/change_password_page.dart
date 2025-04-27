@@ -48,19 +48,19 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 SizedBox(height: 30),
                 _buildTextField(
                   controller: _passwordController,
-                  label: 'รหัสผ่าน',
+                  label: 'รหัสผ่าน *',
                   isPassword: true,
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
                   controller: _newPasswordController,
-                  label: 'รหัสผ่านใหม่',
+                  label: 'รหัสผ่านใหม่ *',
                   isPassword: true,
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
                   controller: _confirmNewPasswordController,
-                  label: 'ยืนยันรหัสผ่านใหม่',
+                  label: 'ยืนยันรหัสผ่านใหม่ *',
                   isPassword: true,
                   isConfirmPassword: true,
                 ),
@@ -148,7 +148,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   void _submitForm() async {
     if (_passwordController.value == _newPasswordController.value &&
         _newPasswordController.value == _confirmNewPasswordController.value) {
-      Get.snackbar('แจ้งเตือน', 'รหัสผ่านใหม่ต้องไม่ตรงกับรหัสผ่านเดิม');
+      Get.snackbar(
+        'แจ้งเตือน',
+        'รหัสผ่านใหม่ต้องไม่ตรงกับรหัสผ่านเดิม',
+        backgroundColor: Colors.grey.shade200,
+      );
       return;
     }
     if (_formKey.currentState!.validate()) {

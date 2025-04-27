@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -35,13 +36,19 @@ class PostOfferDetailController extends GetxController {
         return true;
       } else {
         Get.snackbar(
-            'Error', 'Failed to load offer detail: ${response.reasonPhrase}');
+          'Error',
+          'Failed to load offer detail: ${response.reasonPhrase}',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error',
-          'An error occurred: ${e.toString()} in PostOfferDetailController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in PostOfferDetailController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
       return false;
     }
@@ -66,24 +73,37 @@ class PostOfferDetailController extends GetxController {
         // Ensure decoding with UTF-8
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData.toString());
-        Get.snackbar('สำเร็จ', 'ลบข้อเสนอดังกล่าวออกจากโพสต์แล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'ลบข้อเสนอดังกล่าวออกจากโพสต์แล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
       } else if (response.statusCode == 403) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData.toString());
         Get.snackbar(
-            'แจ้งเตือน', 'คุณไม่มีสิทธิในการลบข้อเสนอดังกล่าวออกจากโพสต์');
+          'แจ้งเตือน',
+          'คุณไม่มีสิทธิในการลบข้อเสนอดังกล่าวออกจากโพสต์',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
       } else {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData.toString());
         Get.snackbar(
-            'แจ้งเตือน', 'เกิดข้อผิดพลาดในการลบข้อเสนอดังกล่าวออกจากโพสต์');
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดในการลบข้อเสนอดังกล่าวออกจากโพสต์',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
       }
     } catch (e) {
-      Get.snackbar('Error',
-          'An error occurred: ${e.toString()} in PostOfferDetailController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in PostOfferDetailController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
     } finally {
       isLoading(false);

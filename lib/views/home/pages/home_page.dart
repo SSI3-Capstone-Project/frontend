@@ -344,7 +344,7 @@ class _HomePageState extends State<HomePage> {
             borderSide: BorderSide(
               color: Colors.grey.shade300,
             ),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(10),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -375,7 +375,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: const Text(
                   "ตัวกรองการค้นหา",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.normal),
                   textAlign: TextAlign.center,
                 ),
                 content: Obx(() {
@@ -390,6 +391,8 @@ class _HomePageState extends State<HomePage> {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          const SizedBox(height: 10),
+
                           /// 🔵 Brand Dropdown
                           DropdownButtonHideUnderline(
                             child: DropdownButtonFormField2<Brand>(
@@ -604,11 +607,11 @@ class _HomePageState extends State<HomePage> {
                 }),
                 actions: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
                         style: TextButton.styleFrom(
-                          backgroundColor: Constants.secondaryColor,
+                          backgroundColor: Colors.white,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -641,15 +644,17 @@ class _HomePageState extends State<HomePage> {
                             await productController.fetchProducts();
                           }
                         },
-                        child: const Text(
+                        child: Text(
                           "ล้าง",
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade800),
                         ),
                       ),
                       TextButton(
                         style: TextButton.styleFrom(
-                          backgroundColor: Constants.primaryColor,
+                          backgroundColor: Colors.white,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -682,10 +687,12 @@ class _HomePageState extends State<HomePage> {
                             await productController.fetchProducts();
                           }
                         },
-                        child: const Text(
+                        child: Text(
                           "ยืนยัน",
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w600),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade800),
                         ),
                       )
                     ],

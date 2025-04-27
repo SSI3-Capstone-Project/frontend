@@ -394,11 +394,19 @@ class _ExchangeDetailState extends State<ExchangeDetail> {
                                         onPressed: () async {
                                           if (ratingController.selectedRating ==
                                               0) {
-                                            Get.snackbar('แจ้งเตือน',
-                                                'กรุณากดให้คะแนนผู้ใช้ท่านนี้ก่อนส่งความคิดเห็น');
+                                            Get.snackbar(
+                                              'แจ้งเตือน',
+                                              'กรุณากดให้คะแนนผู้ใช้ท่านนี้ก่อนส่งความคิดเห็น',
+                                              backgroundColor:
+                                                  Colors.grey.shade200,
+                                            );
                                           } else if (mediaList.length == 0) {
-                                            Get.snackbar('แจ้งเตือน',
-                                                'กรุณาแนบอย่างน้องหนึ่งรูปหรือหนึ่งคลิปวีดีโอ');
+                                            Get.snackbar(
+                                              'แจ้งเตือน',
+                                              'กรุณาแนบอย่างน้องหนึ่งรูปหรือหนึ่งคลิปวีดีโอ',
+                                              backgroundColor:
+                                                  Colors.grey.shade200,
+                                            );
                                           } else {
                                             await exchangeController
                                                 .sendUserReview(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -34,13 +35,20 @@ class OfferDetailController extends GetxController {
         return true;
       } else {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-        Get.snackbar('Error', 'Failed to load offer detail: ${jsonData}');
+        Get.snackbar(
+          'Error',
+          'Failed to load offer detail: ${jsonData}',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error',
-          'An error occurred: ${e.toString()} in OfferDetailController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in OfferDetailController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
       return false;
     }

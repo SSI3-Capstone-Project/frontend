@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -69,7 +70,11 @@ class ProductController extends GetxController {
           productList.clear();
         }
       } else {
-        Get.snackbar('Error', 'Failed to load products');
+        Get.snackbar(
+          'Error',
+          'Failed to load products',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } finally {
       isLoading(false);

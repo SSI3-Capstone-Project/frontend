@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -35,7 +36,11 @@ class CreateChatRoomController extends GetxController {
             '----------------------------------create here----------------------------------------------------');
         print(jsonData.toString());
         // Get.snackbar('สำเร็จ', jsonData.toString());
-        Get.snackbar('สำเร็จ', 'ห้องสนทนาถูกสร้างขึ้นแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'ห้องสนทนาถูกสร้างขึ้นแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return result['id'];
       } else if (response.statusCode == 409) {
@@ -51,13 +56,20 @@ class CreateChatRoomController extends GetxController {
       } else {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData.toString());
-        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการสร้างห้องสนทนา');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดในการสร้างห้องสนทนา',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return null;
       }
     } catch (e) {
-      Get.snackbar('Error',
-          'An error occurred: ${e.toString()} in CreateChatRoomController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in CreateChatRoomController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
       return null;
     }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
@@ -176,8 +177,15 @@ class ChatController extends GetxController {
         return true;
       } else {
         Get.snackbar(
-            'แจ้งเตือน', 'เกิดข้อผิดพลาดในการเก็บข้อมูลของข้อความที่ส่งไป');
-        Get.snackbar('แจ้งเตือน', response.body);
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดในการเก็บข้อมูลของข้อความที่ส่งไป',
+          backgroundColor: Colors.grey.shade200,
+        );
+        Get.snackbar(
+          'แจ้งเตือน',
+          response.body,
+          backgroundColor: Colors.grey.shade200,
+        );
         print("Error: ${response.body}");
         return false;
       }
@@ -215,7 +223,11 @@ class ChatController extends GetxController {
 
       if (mimeType == null || !allowedMimeTypes.containsKey(mimeType)) {
         print("ประเภทไฟล์ไม่รองรับ: $mimeType");
-        Get.snackbar('แจ้งเตือน', 'ประเภทไฟล์ไม่รองรับ');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'ประเภทไฟล์ไม่รองรับ',
+          backgroundColor: Colors.grey.shade200,
+        );
         return false;
       }
 
@@ -249,8 +261,15 @@ class ChatController extends GetxController {
         return true;
       } else {
         Get.snackbar(
-            'แจ้งเตือน', 'เกิดข้อผิดพลาดในการเก็บข้อมูลของรูปที่ส่งไป');
-        Get.snackbar('แจ้งเตือน', response.body);
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดในการเก็บข้อมูลของรูปที่ส่งไป',
+          backgroundColor: Colors.grey.shade200,
+        );
+        Get.snackbar(
+          'แจ้งเตือน',
+          response.body,
+          backgroundColor: Colors.grey.shade200,
+        );
         print("เกิดข้อผิดพลาด: ${response.body}");
         return false;
       }
@@ -285,7 +304,10 @@ class ChatController extends GetxController {
       if (mimeType == null || !allowedVideoTypes.containsKey(mimeType)) {
         print("ประเภทไฟล์วิดีโอไม่รองรับ: $mimeType");
         Get.snackbar(
-            'แจ้งเตือน', 'รองรับเฉพาะไฟล์ .mp4 / .mov / .avi เท่านั้น');
+          'แจ้งเตือน',
+          'รองรับเฉพาะไฟล์ .mp4 / .mov / .avi เท่านั้น',
+          backgroundColor: Colors.grey.shade200,
+        );
         return false;
       }
 
@@ -318,7 +340,10 @@ class ChatController extends GetxController {
         return true;
       } else {
         Get.snackbar(
-            'แจ้งเตือน', 'อัปโหลดวิดีโอล้มเหลว: ${response.statusCode}');
+          'แจ้งเตือน',
+          'อัปโหลดวิดีโอล้มเหลว: ${response.statusCode}',
+          backgroundColor: Colors.grey.shade200,
+        );
         print("เกิดข้อผิดพลาด: ${response.body}");
         return false;
       }
@@ -347,7 +372,11 @@ class ChatController extends GetxController {
 
   Future<void> fetchMessages(String roomID) async {
     if (tokenController.accessToken.value?.isEmpty ?? true) {
-      Get.snackbar('Error', 'No access token found.');
+      Get.snackbar(
+        'Error',
+        'No access token found.',
+        backgroundColor: Colors.grey.shade200,
+      );
       return;
     }
 
@@ -388,18 +417,28 @@ class ChatController extends GetxController {
                 rawData.map((item) => ChatRoom.fromJson(item)).toList();
             chatRooms.assignAll(chatList);
           } else {
-            Get.snackbar("Error", "Invalid response format");
+            Get.snackbar(
+              "Error",
+              "Invalid response format",
+              backgroundColor: Colors.grey.shade200,
+            );
           }
         } catch (e) {
           print("Error parsing JSON: $e");
         }
       } else {
         Get.snackbar(
-            "Error", "Failed to fetch messages (${response.statusCode})");
+          "Error",
+          "Failed to fetch messages (${response.statusCode})",
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
       Get.snackbar(
-          "Error", "An error occurred: ${e.toString()} in ChatController");
+        "Error",
+        "An error occurred: ${e.toString()} in ChatController",
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading(false);
     }
@@ -409,7 +448,11 @@ class ChatController extends GetxController {
     try {
       isLoading(true);
       if (tokenController.accessToken.value?.isEmpty ?? true) {
-        Get.snackbar('Error', 'No access token found.');
+        Get.snackbar(
+          'Error',
+          'No access token found.',
+          backgroundColor: Colors.grey.shade200,
+        );
         return;
       }
       final token = tokenController.accessToken.value!;
@@ -428,12 +471,18 @@ class ChatController extends GetxController {
         isLoading(false);
         // Get.snackbar("สำเร็จ", "อัพเดทสถานะข้อความล่าสุดภายในห้องแชทแล้ว");
       } else {
-        Get.snackbar("แจ้งเตือน",
-            "เกิดข้อผิดพลาในการอัพเดทสถานะของห้องแชท (${response.statusCode})");
+        Get.snackbar(
+          "แจ้งเตือน",
+          "เกิดข้อผิดพลาในการอัพเดทสถานะของห้องแชท (${response.statusCode})",
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
       Get.snackbar(
-          "Error", "An error occurred: ${e.toString()} in ChatController");
+        "Error",
+        "An error occurred: ${e.toString()} in ChatController",
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading(false);
     }
@@ -443,7 +492,11 @@ class ChatController extends GetxController {
     try {
       isLoading(true);
       if (tokenController.accessToken.value?.isEmpty ?? true) {
-        Get.snackbar('Error', 'No access token found.');
+        Get.snackbar(
+          'Error',
+          'No access token found.',
+          backgroundColor: Colors.grey.shade200,
+        );
         return;
       }
       final token = tokenController.accessToken.value!;
@@ -461,14 +514,24 @@ class ChatController extends GetxController {
         isLoading(false);
         // Get.snackbar("สำเร็จ", "อัพเดทสถานะข้อความล่าสุดภายในห้องแชทแล้ว");
       } else if (response.statusCode == 403) {
-        Get.snackbar("แจ้งเตือน", "ไม่สามารถปิดห้องแชทได้ในขณะนี้");
+        Get.snackbar(
+          "แจ้งเตือน",
+          "ไม่สามารถปิดห้องแชทได้ในขณะนี้",
+          backgroundColor: Colors.grey.shade200,
+        );
       } else {
-        Get.snackbar("แจ้งเตือน",
-            "เกิดข้อผิดพลาในปิดห้องแชทนี้ (${response.statusCode})");
+        Get.snackbar(
+          "แจ้งเตือน",
+          "เกิดข้อผิดพลาในปิดห้องแชทนี้ (${response.statusCode})",
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
       Get.snackbar(
-          "Error", "An error occurred: ${e.toString()} in ChatController");
+        "Error",
+        "An error occurred: ${e.toString()} in ChatController",
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading(false);
     }

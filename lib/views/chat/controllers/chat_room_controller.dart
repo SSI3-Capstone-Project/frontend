@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -43,13 +44,20 @@ class ChatRoomController extends GetxController {
             isLoading(false);
           }
         } else {
-          Get.snackbar('แจ้งเตือน', 'ไม่สามารถดึงข้อมูลห้องแชท');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'ไม่สามารถดึงข้อมูลห้องแชท',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading(false);
         }
       }
     } catch (e) {
       Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in ChatRoomController');
+        'Error',
+        'An error occurred: ${e.toString()} in ChatRoomController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
     }
   }

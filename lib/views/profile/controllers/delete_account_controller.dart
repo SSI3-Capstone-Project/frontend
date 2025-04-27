@@ -1,4 +1,5 @@
 import 'dart:convert'; // สำหรับ jsonEncode
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +13,11 @@ class DeleteAccountController extends GetxController {
     isLoading.value = true;
 
     if (tokenController.accessToken.value == null) {
-      Get.snackbar('Error', 'No access token found.');
+      Get.snackbar(
+        'Error',
+        'No access token found.',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }
@@ -41,19 +46,28 @@ class DeleteAccountController extends GetxController {
       final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
-        Get.snackbar('สำเร็จ', 'บัญชีได้ถูกลบออกไปแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'บัญชีได้ถูกลบออกไปแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return true;
       } else {
         Get.snackbar(
           'แจ้งเตือน',
           'เกิดข้อผิดพลาดในการลบบัญชี: ${response.statusCode}\n$responseBody',
+          backgroundColor: Colors.grey.shade200,
         );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
-      Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาด: $e');
+      Get.snackbar(
+        'แจ้งเตือน',
+        'เกิดข้อผิดพลาด: $e',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }

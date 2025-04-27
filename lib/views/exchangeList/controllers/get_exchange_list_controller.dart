@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -50,14 +51,21 @@ class ExchangeListController extends GetxController {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         var exchangeListData = jsonData['data'];
-        if (exchangeListData != null && exchangeListData is List && exchangeListData.isNotEmpty) {
-          exchangeList.value =
-              exchangeListData.map((item) => ExchangeListModel.fromJson(item)).toList();
+        if (exchangeListData != null &&
+            exchangeListData is List &&
+            exchangeListData.isNotEmpty) {
+          exchangeList.value = exchangeListData
+              .map((item) => ExchangeListModel.fromJson(item))
+              .toList();
         } else {
           exchangeList.clear();
         }
       } else {
-        Get.snackbar('Error', 'Failed to load exchange list');
+        Get.snackbar(
+          'Error',
+          'Failed to load exchange list',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } finally {
       isLoading(false);

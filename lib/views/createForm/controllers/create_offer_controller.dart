@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -60,7 +61,11 @@ class CreateOfferController extends GetxController {
           return offerId;
         } else {
           print('Unexpected response structure: $responseData');
-          Get.snackbar('แจ้งเตือน', 'ไม่พบ ID ของข้อเสนอในข้อมูลที่ตอบกลับ');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'ไม่พบ ID ของข้อเสนอในข้อมูลที่ตอบกลับ',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading.value = false;
           return null;
         }
@@ -69,7 +74,11 @@ class CreateOfferController extends GetxController {
         var errorData = await response.stream.bytesToString();
         print(
             'Failed to create offer: ${response.statusCode}, Error: $errorData');
-        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดไม่สามารถสร้างข้อเสนอได้');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดไม่สามารถสร้างข้อเสนอได้',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return null;
       }

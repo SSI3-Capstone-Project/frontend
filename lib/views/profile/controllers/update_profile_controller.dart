@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -57,7 +58,11 @@ class UpdateProfileController extends GetxController {
 
         // Check the response status
         if (response.statusCode == 200) {
-          Get.snackbar('Success', 'Profile updated successfully.');
+          Get.snackbar(
+            'Success',
+            'Profile updated successfully.',
+            backgroundColor: Colors.grey.shade200,
+          );
           print("user image not null");
           print(
               "This is data after updating profile: ${userProfileController.fetchUserProfile()}");
@@ -66,7 +71,11 @@ class UpdateProfileController extends GetxController {
           print(
               '-----------------------------------------------------------------');
           print('Response: $responseData');
-          Get.snackbar('Error', 'Failed to update profile.');
+          Get.snackbar(
+            'Error',
+            'Failed to update profile.',
+            backgroundColor: Colors.grey.shade200,
+          );
         }
       } else {
         // If no image, send the data without image file
@@ -81,19 +90,31 @@ class UpdateProfileController extends GetxController {
 
         // Handle the response
         if (response.statusCode == 200) {
-          Get.snackbar('สำเร็จ', 'อัปเดตโปรไฟล์สำเร็จแล้ว');
+          Get.snackbar(
+            'สำเร็จ',
+            'อัปเดตโปรไฟล์สำเร็จแล้ว',
+            backgroundColor: Colors.grey.shade200,
+          );
           print(userProfileController.fetchUserProfile());
           print("userProfile value: ${profileData}");
         } else {
           print('------------------------------------------------------------');
           print('Failed to refresh tokens: ${response.statusCode}');
           print('Response body: ${utf8.decode(response.bodyBytes)}');
-          Get.snackbar('Errorsss', response.body);
+          Get.snackbar(
+            'Errorsss',
+            response.body,
+            backgroundColor: Colors.grey.shade200,
+          );
           print('------------------------------------------------------------');
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e in UpdateProfileController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e in UpdateProfileController',
+        backgroundColor: Colors.grey.shade200,
+      );
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -64,7 +65,11 @@ class UserCreationController extends GetxController {
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
-        Get.snackbar('สำเร็จ', 'ลงทะเบียนผู้ใช้เรียบร้อยแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'ลงทะเบียนผู้ใช้เรียบร้อยแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return true;
       } else if (response.statusCode == 409) {
@@ -84,25 +89,40 @@ class UserCreationController extends GetxController {
           }
         }).join(', ');
 
-        Get.snackbar('แจ้งเตือน', errorMessages);
+        Get.snackbar(
+          'แจ้งเตือน',
+          errorMessages,
+          backgroundColor: Colors.grey.shade200,
+        );
         print(errorMessages); // Debug log
         isLoading.value = false;
         return false;
       } else if (response.statusCode == 500) {
-        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (500)');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (500)',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else {
         var errorData = await response.stream.bytesToString();
 
-        Get.snackbar('แจ้งเตือน', errorData);
+        Get.snackbar(
+          'แจ้งเตือน',
+          errorData,
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       print(e);
-      Get.snackbar('Error',
-          'An error occurred: ${e.toString()} in UserCreationController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in UserCreationController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }

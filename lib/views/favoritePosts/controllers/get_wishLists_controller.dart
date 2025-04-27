@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -49,15 +50,26 @@ class GetWishListsController extends GetxController {
             wishLists([]);
           }
         } else {
-          Get.snackbar('Error', 'Response does not contain expected data key');
+          Get.snackbar(
+            'Error',
+            'Response does not contain expected data key',
+            backgroundColor: Colors.grey.shade200,
+          );
         }
       } else {
         var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
         Get.snackbar(
-            'Errorsss', 'Failed to load wish lists: ${decodedResponse}');
+          'Errorsss',
+          'Failed to load wish lists: ${decodedResponse}',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e',
+        backgroundColor: Colors.grey.shade200,
+      );
       print("Error in GetWishListsController: $e");
     } finally {
       isLoading.value = false;

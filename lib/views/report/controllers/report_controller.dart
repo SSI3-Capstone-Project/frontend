@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -53,7 +54,11 @@ class ReportController extends GetxController {
     try {
       isLoading(true);
       if (tokenController.accessToken.value == null) {
-        Get.snackbar('Error', 'No access token found.');
+        Get.snackbar(
+          'Error',
+          'No access token found.',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       }
@@ -76,7 +81,11 @@ class ReportController extends GetxController {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
-        Get.snackbar('สำเร็จ', 'การสร้างรายงานสำเร็จ');
+        Get.snackbar(
+          'สำเร็จ',
+          'การสร้างรายงานสำเร็จ',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return true;
       } else if (response.statusCode == 400) {
@@ -91,23 +100,39 @@ class ReportController extends GetxController {
           }
         }).join(', ');
 
-        Get.snackbar('แจ้งเตือน', errorMessages);
+        Get.snackbar(
+          'แจ้งเตือน',
+          errorMessages,
+          backgroundColor: Colors.grey.shade200,
+        );
         print(errorMessages); // Debug log
         isLoading.value = false;
         return false;
       } else if (response.statusCode == 404) {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'ไม่พบรายการแลกเปลี่ยนนี้ในระบบ');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'ไม่พบรายการแลกเปลี่ยนนี้ในระบบ',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาระหว่างการส่งรายงาน');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดปัญหาระหว่างการส่งรายงาน',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()}',
+        backgroundColor: Colors.grey.shade200,
+      );
       return false;
     } finally {
       isLoading(false);

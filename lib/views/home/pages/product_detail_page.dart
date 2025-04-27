@@ -67,7 +67,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             await createWishListController.createWishList(userId, postId);
         wishListId = wishListDetail.wishListId;
       } catch (e) {
-        Get.snackbar("Error", "Failed to create WishList: $e");
+        Get.snackbar(
+          "Error",
+          "Failed to create WishList: $e",
+          backgroundColor: Colors.grey.shade200,
+        );
         return;
       }
     } else {
@@ -80,7 +84,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               productDetailController.productDetail.value!.wishListId);
         }
       } catch (e) {
-        Get.snackbar("Error", "Failed to delete WishList: $e");
+        Get.snackbar(
+          "Error",
+          "Failed to delete WishList: $e",
+          backgroundColor: Colors.grey.shade200,
+        );
         return;
       }
     }
@@ -197,41 +205,41 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   ),
                               ],
                             ),
-                            if (userProfileController
-                                    .userProfile.value!.username !=
-                                productDetail.username)
-                              GestureDetector(
-                                onTap: () {
-                                  _sendOfferDialog();
-                                },
-                                child: IntrinsicWidth(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 8, // ระยะห่างบน-ล่าง
-                                      horizontal: 20, // ระยะห่างซ้าย-ขวา
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Constants.secondaryColor,
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Text(
-                                      'ยื่นข้อเสนอ',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            // if (userProfileController
+                            //         .userProfile.value!.username !=
+                            //     productDetail.username)
+                            //   GestureDetector(
+                            //     onTap: () {
+                            //       _sendOfferDialog();
+                            //     },
+                            //     child: IntrinsicWidth(
+                            //       child: Container(
+                            //         padding: const EdgeInsets.symmetric(
+                            //           vertical: 8, // ระยะห่างบน-ล่าง
+                            //           horizontal: 20, // ระยะห่างซ้าย-ขวา
+                            //         ),
+                            //         decoration: BoxDecoration(
+                            //           color: Constants.secondaryColor,
+                            //           borderRadius: BorderRadius.circular(10),
+                            //           boxShadow: [
+                            //             BoxShadow(
+                            //               color: Colors.black.withOpacity(0.1),
+                            //               blurRadius: 8,
+                            //               offset: const Offset(0, 4),
+                            //             ),
+                            //           ],
+                            //         ),
+                            //         child: const Text(
+                            //           'ยื่นข้อเสนอ',
+                            //           style: TextStyle(
+                            //             color: Colors.white,
+                            //             fontSize: 12,
+                            //             fontWeight: FontWeight.bold,
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ),
                           ],
                         ),
                       ),
@@ -591,45 +599,45 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   ),
                 ],
               ),
-              // if (userProfileController.userProfile.value!.username !=
-              //         productDetail.username &&
-              //     selectedIndex == 0)
-              // Positioned(
-              //   right: 15, // ระยะห่างจากขอบขวา
-              //   bottom: 30, // ระยะห่างจากขอบล่าง
-              //   child: GestureDetector(
-              //     onTap: () {
-              //       _sendOfferDialog();
-              //     },
-              //     child: IntrinsicWidth(
-              //       child: Container(
-              //         padding: const EdgeInsets.symmetric(
-              //           vertical: 10, // ระยะห่างบน-ล่าง
-              //           horizontal: 20, // ระยะห่างซ้าย-ขวา
-              //         ),
-              //         decoration: BoxDecoration(
-              //           color: Constants.secondaryColor,
-              //           borderRadius: BorderRadius.circular(12),
-              //           boxShadow: [
-              //             BoxShadow(
-              //               color: Colors.black.withOpacity(0.1),
-              //               blurRadius: 8,
-              //               offset: const Offset(0, 4),
-              //             ),
-              //           ],
-              //         ),
-              //         child: const Text(
-              //           'ยื่นข้อเสนอ',
-              //           style: TextStyle(
-              //             color: Colors.white,
-              //             fontSize: 14,
-              //             fontWeight: FontWeight.bold,
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              if (userProfileController.userProfile.value!.username !=
+                      productDetail.username &&
+                  selectedIndex == 0)
+                Positioned(
+                  right: 15, // ระยะห่างจากขอบขวา
+                  bottom: 30, // ระยะห่างจากขอบล่าง
+                  child: GestureDetector(
+                    onTap: () {
+                      _sendOfferDialog();
+                    },
+                    child: IntrinsicWidth(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10, // ระยะห่างบน-ล่าง
+                          horizontal: 20, // ระยะห่างซ้าย-ขวา
+                        ),
+                        decoration: BoxDecoration(
+                          color: Constants.secondaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'ยื่นข้อเสนอ',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ]);
           } else {
             return Center(child: Text('No data available'));

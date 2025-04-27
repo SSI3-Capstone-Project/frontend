@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -39,13 +40,20 @@ class ExchangeController extends GetxController {
         return true;
       } else {
         exchange.value = null;
-        Get.snackbar('แจ้งเตือน', 'ไม่สามารถดึงรายละเอียดการแลกเปลี่ยนได้');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'ไม่สามารถดึงรายละเอียดการแลกเปลี่ยนได้',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in ExchangeController');
+        'Error',
+        'An error occurred: ${e.toString()} in ExchangeController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     } finally {
@@ -76,33 +84,50 @@ class ExchangeController extends GetxController {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
-        Get.snackbar('สำเร็จ', 'อัพเดทสถานะการแลกเปลี่ยนสำเร็จ');
+        Get.snackbar(
+          'สำเร็จ',
+          'อัพเดทสถานะการแลกเปลี่ยนสำเร็จ',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return true;
       } else if (response.statusCode == 409) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'คุณได้อัพเดทสถานะการแลกเปลี่ยนนี้แล้ว');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'คุณได้อัพเดทสถานะการแลกเปลี่ยนนี้แล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       } else if (response.statusCode == 403) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
-        Get.snackbar('แจ้งเตือน',
-            'คุณจะสามารถยกเลิกได้เมื่อผ่านไปหนึงชั่วโมงหลังเวลานัด');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'คุณจะสามารถยกเลิกได้เมื่อผ่านไปหนึงชั่วโมงหลังเวลานัด',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       } else {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
         Get.snackbar(
-            'แจ้งเตือน', 'เกิดปัญหาระหว่างการอัพเดทสถานะการแลกเปลี่ยน');
+          'แจ้งเตือน',
+          'เกิดปัญหาระหว่างการอัพเดทสถานะการแลกเปลี่ยน',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       }
     } catch (e) {
       Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in ExchangeController');
+        'Error',
+        'An error occurred: ${e.toString()} in ExchangeController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
       return false;
     } finally {
@@ -134,30 +159,48 @@ class ExchangeController extends GetxController {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
-        Get.snackbar('สำเร็จ', 'สร้างรายการชำระเงินเรียบร้อยแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'สร้างรายการชำระเงินเรียบร้อยแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return true;
       } else if (response.statusCode == 400) {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน',
-            'ไม่มีการแนบเลขการ์ดสำหรับชำระเงิน หรือ รูปแบบไม่ถูกต้อง');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'ไม่มีการแนบเลขการ์ดสำหรับชำระเงิน หรือ รูปแบบไม่ถูกต้อง',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else if (response.statusCode == 404) {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'ไม่พบรายการชำระเงินนี้');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'ไม่พบรายการชำระเงินนี้',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาในการสร้างรายการชำระเงินนี้');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดปัญหาในการสร้างรายการชำระเงินนี้',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       print(e);
       Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in ExchangeController');
+        'Error',
+        'An error occurred: ${e.toString()} in ExchangeController',
+        backgroundColor: Colors.grey.shade200,
+      );
       return false;
     } finally {
       isLoading(false);
@@ -216,7 +259,11 @@ class ExchangeController extends GetxController {
 
       if (response.statusCode == 200) {
         print(jsonData);
-        Get.snackbar('สำเร็จ', 'คุณส่งรีวิวผู้ใช้งานท่านนี้สำเร็จแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'คุณส่งรีวิวผู้ใช้งานท่านนี้สำเร็จแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return true;
       } else if (response.statusCode == 400) {
@@ -231,34 +278,57 @@ class ExchangeController extends GetxController {
           }
         }).join(', ');
 
-        Get.snackbar('แจ้งเตือน', errorMessages);
+        Get.snackbar(
+          'แจ้งเตือน',
+          errorMessages,
+          backgroundColor: Colors.grey.shade200,
+        );
         print(errorMessages); // Debug log
         isLoading.value = false;
         return false;
       } else if (response.statusCode == 403) {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน',
-            'คุณสามารถส่งรีวิวได้หลังจากการแลกเปลี่ยนเสร็จสิ้นแล้วเท่านั้น');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'คุณสามารถส่งรีวิวได้หลังจากการแลกเปลี่ยนเสร็จสิ้นแล้วเท่านั้น',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       } else if (response.statusCode == 404) {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'ไม่พบรายการแลกเปลี่ยนนี้ในระบบ');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'ไม่พบรายการแลกเปลี่ยนนี้ในระบบ',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else if (response.statusCode == 409) {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'คุณได้รีวิวผู้ใช้งานท่านนี้เรียบร้อยแล้ว');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'คุณได้รีวิวผู้ใช้งานท่านนี้เรียบร้อยแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       } else {
         print(jsonData);
-        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาระหว่างการส่งรีวิวผู้ใช้งาน');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดปัญหาระหว่างการส่งรีวิวผู้ใช้งาน',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()}',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
       return false;
     } finally {

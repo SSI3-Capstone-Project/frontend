@@ -365,7 +365,7 @@ class _ChooseOfferPageState extends State<ChooseOfferPage> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             color: Constants
-                                                                .secondaryColor,
+                                                                .primaryColor,
                                                           ),
                                                           maxLines: 2,
                                                           overflow: TextOverflow

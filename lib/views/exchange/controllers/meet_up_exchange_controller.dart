@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -62,25 +63,39 @@ class MeetUpExchangeController extends GetxController {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData);
-        Get.snackbar('สำเร็จ', 'เสนอวันเวลาและสถานที่ให้อีกฝ่ายแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'เสนอวันเวลาและสถานที่ให้อีกฝ่ายแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return jsonData['data']['id'];
       } else {
         var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         print(jsonData['error']['message']);
         if (jsonData['error']['message'] == 'Post not found') {
-          Get.snackbar('แจ้งเตือน', 'วันเวลาและสถานถูกเสนอไปให้อีกฝ่ายแล้ว');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'วันเวลาและสถานถูกเสนอไปให้อีกฝ่ายแล้ว',
+            backgroundColor: Colors.grey.shade200,
+          );
         } else {
           var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-          Get.snackbar('Error',
-              'ไม่สามารถเสนอวันเวลาและสถานที่ได้ ${response.statusCode}${jsonData}');
+          Get.snackbar(
+            'Error',
+            'ไม่สามารถเสนอวันเวลาและสถานที่ได้ ${response.statusCode}${jsonData}',
+            backgroundColor: Colors.grey.shade200,
+          );
         }
         isLoading(false);
         return null;
       }
     } catch (e) {
-      Get.snackbar('Error',
-          'An error occurred: ${e.toString()} in MeetUpExchangeController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in MeetUpExchangeController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
       return null;
     }

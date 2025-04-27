@@ -126,7 +126,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           children: [
             _buildTextFormField(
               controller: _productNameController,
-              label: 'ชื่อสินค้า',
+              label: 'ชื่อสินค้า *',
               validator: (value) =>
                   value == null || value.isEmpty ? 'โปรดระบุชื่อสินค้า' : null,
             ),
@@ -150,7 +150,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                       NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
                   children: [
                     _buildDropdownField(
-                      label: 'เลือกแบรนด์',
+                      label: 'เลือกแบรนด์ *',
                       items: brandController.brands.map((b) => b.name).toList(),
                       value: selectedBrand,
                       onChanged: (newValue) {
@@ -165,7 +165,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                     ),
                     if (selectedBrand != null)
                       _buildDropdownField(
-                        label: 'เลือกคอลเลคชั่น',
+                        label: 'เลือกคอลเลคชั่น *',
                         items: brandController.brands
                                 .firstWhere((b) => b.name == selectedBrand)
                                 .collections
@@ -184,7 +184,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                       ),
                     if (selectedMainCategory != null)
                       _buildDropdownField(
-                        label: 'เลือกคอลเลคชั่นย่อย',
+                        label: 'เลือกคอลเลคชั่นย่อย *',
                         items: brandController.brands
                                 .firstWhere((b) => b.name == selectedBrand)
                                 .collections
@@ -210,7 +210,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
             // SizedBox(height: 30),
             _buildTextFormField(
               controller: _descriptionController,
-              label: 'รายละเอียดสินค้า',
+              label: 'รายละเอียดสินค้า *',
               maxLength: 200,
               maxLines: 4,
               validator: (value) => value == null || value.isEmpty
@@ -242,7 +242,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                       NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
                   children: [
                     _buildDropdownField(
-                      label: 'เลือกจังหวัด',
+                      label: 'เลือกจังหวัด *',
                       items: provinceController.provinces
                           .map((b) => b.name)
                           .toList(),
@@ -259,7 +259,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                     ),
                     if (selectedProvince != null)
                       _buildDropdownField(
-                        label: 'เลือกเขต / อำเภอ',
+                        label: 'เลือกเขต / อำเภอ *',
                         items: provinceController.provinces
                                 .firstWhere((b) => b.name == selectedProvince)
                                 .districts
@@ -278,7 +278,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                       ),
                     if (selectedMainDistrict != null)
                       _buildDropdownField(
-                        label: 'เลือกตำบล',
+                        label: 'เลือกตำบล *',
                         items: provinceController.provinces
                                 .firstWhere((b) => b.name == selectedProvince)
                                 .districts
@@ -570,7 +570,10 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                   ? _pickImage
                   : () {
                       Get.snackbar(
-                          'แจ้งเตือน', 'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว');
+                        'แจ้งเตือน',
+                        'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว',
+                        backgroundColor: Colors.grey.shade200,
+                      );
                     },
               icon: Icons.photo_library,
               label: 'เลือกรูปภาพ',
@@ -581,7 +584,10 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                   ? _pickVideo
                   : () {
                       Get.snackbar(
-                          'แจ้งเตือน', 'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว');
+                        'แจ้งเตือน',
+                        'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว',
+                        backgroundColor: Colors.grey.shade200,
+                      );
                     },
               icon: Icons.video_library,
               label: 'เลือกวีดีโอ',
@@ -651,7 +657,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               }
 
               if (subCollectionId == null) {
-                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                Get.snackbar(
+                  'แจ้งเตือน',
+                  'กรุณาเลือกคอลเลคชั่นย่อย',
+                  backgroundColor: Colors.grey.shade200,
+                );
                 return;
               }
 
@@ -668,7 +678,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               }
 
               if (subCollectionId == 0) {
-                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                Get.snackbar(
+                  'แจ้งเตือน',
+                  'กรุณาเลือกคอลเลคชั่นย่อย',
+                  backgroundColor: Colors.grey.shade200,
+                );
                 return;
               }
 
@@ -693,7 +707,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               var result = await createOfferController.createOffer(post);
               if (mounted) {
                 if (result != null) {
-                  Get.snackbar('สำเร็จ', 'ข้อเสนอใหม่ของคุณถูกสร้างขึ้นแล้ว');
+                  Get.snackbar(
+                    'สำเร็จ',
+                    'ข้อเสนอใหม่ของคุณถูกสร้างขึ้นแล้ว',
+                    backgroundColor: Colors.grey.shade200,
+                  );
                   await offerController.fetchOffers();
                   // send Offer
                   if (widget.isSendOffer) {
@@ -718,7 +736,11 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               })
                   ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
                   : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รูป';
-              Get.snackbar('แจ้งเตือน', errorMessage);
+              Get.snackbar(
+                'แจ้งเตือน',
+                errorMessage,
+                backgroundColor: Colors.grey.shade200,
+              );
             }
           },
           style: ElevatedButton.styleFrom(

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -40,12 +41,19 @@ class ProvinceController extends GetxController {
         );
         isLoading(false);
       } else {
-        Get.snackbar('แจ้งเตือน', 'เกิดปัญหาในการดึงข้อมูลสถานที่');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดปัญหาในการดึงข้อมูลสถานที่',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
       }
     } catch (e) {
       Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in ProvinceController');
+        'Error',
+        'An error occurred: ${e.toString()} in ProvinceController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
     } finally {
       isLoading(false);

@@ -354,7 +354,11 @@ class _MeetUpPageState extends State<MeetUpPage> {
       print("Place ID: ${place.placeId}");
       _getPlaceDetails(place.placeId);
     } else {
-      Get.snackbar('แจ้งเตือน', 'ไม่พบข้อมูลของสถานที่นี้');
+      Get.snackbar(
+        'แจ้งเตือน',
+        'ไม่พบข้อมูลของสถานที่นี้',
+        backgroundColor: Colors.grey.shade200,
+      );
       print("ไม่พบ Place ID");
     }
   }
@@ -440,8 +444,11 @@ class _MeetUpPageState extends State<MeetUpPage> {
 
                     if (exchangeController.exchange.value?.status ==
                         'cancelled') {
-                      Get.snackbar('แจ้งเตือน',
-                          'วันเวลาและสถานที่นัดหมายที่คุณเสนอถูกยกเลิก');
+                      Get.snackbar(
+                        'แจ้งเตือน',
+                        'วันเวลาและสถานที่นัดหมายที่คุณเสนอถูกยกเลิก',
+                        backgroundColor: Colors.grey.shade200,
+                      );
                       Navigator.pop(context);
                       if (widget.currentStep == 1 &&
                           widget.user == Payer.post) {
@@ -914,12 +921,18 @@ class _MeetUpPageState extends State<MeetUpPage> {
                                 await exchangeController
                                     .fetchExchangeDetails(exchangeID!);
                               } else {
-                                Get.snackbar('แจ้งเตือน',
-                                    'คุณไม่ได้อยู่ในระยะเช็คอินที่กำหนด');
+                                Get.snackbar(
+                                  'แจ้งเตือน',
+                                  'คุณไม่ได้อยู่ในระยะเช็คอินที่กำหนด',
+                                  backgroundColor: Colors.grey.shade200,
+                                );
                               }
                             } else {
-                              Get.snackbar('แจ้งเตือน',
-                                  'คุณไม่สามารถเช็คอินได้ก่อนเวลานัดหมาย');
+                              Get.snackbar(
+                                'แจ้งเตือน',
+                                'คุณไม่สามารถเช็คอินได้ก่อนเวลานัดหมาย',
+                                backgroundColor: Colors.grey.shade200,
+                              );
                             }
                           },
                 child: const Text(
@@ -1160,12 +1173,18 @@ class _MeetUpPageState extends State<MeetUpPage> {
                             }
                             print("เสนอวันเวลาและสถานที่นี้");
                           } else {
-                            Get.snackbar('แจ้งเตือน',
-                                'เวลาในการนัดหมายต้องเป็นอย่างน้อย 2 วันนับจากวันที่ทำรายการ');
+                            Get.snackbar(
+                              'แจ้งเตือน',
+                              'เวลาในการนัดหมายต้องเป็นอย่างน้อย 2 วันนับจากวันที่ทำรายการ',
+                              backgroundColor: Colors.grey.shade200,
+                            );
                           }
                         } else {
-                          Get.snackbar('แจ้งเตือน',
-                              'กรุณากรอกวันเวลา และเลือกสถานที่นัดหมายให้ครบถ้วน');
+                          Get.snackbar(
+                            'แจ้งเตือน',
+                            'กรุณากรอกวันเวลา และเลือกสถานที่นัดหมายให้ครบถ้วน',
+                            backgroundColor: Colors.grey.shade200,
+                          );
                         }
                       },
             child: const Text(

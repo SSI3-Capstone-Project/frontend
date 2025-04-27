@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -43,12 +44,20 @@ class UserProfileController extends GetxController {
         print("This is data of user profile: ${userProfile.value}");
         isLoading.value = false;
       } else {
-        Get.snackbar('Error', 'Failed to fetch user profile');
+        Get.snackbar(
+          'Error',
+          'Failed to fetch user profile',
+          backgroundColor: Colors.grey.shade200,
+        );
         print("failed to fetch user profile");
         isLoading.value = false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e in UserProfileController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e in UserProfileController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
     } finally {
       isLoading.value = false;

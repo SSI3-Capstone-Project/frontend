@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -47,7 +48,11 @@ class ChangePasswordController extends GetxController {
         final Map<String, dynamic> responseData =
             json.decode(utf8.decode(response.bodyBytes));
         message.value = responseData['message'] ?? 'Address added successfully';
-        Get.snackbar("สำเร็จ", "คุณได้เปลี่ยนรหัสผ่านแล้ว");
+        Get.snackbar(
+          "สำเร็จ",
+          "คุณได้เปลี่ยนรหัสผ่านแล้ว",
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return true;
       } else {
@@ -66,13 +71,21 @@ class ChangePasswordController extends GetxController {
         }
 
         print(responseData);
-        Get.snackbar('แจ้งเตือน', message.value);
+        Get.snackbar(
+          'แจ้งเตือน',
+          message.value,
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("แจ้งเตือน", "An unexpected error occurred");
+      Get.snackbar(
+        "แจ้งเตือน",
+        "An unexpected error occurred",
+        backgroundColor: Colors.grey.shade200,
+      );
       return false;
     }
   }

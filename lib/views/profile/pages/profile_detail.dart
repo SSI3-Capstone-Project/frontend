@@ -14,7 +14,6 @@ import 'package:mbea_ssi3_front/views/resetPassword/pages/change_password_page.d
 import '../../card/pages/card_list_page.dart';
 import '../../recipient/pages/recepient_get_page.dart';
 
-
 class ProfileDetail extends StatefulWidget {
   const ProfileDetail({super.key});
 
@@ -54,7 +53,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               children: [
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -213,8 +212,8 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 break;
               case "วิธีการชำระเงิน":
                 Navigator.push(
-                 context,
-                MaterialPageRoute(builder: (context) => CardListPage()),
+                  context,
+                  MaterialPageRoute(builder: (context) => CardListPage()),
                 );
                 break;
               case "บัญชีรับเงิน":
@@ -236,7 +235,11 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 );
                 break;
               case "ออกจากระบบ":
-                Get.snackbar('ออกจากระบบ', 'คุณได้ออกจากระบบแล้ว');
+                Get.snackbar(
+                  'ออกจากระบบ',
+                  'คุณได้ออกจากระบบแล้ว',
+                  backgroundColor: Colors.grey.shade200,
+                );
                 await tokenController.deleteTokens();
                 Phoenix.rebirth(context);
                 Navigator.pushReplacement(

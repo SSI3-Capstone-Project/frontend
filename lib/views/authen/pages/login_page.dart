@@ -48,7 +48,11 @@ class _LoginPageState extends State<LoginPage> {
         }
       } catch (e) {
         // Get.back(); // ปิด Dialog loading ในกรณีเกิดข้อผิดพลาด
-        Get.snackbar("เกิดข้อผิดพลาด", "ไม่สามารถเข้าสู่ระบบได้");
+        Get.snackbar(
+          "เกิดข้อผิดพลาด",
+          "ไม่สามารถเข้าสู่ระบบได้",
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     }
   }

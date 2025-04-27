@@ -276,8 +276,11 @@ class _ExchangePageState extends State<ExchangePage> {
 
                                 if ((postPrice == null || postPrice == 0) &&
                                     (offerPrice == null || offerPrice == 0)) {
-                                  Get.snackbar('แจ้งเตือน',
-                                      'ถ้าการแลกเปลี่ยนของคุณมีค่าส่วนต่างต้องระบุค่าส่วนต่าง\nขั้นต่ำคือ 1 บาท');
+                                  Get.snackbar(
+                                    'แจ้งเตือน',
+                                    'ถ้าการแลกเปลี่ยนของคุณมีค่าส่วนต่างต้องระบุค่าส่วนต่าง\nขั้นต่ำคือ 1 บาท',
+                                    backgroundColor: Colors.grey.shade200,
+                                  );
                                 } else {
                                   // setState(() {
                                   //   _exchangeStage = _exchangeStage + 1;

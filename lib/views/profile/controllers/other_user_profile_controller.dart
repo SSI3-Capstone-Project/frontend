@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -36,12 +37,20 @@ class OtherUserProfileController extends GetxController {
         print("ข้อมูลโปรไฟล์ของผู้ใช้ท่านอื่น: ${userProfile.value}");
         isLoading.value = false;
       } else {
-        Get.snackbar('Error', 'ไม่สามารถดึงข้อมูลโปรไฟล์ของผู้ใช้ได้');
+        Get.snackbar(
+          'Error',
+          'ไม่สามารถดึงข้อมูลโปรไฟล์ของผู้ใช้ได้',
+          backgroundColor: Colors.grey.shade200,
+        );
         print("ดึงข้อมูลโปรไฟล์ของผู้ใช้ท่านอื่นล้มเหลว");
         isLoading.value = false;
       }
     } catch (e) {
-      Get.snackbar('Error', 'เกิดข้อผิดพลาด: $e ใน OtherUserProfileController');
+      Get.snackbar(
+        'Error',
+        'เกิดข้อผิดพลาด: $e ใน OtherUserProfileController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
     } finally {
       isLoading.value = false;

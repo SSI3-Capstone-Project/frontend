@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -40,12 +41,19 @@ class BrandController extends GetxController {
         );
         isLoading(false);
       } else {
-        Get.snackbar('Error', 'Failed to fetch brands');
+        Get.snackbar(
+          'Error',
+          'Failed to fetch brands',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
       }
     } catch (e) {
       Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in BrandController');
+        'Error',
+        'An error occurred: ${e.toString()} in BrandController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
     } finally {
       isLoading(false);

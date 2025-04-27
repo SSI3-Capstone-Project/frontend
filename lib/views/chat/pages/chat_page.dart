@@ -105,7 +105,7 @@ class _ChatPageState extends State<ChatPage> {
           Container(
             color: Colors.white,
             child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.71, // กำหนดความสูง
+              height: MediaQuery.of(context).size.height * 0.72, // กำหนดความสูง
               child: StaggeredGridView.countBuilder(
                 padding: const EdgeInsets.all(15),
                 crossAxisCount: 1,

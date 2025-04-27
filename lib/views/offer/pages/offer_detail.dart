@@ -159,7 +159,7 @@ class _OfferDetailPageState extends State<OfferDetailPage> {
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
-                                            color: Constants.secondaryColor,
+                                            color: Constants.primaryColor,
                                           ),
                                           softWrap:
                                               true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่

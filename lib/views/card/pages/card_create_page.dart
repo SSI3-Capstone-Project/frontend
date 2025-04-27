@@ -113,7 +113,11 @@ class _CardCreatePageState extends State<CardCreatePage> {
 
     final expiryParts = expiryDateController.text.split('/');
     if (expiryParts.length != 2) {
-      Get.snackbar("Error", "รูปแบบวันหมดอายุไม่ถูกต้อง");
+      Get.snackbar(
+        "Error",
+        "รูปแบบวันหมดอายุไม่ถูกต้อง",
+        backgroundColor: Colors.grey.shade200,
+      );
       return false;
     }
 
@@ -216,7 +220,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
                 CardNumberFormatter(), // ใช้ฟอร์แมตเตอร์ที่สร้างขึ้น
               ],
               decoration: InputDecoration(
-                labelText: "หมายเลขบัตร",
+                labelText: "หมายเลขบัตร *",
                 hintText: "XXXX XXXX XXXX XXXX",
                 border: const OutlineInputBorder(),
                 hintStyle: const TextStyle(fontSize: 14),
@@ -228,7 +232,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
               controller: cardNameController,
               focusNode: cardNameFocus,
               decoration: InputDecoration(
-                labelText: "ชื่อบนบัตร",
+                labelText: "ชื่อบนบัตร *",
                 hintText: "กรอกชื่อบนบัตร",
                 border: const OutlineInputBorder(),
                 hintStyle: const TextStyle(fontSize: 14),
@@ -250,7 +254,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
                       ExpiryDateFormatter(), // ฟอร์แมตให้เป็น MM/YY
                     ],
                     decoration: InputDecoration(
-                      labelText: "วันหมดอายุ",
+                      labelText: "วันหมดอายุ *",
                       hintText: "MM/YY",
                       border: const OutlineInputBorder(),
                       hintStyle: const TextStyle(fontSize: 14),
@@ -270,7 +274,7 @@ class _CardCreatePageState extends State<CardCreatePage> {
                     ],
                     obscureText: true,
                     decoration: InputDecoration(
-                      labelText: "CVV",
+                      labelText: "CVV *",
                       hintText: "XXX",
                       border: const OutlineInputBorder(),
                       hintStyle: const TextStyle(fontSize: 14),

@@ -64,7 +64,11 @@ class TokenController extends GetxController with WidgetsBindingObserver {
         await deleteTokens();
         // Get.offAllNamed('/login');
         print('(Token) Refresh token data expired.');
-        Get.snackbar('Error', 'Refresh token data expired.');
+        Get.snackbar(
+          'Error',
+          'Refresh token data expired.',
+          backgroundColor: Colors.grey.shade200,
+        );
         return;
       }
 
@@ -88,20 +92,36 @@ class TokenController extends GetxController with WidgetsBindingObserver {
           // Get.snackbar('Success', 'Tokens refreshed successfully.');
         } else {
           print('(Token) Invalid token data received.');
-          Get.snackbar('Error', 'Invalid token data received.');
+          Get.snackbar(
+            'Error',
+            'Invalid token data received.',
+            backgroundColor: Colors.grey.shade200,
+          );
         }
       } else if (response.statusCode == 401) {
         await deleteTokens();
         // Get.offAllNamed('/login');
         print('(Token) Invalid refresh token data.');
-        Get.snackbar('Error', 'Invalid refresh token data.');
+        Get.snackbar(
+          'Error',
+          'Invalid refresh token data.',
+          backgroundColor: Colors.grey.shade200,
+        );
       } else {
         print('(Token) Failed to refresh tokens: ${response.body}');
-        Get.snackbar('Error', 'Failed to refresh tokens: ${response.body}');
+        Get.snackbar(
+          'Error',
+          'Failed to refresh tokens: ${response.body}',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
       print('(Token) Error during token refresh: $e');
-      Get.snackbar('Error', 'Error during token refresh: $e');
+      Get.snackbar(
+        'Error',
+        'Error during token refresh: $e',
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       _mutex.value = false;
     }

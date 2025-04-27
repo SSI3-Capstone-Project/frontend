@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -59,7 +60,11 @@ class AddressController extends GetxController {
         isLoading.value = false;
       } else {
         message.value = 'Failed to fetch addresses';
-        Get.snackbar('Error', 'Failed to fetch addresses');
+        Get.snackbar(
+          'Error',
+          'Failed to fetch addresses',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
       }
     } catch (e) {
@@ -112,13 +117,21 @@ class AddressController extends GetxController {
             json.decode(utf8.decode(response.bodyBytes));
         message.value = responseData['message'] ?? 'Failed to add address';
         print(responseData);
-        Get.snackbar('Error', message.value);
+        Get.snackbar(
+          'Error',
+          message.value,
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       message.value = 'Error occurred: $e';
-      Get.snackbar('Error', message.value);
+      Get.snackbar(
+        'Error',
+        message.value,
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }
@@ -174,13 +187,21 @@ class AddressController extends GetxController {
             json.decode(utf8.decode(response.bodyBytes));
         message.value = responseData['message'] ?? 'Failed to edit address';
         print(responseData);
-        Get.snackbar('Error', message.value);
+        Get.snackbar(
+          'Error',
+          message.value,
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       message.value = 'Error occurred: $e';
-      Get.snackbar('Error', message.value);
+      Get.snackbar(
+        'Error',
+        message.value,
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }
@@ -222,13 +243,21 @@ class AddressController extends GetxController {
             json.decode(utf8.decode(response.bodyBytes));
         message.value = responseData['message'] ?? 'Failed to delete address';
         print(responseData);
-        Get.snackbar('Error', message.value);
+        Get.snackbar(
+          'Error',
+          message.value,
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       message.value = 'Error occurred: $e';
-      Get.snackbar('Error', message.value);
+      Get.snackbar(
+        'Error',
+        message.value,
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }

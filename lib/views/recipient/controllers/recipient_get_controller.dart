@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -38,10 +39,18 @@ class RecipientController extends GetxController {
         final decodedJson = json.decode(utf8Data);
         recipient.value = Recipient.fromJson(decodedJson);
       } else {
-        Get.snackbar('Error', 'Failed to fetch recipient details');
+        Get.snackbar(
+          'Error',
+          'Failed to fetch recipient details',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e in RecipientController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e in RecipientController',
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading.value = false;
     }

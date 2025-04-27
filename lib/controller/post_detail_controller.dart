@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -34,13 +35,19 @@ class PostDetailController extends GetxController {
         return true;
       } else {
         Get.snackbar(
-            'Error', 'Failed to load post detail: ${response.reasonPhrase}');
+          'Error',
+          'Failed to load post detail: ${response.reasonPhrase}',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
         return false;
       }
     } catch (e) {
-      Get.snackbar('Error',
-          'An error occurred: ${e.toString()} in PostDetailController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in PostDetailController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
       return false;
     }

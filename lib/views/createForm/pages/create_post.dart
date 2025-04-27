@@ -120,7 +120,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
           children: [
             _buildTextFormField(
               controller: _productNameController,
-              label: 'ชื่อสินค้า',
+              label: 'ชื่อสินค้า *',
               validator: (value) =>
                   value == null || value.isEmpty ? 'โปรดระบุชื่อสินค้า' : null,
             ),
@@ -142,7 +142,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                       NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
                   children: [
                     _buildDropdownField(
-                      label: 'เลือกแบรนด์',
+                      label: 'เลือกแบรนด์ *',
                       items: brandController.brands.map((b) => b.name).toList(),
                       value: selectedBrand,
                       onChanged: (newValue) {
@@ -157,7 +157,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                     ),
                     if (selectedBrand != null)
                       _buildDropdownField(
-                        label: 'เลือกคอลเลคชั่น',
+                        label: 'เลือกคอลเลคชั่น *',
                         items: brandController.brands
                                 .firstWhere((b) => b.name == selectedBrand)
                                 .collections
@@ -176,7 +176,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                       ),
                     if (selectedMainCategory != null)
                       _buildDropdownField(
-                        label: 'เลือกคอลเลคชั่นย่อย',
+                        label: 'เลือกคอลเลคชั่นย่อย *',
                         items: brandController.brands
                                 .firstWhere((b) => b.name == selectedBrand)
                                 .collections
@@ -202,7 +202,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
             // SizedBox(height: 30),
             _buildTextFormField(
               controller: _descriptionController,
-              label: 'รายละเอียดสินค้า',
+              label: 'รายละเอียดสินค้า *',
               maxLength: 200,
               maxLines: 4,
               validator: (value) => value == null || value.isEmpty
@@ -218,7 +218,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
             SizedBox(height: 16),
             _buildTextFormField(
               controller: _desiredController,
-              label: 'ระบุสิ่งที่อยากแลก',
+              label: 'ระบุสิ่งที่อยากแลก *',
               maxLength: 50,
               validator: (value) => value == null || value.isEmpty
                   ? 'โปรดระบุสิ่งที่อยากแลก'
@@ -242,7 +242,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                       NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
                   children: [
                     _buildDropdownField(
-                      label: 'เลือกจังหวัด',
+                      label: 'เลือกจังหวัด *',
                       items: provinceController.provinces
                           .map((b) => b.name)
                           .toList(),
@@ -259,7 +259,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                     ),
                     if (selectedProvince != null)
                       _buildDropdownField(
-                        label: 'เลือกเขต / อำเภอ',
+                        label: 'เลือกเขต / อำเภอ *',
                         items: provinceController.provinces
                                 .firstWhere((b) => b.name == selectedProvince)
                                 .districts
@@ -278,7 +278,7 @@ class _CreatePostFormState extends State<CreatePostForm> {
                       ),
                     if (selectedMainDistrict != null)
                       _buildDropdownField(
-                        label: 'เลือกตำบล',
+                        label: 'เลือกตำบล *',
                         items: provinceController.provinces
                                 .firstWhere((b) => b.name == selectedProvince)
                                 .districts
@@ -586,7 +586,10 @@ class _CreatePostFormState extends State<CreatePostForm> {
                   ? _pickImage
                   : () {
                       Get.snackbar(
-                          'แจ้งเตือน', 'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว');
+                        'แจ้งเตือน',
+                        'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว',
+                        backgroundColor: Colors.grey.shade200,
+                      );
                     },
               icon: Icons.photo_library,
               label: 'เลือกรูปภาพ',
@@ -597,7 +600,10 @@ class _CreatePostFormState extends State<CreatePostForm> {
                   ? _pickVideo
                   : () {
                       Get.snackbar(
-                          'แจ้งเตือน', 'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว');
+                        'แจ้งเตือน',
+                        'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว',
+                        backgroundColor: Colors.grey.shade200,
+                      );
                     },
               icon: Icons.video_library,
               label: 'เลือกวีดีโอ',
@@ -667,7 +673,11 @@ class _CreatePostFormState extends State<CreatePostForm> {
               }
 
               if (subCollectionId == null) {
-                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                Get.snackbar(
+                  'แจ้งเตือน',
+                  'กรุณาเลือกคอลเลคชั่นย่อย',
+                  backgroundColor: Colors.grey.shade200,
+                );
                 return;
               }
 
@@ -684,7 +694,11 @@ class _CreatePostFormState extends State<CreatePostForm> {
               }
 
               if (subCollectionId == 0) {
-                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                Get.snackbar(
+                  'แจ้งเตือน',
+                  'กรุณาเลือกคอลเลคชั่นย่อย',
+                  backgroundColor: Colors.grey.shade200,
+                );
                 return;
               }
 
@@ -709,7 +723,11 @@ class _CreatePostFormState extends State<CreatePostForm> {
               var result = await createPostController.createPost(post);
               if (mounted) {
                 if (result) {
-                  Get.snackbar('สำเร็จ', 'โพสต์ใหม่ของคุณถูกสร้างขึ้นแล้ว');
+                  Get.snackbar(
+                    'สำเร็จ',
+                    'โพสต์ใหม่ของคุณถูกสร้างขึ้นแล้ว',
+                    backgroundColor: Colors.grey.shade200,
+                  );
                   await postController.fetchPosts();
                   Navigator.pop(context);
                 }
@@ -728,7 +746,11 @@ class _CreatePostFormState extends State<CreatePostForm> {
               })
                   ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
                   : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รูป';
-              Get.snackbar('แจ้งเตือน', errorMessage);
+              Get.snackbar(
+                'แจ้งเตือน',
+                errorMessage,
+                backgroundColor: Colors.grey.shade200,
+              );
             }
           },
           style: ElevatedButton.styleFrom(

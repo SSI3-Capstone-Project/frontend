@@ -294,7 +294,7 @@ class _AddressPageState extends State<AddressPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: _buildTextFormField(
                               controller: _mainAddress,
-                              label: 'ที่อยู่',
+                              label: 'ที่อยู่ *',
                               validator: (value) =>
                                   value == null || value.isEmpty
                                       ? 'โปรดระบุที่อยู่'
@@ -304,7 +304,7 @@ class _AddressPageState extends State<AddressPage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: _buildDropdownField(
-                              label: 'เลือกจังหวัด',
+                              label: 'เลือกจังหวัด *',
                               items: provinceController.provinces
                                   .map((b) => b.name)
                                   .toList(),
@@ -325,7 +325,7 @@ class _AddressPageState extends State<AddressPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildDropdownField(
-                                label: 'เลือกเขต / อำเภอ',
+                                label: 'เลือกเขต / อำเภอ *',
                                 items: provinceController.provinces
                                         .firstWhere(
                                             (b) => b.name == selectedProvince)
@@ -350,7 +350,7 @@ class _AddressPageState extends State<AddressPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildDropdownField(
-                                label: 'เลือกตำบล',
+                                label: 'เลือกตำบล *',
                                 items: provinceController.provinces
                                         .firstWhere(
                                             (b) => b.name == selectedProvince)
@@ -455,7 +455,10 @@ class _AddressPageState extends State<AddressPage> {
   void _createAddress() {
     if (addressController.addressList.length >= 5) {
       Get.snackbar(
-          'แจ้งเตือน', 'สามารถมี่ที่อยู่ในรายชื่อได้ไม่เกิน 5 สถานที่');
+        'แจ้งเตือน',
+        'สามารถมี่ที่อยู่ในรายชื่อได้ไม่เกิน 5 สถานที่',
+        backgroundColor: Colors.grey.shade200,
+      );
       return;
     }
     _resetAddressForm();
@@ -490,7 +493,7 @@ class _AddressPageState extends State<AddressPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: _buildTextFormField(
                               controller: _mainAddress,
-                              label: 'ที่อยู่',
+                              label: 'ที่อยู่ *',
                               validator: (value) =>
                                   value == null || value.isEmpty
                                       ? 'โปรดระบุที่อยู่'
@@ -500,7 +503,7 @@ class _AddressPageState extends State<AddressPage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: _buildDropdownField(
-                              label: 'เลือกจังหวัด',
+                              label: 'เลือกจังหวัด *',
                               items: provinceController.provinces
                                   .map((b) => b.name)
                                   .toList(),
@@ -521,7 +524,7 @@ class _AddressPageState extends State<AddressPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildDropdownField(
-                                label: 'เลือกเขต / อำเภอ',
+                                label: 'เลือกเขต / อำเภอ *',
                                 items: provinceController.provinces
                                         .firstWhere(
                                             (b) => b.name == selectedProvince)
@@ -546,7 +549,7 @@ class _AddressPageState extends State<AddressPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               child: _buildDropdownField(
-                                label: 'เลือกตำบล',
+                                label: 'เลือกตำบล *',
                                 items: provinceController.provinces
                                         .firstWhere(
                                             (b) => b.name == selectedProvince)
@@ -846,10 +849,18 @@ class _AddressPageState extends State<AddressPage> {
                 print('Result from addAddress: $result');
                 if (mounted) {
                   if (result) {
-                    Get.snackbar('สำเร็จ', 'คุณได้เพิ่มที่อยู่ใหม่แล้ว');
+                    Get.snackbar(
+                      'สำเร็จ',
+                      'คุณได้เพิ่มที่อยู่ใหม่แล้ว',
+                      backgroundColor: Colors.grey.shade200,
+                    );
                     Navigator.pop(context);
                   } else {
-                    Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการเพิ่มที่อยู่');
+                    Get.snackbar(
+                      'ล้มเหลว',
+                      'เกิดข้อผิดพลาดในการเพิ่มที่อยู่',
+                      backgroundColor: Colors.grey.shade200,
+                    );
                   }
                 }
               }
@@ -908,10 +919,18 @@ class _AddressPageState extends State<AddressPage> {
                 print('Result from addAddress: $result');
                 if (mounted) {
                   if (result) {
-                    Get.snackbar('สำเร็จ', 'คุณได้แก้ไขที่อยู่แล้ว');
+                    Get.snackbar(
+                      'สำเร็จ',
+                      'คุณได้แก้ไขที่อยู่แล้ว',
+                      backgroundColor: Colors.grey.shade200,
+                    );
                     Navigator.pop(context);
                   } else {
-                    Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการแก้ไขที่อยู่');
+                    Get.snackbar(
+                      'ล้มเหลว',
+                      'เกิดข้อผิดพลาดในการแก้ไขที่อยู่',
+                      backgroundColor: Colors.grey.shade200,
+                    );
                   }
                 }
               }
@@ -948,9 +967,17 @@ class _AddressPageState extends State<AddressPage> {
             var result = await addressController.deleteAddress(id: id);
             if (mounted) {
               if (result) {
-                Get.snackbar('สำเร็จ', 'ที่อยู่ถูกลบออกไปแล้ว');
+                Get.snackbar(
+                  'สำเร็จ',
+                  'ที่อยู่ถูกลบออกไปแล้ว',
+                  backgroundColor: Colors.grey.shade200,
+                );
               } else {
-                Get.snackbar('ล้มเหลว', 'เกิดข้อผิดพลาดในการลบที่อยู่');
+                Get.snackbar(
+                  'ล้มเหลว',
+                  'เกิดข้อผิดพลาดในการลบที่อยู่',
+                  backgroundColor: Colors.grey.shade200,
+                );
               }
             }
             Navigator.pop(context);

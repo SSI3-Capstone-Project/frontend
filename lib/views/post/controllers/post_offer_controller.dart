@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -41,12 +42,18 @@ class PostOfferController extends GetxController {
         }
       } else {
         Get.snackbar(
-            'Error', 'Failed to load offers: ${response.reasonPhrase}');
+          'Error',
+          'Failed to load offers: ${response.reasonPhrase}',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading(false);
       }
     } catch (e) {
       Get.snackbar(
-          'Error', 'An error occurred: ${e.toString()} in PostOfferController');
+        'Error',
+        'An error occurred: ${e.toString()} in PostOfferController',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading(false);
     } finally {
       isLoading(false);

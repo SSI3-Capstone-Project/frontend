@@ -165,19 +165,19 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  // widget.product.isFavorated =
-                                  //     !widget.product.isFavorated;
-                                },
-                                child: Icon(
-                                  Icons.more_horiz,
-                                  color: Colors.black54,
-                                ),
-                              ),
+                              // SizedBox(
+                              //   width: 15,
+                              // ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     // widget.product.isFavorated =
+                              //     //     !widget.product.isFavorated;
+                              //   },
+                              //   child: Icon(
+                              //     Icons.more_horiz,
+                              //     color: Colors.black54,
+                              //   ),
+                              // ),
                             ],
                           )
                         ],
@@ -267,7 +267,7 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Constants.secondaryColor,
+                                    color: Constants.primaryColor,
                                   ),
                                   softWrap:
                                       true, // อนุญาตให้ข้อความขึ้นบรรทัดใหม่
@@ -285,146 +285,116 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                   widget.username)
                 Positioned(
                   right: 0,
-                  bottom: 0,
+                  bottom: 10,
                   left: 0,
                   child: Container(
                     padding: const EdgeInsets.symmetric(),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: Offset(0, -2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // IconButton(
-                        //   padding: EdgeInsets.symmetric(horizontal: 40),
-                        //   icon: Icon(Icons.favorite_border),
-                        //   onPressed: () {
-                        //     // กดปุ่มโปรด
-                        //   },
-                        // ),
-
-                        // IconButton(
-                        //   padding: EdgeInsets.symmetric(horizontal: 40),
-                        //   icon: Icon(Icons.chat_bubble_outline),
-                        //   onPressed: () {
-                        //     // กดปุ่มแชท
-                        //   },
-                        // ),
-                        Expanded(
-                          child: TextButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Constants.secondaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                              ),
-                              onPressed: () async {
-                                deletePostOffer(widget.postID, widget.offerID);
-                              },
-                              child: Column(
-                                children: [
-                                  Icon(Icons.delete_outline,
-                                      color: Colors.black),
-                                  Text(
-                                    'ทิ้งข้อเสนอนี้',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
+                    child: SizedBox(
+                      height: 45,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  deletePostOffer(
+                                      widget.postID, widget.offerID);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Constants.secondaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                ],
-                              )),
-                        ),
-                        Expanded(
-                          child: TextButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 45),
+                                child: Text(
+                                  'ทิ้งข้อเสนอนี้',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
-                              onPressed: () async {
-                                var result = await createChatRoomController
-                                    .createChatRoom(
-                                        widget.postID, widget.offerID);
-                                if (result != null) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatRoom(
-                                        roomID: result,
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  var result = await createChatRoomController
+                                      .createChatRoom(
+                                          widget.postID, widget.offerID);
+                                  if (result != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatRoom(
+                                          roomID: result,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Column(
-                                children: [
-                                  Icon(Icons.chat_outlined,
-                                      color: Colors.black),
-                                  Text(
-                                    'แชท',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey.shade50,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                ],
-                              )),
-                        ),
+                                ),
+                                child: Text(
+                                  'แชท',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ),
 
-                        // ปุ่มตรงกลาง
-                        // ElevatedButton(
-                        //     style: ElevatedButton.styleFrom(
-                        //       backgroundColor: Constants.secondaryColor,
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(0),
-                        //       ),
-                        //       padding: const EdgeInsets.symmetric(
-                        //           vertical: 25, horizontal: 24),
-                        //     ),
-                        //     onPressed: () {
-                        //       Navigator.push(
-                        //         context,
-                        //         MaterialPageRoute(
-                        //           builder: (context) => ExchangePage(
-                        //             postID: widget.postID,
-                        //             offerID: widget.offerID,
-                        //           ),
-                        //         ),
-                        //       );
-                        //     },
-                        //     child: Row(
-                        //       children: [
-                        //         Icon(Icons.autorenew, color: Colors.white),
-                        //         SizedBox(
-                        //           width: 5,
-                        //         ),
-                        //         Text(
-                        //           'ตกลงแลกเปลี่ยน',
-                        //           style: const TextStyle(
-                        //             fontSize: 14,
-                        //             fontWeight: FontWeight.w500,
-                        //             color: Colors.white,
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     )),
-                      ],
+                          // ปุ่มตรงกลาง
+                          // ElevatedButton(
+                          //     style: ElevatedButton.styleFrom(
+                          //       backgroundColor: Constants.secondaryColor,
+                          //       shape: RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.circular(0),
+                          //       ),
+                          //       padding: const EdgeInsets.symmetric(
+                          //           vertical: 25, horizontal: 24),
+                          //     ),
+                          //     onPressed: () {
+                          //       Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //           builder: (context) => ExchangePage(
+                          //             postID: widget.postID,
+                          //             offerID: widget.offerID,
+                          //           ),
+                          //         ),
+                          //       );
+                          //     },
+                          //     child: Row(
+                          //       children: [
+                          //         Icon(Icons.autorenew, color: Colors.white),
+                          //         SizedBox(
+                          //           width: 5,
+                          //         ),
+                          //         Text(
+                          //           'ตกลงแลกเปลี่ยน',
+                          //           style: const TextStyle(
+                          //             fontSize: 14,
+                          //             fontWeight: FontWeight.w500,
+                          //             color: Colors.white,
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     )),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -432,48 +402,33 @@ class _OfferDetailsPageState extends State<OfferDetailPage> {
                   widget.username)
                 Positioned(
                   right: 0,
-                  bottom: 0,
+                  bottom: 10,
                   left: 0,
                   child: Container(
                     padding: const EdgeInsets.symmetric(),
-                    decoration: BoxDecoration(
-                      color: Constants.secondaryColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: Offset(0, -2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 30),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: SizedBox(
+                        height: 45,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            deletePostOffer(widget.postID, widget.offerID);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.secondaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            onPressed: () async {
-                              deletePostOffer(widget.postID, widget.offerID);
-                            },
-                            child: Column(
-                              children: [
-                                Icon(Icons.cancel, color: Colors.white),
-                                Text(
-                                  'ยกเลิกข้อเสนอ',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ],
+                          ),
+                          child: Text(
+                            'ยกเลิกข้อเสนอ',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),

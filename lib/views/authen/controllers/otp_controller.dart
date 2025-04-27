@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -42,30 +43,54 @@ class OTPController extends GetxController {
         // isLoading.value = false;
         // return true;
         if (message == 'Email is already registered') {
-          Get.snackbar('แจ้งเตือน', 'อีเมลนี้ถูกลงทะเบียนไว้แล้ว');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'อีเมลนี้ถูกลงทะเบียนไว้แล้ว',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading.value = false;
           return false;
         } else if (message == 'OTP has been sent to your email') {
-          Get.snackbar('สำเร็จ', 'รหัส OTP ถูกส่งไปยังอีเมลปลายทางแล้ว');
+          Get.snackbar(
+            'สำเร็จ',
+            'รหัส OTP ถูกส่งไปยังอีเมลปลายทางแล้ว',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading.value = false;
           return true;
         } else {
-          Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการส่งรหัส OTP');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'เกิดข้อผิดพลาดในการส่งรหัส OTP',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading.value = false;
           return false;
         }
       } else if (response.statusCode == 409) {
-        Get.snackbar('แจ้งเตือน', 'อีเมลนี้ถูกลงทะเบียนไว้แล้ว');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'อีเมลนี้ถูกลงทะเบียนไว้แล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else {
-        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการส่งรหัส OTP');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดในการส่งรหัส OTP',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       // Handle error
-      Get.snackbar('Error', 'An error occurred. Please try again. $e');
+      Get.snackbar(
+        'Error',
+        'An error occurred. Please try again. $e',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }
@@ -103,24 +128,44 @@ class OTPController extends GetxController {
         // isLoading.value = false;
         // return true;
         if (message == 'Email is already registered') {
-          Get.snackbar('แจ้งเตือน', 'อีเมลนี้ถูกลงทะเบียนไว้แล้ว');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'อีเมลนี้ถูกลงทะเบียนไว้แล้ว',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading.value = false;
           return false;
         } else if (message == 'OTP has been sent to your email') {
-          Get.snackbar('สำเร็จ', 'รหัส OTP ใหม่ถูกส่งไปยังอีเมลปลายทางแล้ว');
+          Get.snackbar(
+            'สำเร็จ',
+            'รหัส OTP ใหม่ถูกส่งไปยังอีเมลปลายทางแล้ว',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading.value = false;
           return true;
         } else {
-          Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการส่งรหัส OTP ใหม่');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'เกิดข้อผิดพลาดในการส่งรหัส OTP ใหม่',
+            backgroundColor: Colors.grey.shade200,
+          );
           isLoading.value = false;
           return false;
         }
       } else if (response.statusCode == 409) {
-        Get.snackbar('แจ้งเตือน', 'อีเมลนี้ถูกลงทะเบียนไว้แล้ว');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'อีเมลนี้ถูกลงทะเบียนไว้แล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else {
-        Get.snackbar('แจ้งเตือน', 'เกิดข้อผิดพลาดในการส่งรหัส OTP ใหม่');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดในการส่งรหัส OTP ใหม่',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
@@ -129,7 +174,11 @@ class OTPController extends GetxController {
       print(
           '-----------------------------------------------------------------');
       print(e);
-      Get.snackbar('Error', 'An error occurred. Please try again.');
+      Get.snackbar(
+        'Error',
+        'An error occurred. Please try again.',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }
@@ -159,11 +208,19 @@ class OTPController extends GetxController {
       // ตรวจสอบสถานะการตอบกลับ
       if (response.statusCode == 200) {
         print('รหัส OTP ถูกส่งไปยังเมลปลายทางแล้ว');
-        Get.snackbar('สำเร็จ', 'อีเมลของท่านถูกยืนยันเรียบร้อยแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'อีเมลของท่านถูกยืนยันเรียบร้อยแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return true;
       } else {
-        Get.snackbar('แจ้งเตือน', 'รหัสผ่าน OTP ไม่ถูกต้อง');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'รหัสผ่าน OTP ไม่ถูกต้อง',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
@@ -172,7 +229,11 @@ class OTPController extends GetxController {
       print(
           '-----------------------------------------------------------------');
       print(e);
-      Get.snackbar('Error', 'An error occurred. Please try again.');
+      Get.snackbar(
+        'Error',
+        'An error occurred. Please try again.',
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }

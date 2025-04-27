@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -21,9 +22,10 @@ class SentOfferPostsListController extends GetxController {
 
       // สร้าง URI โดยเช็คว่ามี postTitle หรือไม่
       final uri = Uri.parse('${dotenv.env['API_URL']}/offers/$offerId/posts')
-          .replace(queryParameters: postTitle != null && postTitle.isNotEmpty
-          ? {'post_title': postTitle}
-          : null);
+          .replace(
+              queryParameters: postTitle != null && postTitle.isNotEmpty
+                  ? {'post_title': postTitle}
+                  : null);
 
       final response = await http.get(
         uri,
@@ -37,10 +39,18 @@ class SentOfferPostsListController extends GetxController {
         var responseData = GetSentOfferPostListResponse.fromJson(jsonData);
         sentOfferPosts.value = responseData.data;
       } else {
-        Get.snackbar('Error', 'Failed to load sent offer posts');
+        Get.snackbar(
+          'Error',
+          'Failed to load sent offer posts',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred while fetching sent offer posts');
+      Get.snackbar(
+        'Error',
+        'An error occurred while fetching sent offer posts',
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading(false);
     }

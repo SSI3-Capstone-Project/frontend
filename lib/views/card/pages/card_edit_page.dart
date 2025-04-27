@@ -69,7 +69,11 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
     final newName = cardNameController.text.trim();
 
     if (newName.isEmpty) {
-      Get.snackbar("❌ ผิดพลาด", "กรุณากรอกชื่อบนบัตร");
+      Get.snackbar(
+        "❌ ผิดพลาด",
+        "กรุณากรอกชื่อบนบัตร",
+        backgroundColor: Colors.grey.shade200,
+      );
       return;
     }
 
@@ -89,7 +93,7 @@ class _EditCardDetailsPageState extends State<EditCardDetailsPage> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("ชื่อบนบัตร",
+            const Text("ชื่อบนบัตร *",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(

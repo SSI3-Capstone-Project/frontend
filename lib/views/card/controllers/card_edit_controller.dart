@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -31,12 +32,24 @@ class EditCardDetailsController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar("สำเร็จ", "อัปเดตชื่อบัตรเรียบร้อยแล้ว");
+        Get.snackbar(
+          "สำเร็จ",
+          "อัปเดตชื่อบัตรเรียบร้อยแล้ว",
+          backgroundColor: Colors.grey.shade200,
+        );
       } else {
-        Get.snackbar("ผิดพลาด", "ไม่สามารถอัปเดตข้อมูลได้");
+        Get.snackbar(
+          "ผิดพลาด",
+          "ไม่สามารถอัปเดตข้อมูลได้",
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
-      Get.snackbar("ข้อผิดพลาด", "เกิดข้อผิดพลาด: $e");
+      Get.snackbar(
+        "ข้อผิดพลาด",
+        "เกิดข้อผิดพลาด: $e",
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading.value = false;
     }

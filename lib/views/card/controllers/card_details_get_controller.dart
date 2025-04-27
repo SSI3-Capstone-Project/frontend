@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -32,10 +33,18 @@ class GetOmiseCustomerCardDetailController extends GetxController {
         final data = json.decode(utf8Data)['data'];
         cardDetail.value = GetOmiseCustomerCardDetail.fromJson(data);
       } else {
-        Get.snackbar('Error', 'Failed to fetch card details');
+        Get.snackbar(
+          'Error',
+          'Failed to fetch card details',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e in GetOmiseCustomerCardDetailController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e in GetOmiseCustomerCardDetailController',
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading.value = false;
     }

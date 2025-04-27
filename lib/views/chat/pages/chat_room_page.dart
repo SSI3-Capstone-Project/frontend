@@ -222,8 +222,11 @@ class _ChatRoomState extends State<ChatRoom> {
                             );
                           }
                         } else {
-                          Get.snackbar("แจ้งเตือน",
-                              "กรุณาแจ้งให้เจ้าของโพสต์เป็นผู้เริ่มสร้างการแลกเปลี่ยน");
+                          Get.snackbar(
+                            "แจ้งเตือน",
+                            "กรุณาแจ้งให้เจ้าของโพสต์เป็นผู้เริ่มสร้างการแลกเปลี่ยน",
+                            backgroundColor: Colors.grey.shade200,
+                          );
                         }
                       } else {
                         // เราเป็นเจ้าของ Post

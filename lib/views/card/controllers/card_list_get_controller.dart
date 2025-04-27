@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -46,10 +47,18 @@ class CardListController extends GetxController {
           cards.value = []; // ตั้งค่าให้เป็น array ว่างหากไม่มีข้อมูล
         }
       } else {
-        Get.snackbar('Error', 'Failed to fetch customer cards');
+        Get.snackbar(
+          'Error',
+          'Failed to fetch customer cards',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e in OmiseCardController');
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e in OmiseCardController',
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading.value = false;
     }

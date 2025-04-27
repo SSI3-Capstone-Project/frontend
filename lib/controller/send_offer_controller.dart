@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:mbea_ssi3_front/controller/token_controller.dart';
@@ -39,7 +40,11 @@ class SendOfferController extends GetxController {
             json.decode(utf8.decode(response.bodyBytes));
         message.value =
             responseData['message'] ?? 'Offer added to post successfully';
-        Get.snackbar('สำเร็จ', 'ข้อเสนอของคุณถูกส่งไปแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'ข้อเสนอของคุณถูกส่งไปแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return true;
       } else if (response.statusCode == 409) {
@@ -48,7 +53,11 @@ class SendOfferController extends GetxController {
         message.value =
             responseData['message'] ?? 'Failed to add offer to post';
         print(responseData);
-        Get.snackbar('แจ้งเตือน', 'ไม่สามารถยื่นข้อเสนอเดิมซ้ำได้');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'ไม่สามารถยื่นข้อเสนอเดิมซ้ำได้',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       } else {
@@ -57,13 +66,21 @@ class SendOfferController extends GetxController {
         message.value =
             responseData['message'] ?? 'Failed to add offer to post';
         print(responseData);
-        Get.snackbar('แจ้งเตือน', 'เกินปัญหาระหว่างการส่งข้อเสนอของคุณ');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกินปัญหาระหว่างการส่งข้อเสนอของคุณ',
+          backgroundColor: Colors.grey.shade200,
+        );
         isLoading.value = false;
         return false;
       }
     } catch (e) {
       message.value = 'Error occurred: $e';
-      Get.snackbar('แจ้งเตือน', message.value);
+      Get.snackbar(
+        'แจ้งเตือน',
+        message.value,
+        backgroundColor: Colors.grey.shade200,
+      );
       isLoading.value = false;
       return false;
     }

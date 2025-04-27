@@ -105,10 +105,18 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
       );
 
       if (success) {
-        Get.snackbar('สำเร็จ', 'รายงานของคุณถูกส่งเรียบร้อยแล้ว');
+        Get.snackbar(
+          'สำเร็จ',
+          'รายงานของคุณถูกส่งเรียบร้อยแล้ว',
+          backgroundColor: Colors.grey.shade200,
+        );
         Navigator.of(context).pop();
       } else {
-        Get.snackbar('ผิดพลาด', 'เกิดปัญหาระหว่างการส่งรายงาน');
+        Get.snackbar(
+          'ผิดพลาด',
+          'เกิดปัญหาระหว่างการส่งรายงาน',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     }
   }

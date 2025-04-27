@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -29,12 +30,24 @@ class DeleteCardController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        Get.snackbar('สำเร็จ', 'ลบบัตรสำเร็จ');
+        Get.snackbar(
+          'สำเร็จ',
+          'ลบบัตรสำเร็จ',
+          backgroundColor: Colors.grey.shade200,
+        );
       } else {
-        Get.snackbar('ผิดพลาด', 'ไม่สามารถลบบัตรได้: ${jsonDecode(response.body)['message']}');
+        Get.snackbar(
+          'ผิดพลาด',
+          'ไม่สามารถลบบัตรได้: ${jsonDecode(response.body)['message']}',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } catch (e) {
-      Get.snackbar('ข้อผิดพลาด', 'เกิดข้อผิดพลาด: $e');
+      Get.snackbar(
+        'ข้อผิดพลาด',
+        'เกิดข้อผิดพลาด: $e',
+        backgroundColor: Colors.grey.shade200,
+      );
     } finally {
       isLoading(false);
     }

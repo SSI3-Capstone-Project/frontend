@@ -145,7 +145,11 @@ class _RegisterPageState extends State<RegisterPage> {
             context, MaterialPageRoute(builder: (_) => LoginPage()));
       }
     } else {
-      Get.snackbar('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+      Get.snackbar(
+        'แจ้งเตือน',
+        'กรุณากรอกข้อมูลให้ครบถ้วน',
+        backgroundColor: Colors.grey.shade200,
+      );
     }
   }
 
@@ -160,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
         // ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -186,13 +190,15 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Text(
                           'โปรดกรอกข้อมูลธนาคารของท่านให้ครบถ้วนและถูกต้อง เพื่อความสะดวกในการคืนเงินค่าส่วนต่างหลังจากการแลกเปลี่ยน',
                           style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w500),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade700),
                           textAlign: TextAlign.center, // จัดเรียงข้อความตรงกลาง
                         ),
                       ),
                       SizedBox(height: 30),
                       _buildBankDropdownField(
-                        label: 'เลือกธนาคาร',
+                        label: 'เลือกธนาคาร *',
                         items: bankItems,
                         value: 'kbank', // ตัวอย่างค่าที่ถูกเลือกเริ่มต้น
                         onChanged: (newValue) {
@@ -204,13 +210,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(height: 20),
                       _buildTextField(
                         controller: _bankAccountNumber,
-                        label: 'เลขบัญชี',
+                        label: 'เลขบัญชี *',
                         isBankAccountNumber: true,
                       ),
                       SizedBox(height: 20),
                       _buildTextField(
                         controller: _bankAccountName,
-                        label: 'ชื่อผู้ใช้',
+                        label: 'ชื่อผู้ใช้ *',
                         maxLength: 30,
                       ),
                       SizedBox(height: 24),
@@ -284,7 +290,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               Expanded(
                                 child: _buildTextField(
                                   controller: _nameController,
-                                  label: 'ชื่อ',
+                                  label: 'ชื่อ *',
                                   maxLength: 30,
                                 ),
                               ),
@@ -292,7 +298,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               Expanded(
                                 child: _buildTextField(
                                   controller: _surnameController,
-                                  label: 'นามสกุล',
+                                  label: 'นามสกุล *',
                                   maxLength: 45,
                                 ),
                               ),
@@ -301,8 +307,20 @@ class _RegisterPageState extends State<RegisterPage> {
                           SizedBox(height: 20),
                           _buildTextField(
                             controller: _usernameController,
-                            label: 'ชื่อผู้ใช้งาน',
+                            label: 'ชื่อผู้ใช้งาน *',
                             maxLength: 30,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[a-zA-Z0-9]')),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8, left: 8),
+                            child: Text(
+                              'ชื่อผู้ใช้งานต้องเป็นภาษาอังกฤษ และตัวเลข 0-9 เท่านั้น',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey.shade700),
+                            ),
                           ),
                           SizedBox(height: 20),
                           _buildTextField(
@@ -314,32 +332,33 @@ class _RegisterPageState extends State<RegisterPage> {
                           SizedBox(height: 20),
                           _buildTextField(
                             controller: _passwordController,
-                            label: 'รหัสผ่าน',
+                            label: 'รหัสผ่าน *',
                             isPassword: true,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 8, left: 8),
                             child: Text(
                               'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษรและประกอบด้วย\nตัวอักษร a-z, A-Z, และ 0-9',
-                              style: TextStyle(fontSize: 12),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey.shade700),
                             ),
                           ),
                           SizedBox(height: 20),
                           _buildTextField(
                             controller: _confirmPasswordController,
-                            label: 'ยืนยันรหัสผ่าน',
+                            label: 'ยืนยันรหัสผ่าน *',
                             isPassword: true,
                             isConfirmPassword: true,
                           ),
                           SizedBox(height: 20),
                           _buildTextField(
                             controller: _phoneController,
-                            label: 'เบอร์โทร',
+                            label: 'เบอร์โทร *',
                             isPhone: true,
                           ),
                           SizedBox(height: 20),
                           _buildDropdownField(
-                            label: 'เพศ',
+                            label: 'เพศ *',
                             items: genderOptions,
                             value: _selectedGender,
                             onChanged: (newValue) {
@@ -437,7 +456,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
-                                hintText: "mail@gmail.com",
+                                hintText: "mail@gmail.com *",
                                 hintStyle: TextStyle(
                                   color: Colors.grey, // สีจางเองได้
                                   fontSize: 14, // หรือปรับขนาดด้วย
@@ -455,12 +474,18 @@ class _RegisterPageState extends State<RegisterPage> {
                                 String email = _emailController.text;
                                 if (!email.isNotEmpty) {
                                   Get.snackbar(
-                                      'แจ้งเตือน', 'กรุณากรอกอีเมลของคุณ');
+                                    'แจ้งเตือน',
+                                    'กรุณากรอกอีเมลของคุณ',
+                                    backgroundColor: Colors.grey.shade200,
+                                  );
                                 } else {
                                   if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
                                       .hasMatch(email)) {
                                     Get.snackbar(
-                                        'แจ้งเตือน', 'โปรดกรอกอีเมลที่ถูกต้อง');
+                                      'แจ้งเตือน',
+                                      'โปรดกรอกอีเมลที่ถูกต้อง',
+                                      backgroundColor: Colors.grey.shade200,
+                                    );
                                   } else {
                                     print("Sending OTP to: $email");
                                     var result =
@@ -605,8 +630,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                         .map((controller) => controller.text)
                                         .join();
                                     if (otp.length != 6) {
-                                      Get.snackbar('แจ้งเตือน',
-                                          'กรุณากรอก OTP ให้ครบ 6 หลัก');
+                                      Get.snackbar(
+                                        'แจ้งเตือน',
+                                        'กรุณากรอก OTP ให้ครบ 6 หลัก',
+                                        backgroundColor: Colors.grey.shade200,
+                                      );
                                     }
                                     var result = await otpController.verifyOTP(
                                         _emailController.text, otp);
@@ -726,6 +754,7 @@ class _RegisterPageState extends State<RegisterPage> {
     bool isPhone = false,
     bool isBankAccountNumber = false,
     bool isConfirmPassword = false,
+    List<TextInputFormatter>? inputFormatters, // <=== ✅ เพิ่มบรรทัดนี้
   }) {
     return TextFormField(
       controller: controller,
@@ -737,12 +766,13 @@ class _RegisterPageState extends State<RegisterPage> {
           : isPhone || isBankAccountNumber
               ? TextInputType.phone
               : TextInputType.text,
-      inputFormatters: isPhone || isBankAccountNumber
-          ? [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(10)
-            ]
-          : null,
+      inputFormatters: inputFormatters ??
+          (isPhone || isBankAccountNumber
+              ? [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10)
+                ]
+              : null), // <=== ✅ ปรับตรงนี้ใหม่
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(
@@ -758,7 +788,7 @@ class _RegisterPageState extends State<RegisterPage> {
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(
-            color: Colors.grey.shade500, // สีของกรอบเมื่อปิดการใช้งาน
+            color: Colors.grey.shade500,
           ),
         ),
       ),
