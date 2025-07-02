@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">cp24ssi3.sit.kmutt.ac.th</domain>
+        <domain includeSubdomains="true">capstone24.sit.kmutt.ac.th</domain>
     </domain-config>
 </network-security-config>

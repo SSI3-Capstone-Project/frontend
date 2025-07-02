@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -9,29 +12,21 @@ class CreateOfferController extends GetxController {
   final tokenController = Get.find<TokenController>();
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
-  @override
-  void onInit() {
-    super.onInit();
-    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
-  }
-
-  Future<void> createOffer(Offer offer) async {
+  Future<String?> createOffer(Offer offer) async {
     isLoading.value = true;
-    if (accessToken == null) {
-      Get.snackbar('Error', 'No access token found.');
-      return;
+    if (tokenController.accessToken.value == null) {
+      // Get.snackbar('Error', 'No access token found.');
+      isLoading.value = false;
+      return null;
     }
+    final token = tokenController.accessToken.value;
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('${dotenv.env['API_URL']}/offer'), // เปลี่ยน URL ตามจริง
+      Uri.parse('${dotenv.env['API_URL']}/offers'), // เปลี่ยน URL ตามจริง
     );
 
     // แนบ accessToken ลงบน header ของ MultipartRequest
-    request.headers['Authorization'] = 'Bearer $accessToken';
+    request.headers['Authorization'] = 'Bearer $token';
 
     // เพิ่มข้อมูลฟอร์มที่ไม่ใช่ไฟล์
     request.fields.addAll(
@@ -56,19 +51,42 @@ class CreateOfferController extends GetxController {
       var response = await request.send();
       if (response.statusCode == 200) {
         var responseData = await response.stream.bytesToString();
-        // Handle success
-        print('Offer created successfully: $responseData');
+        var parsedResponse = jsonDecode(responseData);
+
+        if (parsedResponse['data'] != null &&
+            parsedResponse['data']['id'] != null) {
+          String offerId = parsedResponse['data']['id'];
+          print('Offer created successfully with ID: $offerId');
+          isLoading.value = false;
+          return offerId;
+        } else {
+          print('Unexpected response structure: $responseData');
+          Get.snackbar(
+            'แจ้งเตือน',
+            'ไม่พบ ID ของข้อเสนอในข้อมูลที่ตอบกลับ',
+            backgroundColor: Colors.grey.shade200,
+          );
+          isLoading.value = false;
+          return null;
+        }
       } else {
         // อ่านและแสดงรายละเอียดข้อผิดพลาด
         var errorData = await response.stream.bytesToString();
         print(
             'Failed to create offer: ${response.statusCode}, Error: $errorData');
+        Get.snackbar(
+          'แจ้งเตือน',
+          'เกิดข้อผิดพลาดไม่สามารถสร้างข้อเสนอได้',
+          backgroundColor: Colors.grey.shade200,
+        );
+        isLoading.value = false;
+        return null;
       }
     } catch (e) {
       // Handle exception
       print('Error: $e');
-    } finally {
       isLoading.value = false;
+      return null;
     }
   }
 }

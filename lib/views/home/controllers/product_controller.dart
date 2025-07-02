@@ -1,59 +1,80 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:mbea_ssi3_front/controller/token_controller.dart';
 import 'package:mbea_ssi3_front/views/home/models/product_model.dart';
 
 class ProductController extends GetxController {
+  final tokenController = Get.find<TokenController>();
   var productList = <Product>[].obs;
   var isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
+    // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
     fetchProducts();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts({
+    String? brandName,
+    String? collectionName,
+    String? subCollectionName,
+    String? title, // ✅ เพิ่ม parameter title
+  }) async {
     try {
       isLoading(true);
-      final response = await http.get(
-        Uri.parse('https://671e5d3c1dfc4299198215f1.mockapi.io/products'),
-      );
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body) as List;
-        productList.value =
-            jsonData.map((item) => Product.fromJson(item)).toList();
-      } else {
-        Get.snackbar('Error', 'Failed to load products');
+      if (tokenController.accessToken.value == null) {
+        return;
       }
-    } finally {
-      isLoading(false);
-    }
-  }
+      final token = tokenController.accessToken.value;
 
-  Future<void> updateProduct(
-      String id, String title, String description) async {
-    try {
-      isLoading(true);
-      final response = await http.put(
-        Uri.parse('https://671e5d3c1dfc4299198215f1.mockapi.io/products/$id'),
-        headers: {'Content-Type': 'application/json; charset=UTF-8'},
-        body: jsonEncode({
-          'title': title,
-          'description': description,
-        }),
+      final queryParams = <String, String>{};
+
+      if (brandName != null && brandName.isNotEmpty) {
+        queryParams['brand_name'] = brandName;
+
+        if (collectionName != null && collectionName.isNotEmpty) {
+          queryParams['collection_name'] = collectionName;
+
+          if (subCollectionName != null && subCollectionName.isNotEmpty) {
+            queryParams['sub_collection_name'] = subCollectionName;
+          }
+        }
+      }
+
+      // ✅ เพิ่มการตรวจสอบ title และใส่ลงใน queryParams ถ้ามี
+      if (title != null && title.isNotEmpty) {
+        queryParams['title'] = title;
+      }
+
+      final uri = Uri.parse('${dotenv.env['API_URL']}/posts')
+          .replace(queryParameters: queryParams);
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {
-        int index = productList.indexWhere((product) => product.id == id);
-        if (index != -1) {
-          productList[index].title = title;
-          productList[index].description = description;
-          productList.refresh();
+        var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+        var postData = jsonData['data'];
+        if (postData != null && postData is List && postData.isNotEmpty) {
+          productList.value =
+              postData.map((item) => Product.fromJson(item)).toList();
+        } else {
+          productList.clear();
         }
-        Get.snackbar('Success', 'Product updated successfully');
       } else {
-        Get.snackbar('Error', 'Failed to update product');
+        Get.snackbar(
+          'Error',
+          'Failed to load products',
+          backgroundColor: Colors.grey.shade200,
+        );
       }
     } finally {
       isLoading(false);

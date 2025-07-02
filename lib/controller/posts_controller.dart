@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -10,28 +11,26 @@ class PostsController extends GetxController {
   var postList = <Posts>[].obs;
   var isLoading = false.obs;
 
-  // จำเป็นต้องตั้ง accessToken ที่ได้รับจากการ login หรืออื่นๆ
-  String? accessToken;
-
   @override
   void onInit() {
     super.onInit();
     // กำหนดค่า accessToken ใน onInit แทนการกำหนดในตัวแปรโดยตรง
-    accessToken = tokenController.accessToken.value;
     fetchPosts();
   }
 
   Future<void> fetchPosts() async {
     try {
       isLoading(true);
-      if (accessToken == null) {
-        Get.snackbar('Error', 'No access token found.');
+      if (tokenController.accessToken.value == null) {
+        // Get.snackbar('Error', 'No access token found.');
+        isLoading(false);
         return;
       }
+      final token = tokenController.accessToken.value;
       final response = await http.get(
-        Uri.parse('${dotenv.env['API_URL']}/posts'),
+        Uri.parse('${dotenv.env['API_URL']}/posts/own'),
         headers: {
-          'Authorization': 'Bearer $accessToken', // แนบ Bearer Token
+          'Authorization': 'Bearer $token', // แนบ Bearer Token
         },
       );
       if (response.statusCode == 200) {
@@ -40,15 +39,27 @@ class PostsController extends GetxController {
         if (postData != null && postData is List && postData.isNotEmpty) {
           postList.value =
               postData.map((item) => Posts.fromJson(item)).toList();
+          isLoading(false);
         } else {
           postList.clear(); // Clear the list if no data is present
-          Get.snackbar('Notice', 'No posts available.');
+          // Get.snackbar('แจ้งเตือน', 'สร้างโพสต์ของคุณ เพื่อเริ่มการแลกเปลี่ยน');
+          isLoading(false);
         }
       } else {
-        Get.snackbar('Error', 'Failed to load posts: ${response.reasonPhrase}');
+        Get.snackbar(
+          'Error',
+          'Failed to load posts: ${response.reasonPhrase}',
+          backgroundColor: Colors.grey.shade200,
+        );
+        isLoading(false);
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: ${e.toString()}');
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()} in PostsController',
+        backgroundColor: Colors.grey.shade200,
+      );
+      isLoading(false);
     } finally {
       isLoading(false);
     }

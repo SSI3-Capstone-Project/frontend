@@ -46,9 +46,23 @@ dependencies:
   flutter_dotenv: ^5.2.1
   flutter_secure_storage: ^9.2.2
   # gallery_picker: ^0.5.1
+  video_thumbnail: ^0.5.3
+  web_socket_channel: ^3.0.2
+  google_maps_flutter: ^2.10.0
+  flutter_phoenix: ^1.1.1
+  intl: ^0.20.2
+  flutter_google_places_hoc081098: ^2.0.0
+  google_maps_flutter_web: ^0.5.10
+  google_api_headers: ^4.3.5
+  flutter_svg: ^2.0.17
+  geolocator: ^13.0.2
+  mime: ^2.0.0
+  path_provider: ^2.1.5
 
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.14.3"
+
   flutter_test:
     sdk: flutter
 
@@ -57,7 +71,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -74,6 +88,8 @@ flutter:
   assets:
     - assets/images/
     - .env
+    - assets/fonts/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -87,17 +103,163 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: Sarabun
+      fonts:
+        - asset: assets/fonts/Sarabun/Sarabun-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Sarabun/Sarabun-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Sarabun/Sarabun-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Sarabun/Sarabun-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Sarabun/Sarabun-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Sarabun/Sarabun-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Sarabun/Sarabun-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Sarabun/Sarabun-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Sarabun/Sarabun-Italic.ttf
+          style: italic
+        - asset: assets/fonts/Sarabun/Sarabun-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Sarabun/Sarabun-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Sarabun/Sarabun-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Sarabun/Sarabun-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Sarabun/Sarabun-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Sarabun/Sarabun-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Sarabun/Sarabun-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+    - family: Maitree
+      fonts:
+        - asset: assets/fonts/Maitree/Maitree-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Maitree/Maitree-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Maitree/Maitree-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Maitree/Maitree-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Maitree/Maitree-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Maitree/Maitree-Bold.ttf
+          weight: 700
+    - family: Kanit
+      fonts:
+        - asset: assets/fonts/Kanit/Kanit-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Kanit/Kanit-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Kanit/Kanit-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Kanit/Kanit-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Kanit/Kanit-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Kanit/Kanit-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Kanit/Kanit-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Kanit/Kanit-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Kanit/Kanit-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Kanit/Kanit-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Kanit/Kanit-BlackItalic.ttf
+          weight: 900
+          style: italic
+    - family: Taviraj
+      fonts:
+        - asset: assets/fonts/Taviraj/Taviraj-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Taviraj/Taviraj-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/Taviraj/Taviraj-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Taviraj/Taviraj-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Taviraj/Taviraj-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Taviraj/Taviraj-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Taviraj/Taviraj-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Taviraj/Taviraj-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Taviraj/Taviraj-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Taviraj/Taviraj-ThinItalic.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: assets/fonts/Taviraj/Taviraj-BlackItalic.ttf
+          weight: 900
+          style: italic
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  min_sdk_android: 21

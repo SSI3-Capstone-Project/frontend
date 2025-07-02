@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:mbea_ssi3_front/common/constants.dart';
+import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/controller/province_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_post.dart';
 import 'package:mbea_ssi3_front/views/createForm/pages/create_offer.dart'; // Import CreateOfferForm
 
@@ -13,6 +16,8 @@ class CreatePostOffer extends StatefulWidget {
 }
 
 class _CreatePostOfferState extends State<CreatePostOffer> {
+  final BrandController brandController = Get.put(BrandController());
+  final ProvinceController provinceController = Get.put(ProvinceController());
   List<File> mediaFiles = [];
   bool isCreatingPost = true; // Track selected tab
 
@@ -20,14 +25,16 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
-      });
+      if (mounted) {
+        setState(() {
+          List<File> videos =
+              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+          mediaFiles =
+              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          mediaFiles.add(File(pickedFile.path));
+          mediaFiles.addAll(videos);
+        });
+      }
     }
   }
 
@@ -35,14 +42,16 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
-      setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
-      });
+      if (mounted) {
+        setState(() {
+          List<File> videos =
+              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+          mediaFiles =
+              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          mediaFiles.add(File(pickedFile.path));
+          mediaFiles.addAll(videos);
+        });
+      }
     }
   }
 
@@ -86,15 +95,37 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildTabItem('สร้างโพสต์', isCreatingPost, () {
-            setState(() {
-              isCreatingPost = true;
-            });
-          }),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 25,
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              _buildTabItem('สร้างโพสต์', isCreatingPost, () {
+                // brandController.fetchBrands();
+                // provinceController.fetchProvince();
+                if (mounted) {
+                  setState(() {
+                    isCreatingPost = true;
+                  });
+                }
+              }),
+            ],
+          ),
           _buildTabItem('สร้างข้อเสนอ', !isCreatingPost, () {
-            setState(() {
-              isCreatingPost = false;
-            });
+            // brandController.fetchBrands();
+            // provinceController.fetchProvince();
+            if (mounted) {
+              setState(() {
+                isCreatingPost = false;
+              });
+            }
           }),
         ],
       ),
@@ -105,7 +136,7 @@ class _CreatePostOfferState extends State<CreatePostOffer> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
         decoration: BoxDecoration(
           color: isSelected ? Constants.secondaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(15.0),

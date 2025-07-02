@@ -2,16 +2,26 @@
 
     <!-- เพิ่มสิทธิ์การใช้งานอินเทอร์เน็ต -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+    <uses-feature android:name="android.hardware.location" android:required="false"/>
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+    <uses-feature android:name="android.hardware.location.network" android:required="false"/>
+
 
     <application
-    android:label="mbea_ssi3_front"
+    android:label="MBEA"
     android:name="${applicationName}"
-    android:icon="@mipmap/ic_launcher"
+    android:icon="@mipmap/launcher_icon"
+    android:usesCleartextTraffic="true"
     android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait" 
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -29,6 +39,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDEYGoa1lbuULdaGiwh80EBtXUsUxWCP-U" />
     </application>
 
     <queries>

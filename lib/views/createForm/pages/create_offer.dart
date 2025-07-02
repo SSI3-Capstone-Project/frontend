@@ -1,16 +1,26 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mbea_ssi3_front/common/constants.dart';
 import 'package:mbea_ssi3_front/controller/brand_controller.dart';
+import 'package:mbea_ssi3_front/controller/offers_controller.dart';
+import 'package:mbea_ssi3_front/controller/province_controller.dart';
+import 'package:mbea_ssi3_front/controller/send_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/controllers/create_offer_controller.dart';
 import 'package:mbea_ssi3_front/views/createForm/models/create_offer_model.dart';
+import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 // import 'package:mbea_ssi3_front/common/constants.dart';
 
 class CreateOfferForm extends StatefulWidget {
-  const CreateOfferForm({super.key});
+  final bool isSendOffer;
+  final String postId;
+  const CreateOfferForm(
+      {super.key, this.isSendOffer = false, this.postId = ''});
 
   @override
   _CreateOfferFormState createState() => _CreateOfferFormState();
@@ -19,11 +29,15 @@ class CreateOfferForm extends StatefulWidget {
 class _CreateOfferFormState extends State<CreateOfferForm> {
   List<File> mediaFiles = [];
 
+  final SendOfferController sendOfferController =
+      Get.put(SendOfferController());
   final CreateOfferController createOfferController =
       Get.put(CreateOfferController());
   final BrandController brandController = Get.put(BrandController());
+  final ProvinceController provinceController = Get.put(ProvinceController());
 
   final _formKey = GlobalKey<FormState>();
+  final OffersController offerController = Get.put(OffersController());
   final TextEditingController _productNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _flawController = TextEditingController();
@@ -33,148 +47,271 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   String? selectedMainCategory;
   String? selectedSubCategory;
 
+  String? selectedProvince;
+  String? selectedMainDistrict;
+  String? selectedSubDistrict;
+
   bool _mediaError = false;
 
+  bool _loadPage = false;
+
+  VideoPlayerController? _controller;
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickImage() async {
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = true; // เริ่มเลือกสื่อ
+      });
+    }
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
+      if (mounted) {
+        setState(() {
+          List<File> videos =
+              mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+          mediaFiles =
+              mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
+          mediaFiles.add(File(pickedFile.path));
+          mediaFiles.addAll(videos);
+        });
+      }
+    }
+    if (mounted) {
       setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
+        _isPickingMedia = false; // จบการเลือกสื่อ
       });
     }
   }
 
   Future<void> _pickVideo() async {
+    if (mounted) {
+      setState(() {
+        _isPickingMedia = true; // เริ่มเลือกสื่อ
+      });
+    }
+
     final pickedFile =
         await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (pickedFile != null && mediaFiles.length < 5) {
+      if (mounted) {
+        setState(() {
+          // เพิ่มวิดีโอใหม่ต่อท้ายรายการวิดีโอที่มีอยู่
+          mediaFiles.add(File(pickedFile.path));
+        });
+      }
+    }
+
+    if (mounted) {
       setState(() {
-        List<File> videos =
-            mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
-        mediaFiles =
-            mediaFiles.where((file) => !file.path.endsWith('.mp4')).toList();
-        mediaFiles.add(File(pickedFile.path));
-        mediaFiles.addAll(videos);
+        _isPickingMedia = false; // จบการเลือกสื่อ
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: ListView(
-        children: [
-          _buildTextFormField(
-            controller: _productNameController,
-            label: 'ชื่อสินค้า',
-            validator: (value) =>
-                value == null || value.isEmpty ? 'โปรดระบุชื่อสินค้า' : null,
-          ),
-          SizedBox(height: 16),
-          Obx(() {
-            if (brandController.isLoading.value) {
-              return Center(child: CircularProgressIndicator());
-            }
+    if (_loadPage) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return Form(
+        key: _formKey,
+        child: ListView(
+          children: [
+            _buildTextFormField(
+              controller: _productNameController,
+              label: 'ชื่อสินค้า *',
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'โปรดระบุชื่อสินค้า' : null,
+            ),
+            SizedBox(height: 16),
 
-            return Container(
-              constraints:
-                  BoxConstraints(maxHeight: 300), // Set a maximum height
-              child: ListView(
-                shrinkWrap:
-                    true, // This allows the ListView to take only as much height as it needs
-                physics:
-                    NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
-                children: [
-                  _buildDropdownField(
-                    label: 'เลือกแบรนด์',
-                    items: brandController.brands.map((b) => b.name).toList(),
-                    value: selectedBrand,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedBrand = newValue;
-                        selectedMainCategory = null;
-                        selectedSubCategory = null;
-                      });
-                    },
-                    validator: (value) =>
-                        value == null ? 'โปรดเลือกแบรนด์' : null,
-                  ),
-                  if (selectedBrand != null)
+            Obx(() {
+              if (!mounted) return const SizedBox();
+
+              if (brandController.isLoading.value) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              return Container(
+                constraints:
+                    BoxConstraints(maxHeight: 300), // Set a maximum height
+                child: ListView(
+                  padding: EdgeInsets.only(top: 0),
+                  shrinkWrap:
+                      true, // This allows the ListView to take only as much height as it needs
+                  physics:
+                      NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                  children: [
                     _buildDropdownField(
-                      label: 'เลือกคอลเลคชั่น',
-                      items: brandController.brands
-                              .firstWhere((b) => b.name == selectedBrand)
-                              .collections
-                              ?.map((c) => c.name)
-                              .toList() ??
-                          [],
-                      value: selectedMainCategory,
+                      label: 'เลือกแบรนด์ *',
+                      items: brandController.brands.map((b) => b.name).toList(),
+                      value: selectedBrand,
                       onChanged: (newValue) {
                         setState(() {
-                          selectedMainCategory = newValue;
+                          selectedBrand = newValue;
+                          selectedMainCategory = null;
                           selectedSubCategory = null;
                         });
                       },
                       validator: (value) =>
-                          value == null ? 'โปรดเลือกคอลเลคชั่น' : null,
+                          value == null ? 'โปรดเลือกแบรนด์' : null,
                     ),
-                  if (selectedMainCategory != null)
+                    if (selectedBrand != null)
+                      _buildDropdownField(
+                        label: 'เลือกคอลเลคชั่น *',
+                        items: brandController.brands
+                                .firstWhere((b) => b.name == selectedBrand)
+                                .collections
+                                ?.map((c) => c.name)
+                                .toList() ??
+                            [],
+                        value: selectedMainCategory,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedMainCategory = newValue;
+                            selectedSubCategory = null;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกคอลเลคชั่น' : null,
+                      ),
+                    if (selectedMainCategory != null)
+                      _buildDropdownField(
+                        label: 'เลือกคอลเลคชั่นย่อย *',
+                        items: brandController.brands
+                                .firstWhere((b) => b.name == selectedBrand)
+                                .collections
+                                ?.firstWhere(
+                                    (c) => c.name == selectedMainCategory)
+                                .subCollections
+                                ?.map((sc) => sc.name)
+                                .toList() ??
+                            [],
+                        value: selectedSubCategory,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedSubCategory = newValue;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกคอลเลคชั่นย่อย' : null,
+                      ),
+                  ],
+                ),
+              );
+            }),
+            // SizedBox(height: 30),
+            _buildTextFormField(
+              controller: _descriptionController,
+              label: 'รายละเอียดสินค้า *',
+              maxLength: 200,
+              maxLines: 4,
+              validator: (value) => value == null || value.isEmpty
+                  ? 'โปรดระบุรายละเอียดของสินค้า'
+                  : null,
+            ),
+            SizedBox(height: 16),
+            _buildTextFormField(
+              controller: _flawController,
+              label: 'ตำหนิ',
+              maxLength: 50,
+            ),
+            SizedBox(height: 16),
+            Obx(() {
+              if (!mounted) return const SizedBox();
+
+              if (provinceController.isLoading.value) {
+                return Center(child: CircularProgressIndicator());
+              }
+
+              return Container(
+                constraints:
+                    BoxConstraints(maxHeight: 300), // Set a maximum height
+                child: ListView(
+                  padding: EdgeInsets.only(top: 0),
+                  shrinkWrap:
+                      true, // This allows the ListView to take only as much height as it needs
+                  physics:
+                      NeverScrollableScrollPhysics(), // Prevents it from scrolling separately
+                  children: [
                     _buildDropdownField(
-                      label: 'เลือกคอลเลคชั่นย่อย',
-                      items: brandController.brands
-                              .firstWhere((b) => b.name == selectedBrand)
-                              .collections
-                              ?.firstWhere(
-                                  (c) => c.name == selectedMainCategory)
-                              .subCollections
-                              ?.map((sc) => sc.name)
-                              .toList() ??
-                          [],
-                      value: selectedSubCategory,
+                      label: 'เลือกจังหวัด *',
+                      items: provinceController.provinces
+                          .map((b) => b.name)
+                          .toList(),
+                      value: selectedProvince,
                       onChanged: (newValue) {
                         setState(() {
-                          selectedSubCategory = newValue;
+                          selectedProvince = newValue;
+                          selectedMainDistrict = null;
+                          selectedSubDistrict = null;
                         });
                       },
                       validator: (value) =>
-                          value == null ? 'โปรดเลือกคอลเลคชั่นย่อย' : null,
+                          value == null ? 'โปรดเลือกจังหวัด' : null,
                     ),
-                ],
-              ),
-            );
-          }),
-          // SizedBox(height: 30),
-          _buildTextFormField(
-            controller: _descriptionController,
-            label: 'รายละเอียดสินค้า',
-            maxLength: 200,
-            maxLines: 4,
-            validator: (value) => value == null || value.isEmpty
-                ? 'โปรดระบุรายละเอียดของสินค้า'
-                : null,
-          ),
-          SizedBox(height: 16),
-          _buildTextFormField(
-            controller: _flawController,
-            label: 'ตำหนิ',
-          ),
-          SizedBox(height: 30),
-          _buildMediaPreview(),
-          SizedBox(height: 30),
-          _buildMediaButtons(),
-          SizedBox(height: 30),
-          _buildSubmitButton(),
-          SizedBox(height: 30),
-        ],
-      ),
-    );
+                    if (selectedProvince != null)
+                      _buildDropdownField(
+                        label: 'เลือกเขต / อำเภอ *',
+                        items: provinceController.provinces
+                                .firstWhere((b) => b.name == selectedProvince)
+                                .districts
+                                ?.map((c) => c.name)
+                                .toList() ??
+                            [],
+                        value: selectedMainDistrict,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedMainDistrict = newValue;
+                            selectedSubDistrict = null;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกเขต / อำเภอ' : null,
+                      ),
+                    if (selectedMainDistrict != null)
+                      _buildDropdownField(
+                        label: 'เลือกตำบล *',
+                        items: provinceController.provinces
+                                .firstWhere((b) => b.name == selectedProvince)
+                                .districts
+                                ?.firstWhere(
+                                    (c) => c.name == selectedMainDistrict)
+                                .subDistricts
+                                ?.map((sc) => sc.name)
+                                .toList() ??
+                            [],
+                        value: selectedSubDistrict,
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedSubDistrict = newValue;
+                          });
+                        },
+                        validator: (value) =>
+                            value == null ? 'โปรดเลือกตำบล' : null,
+                      ),
+                  ],
+                ),
+              );
+            }),
+            // SizedBox(height: 30),
+            _buildMediaPreview(),
+            SizedBox(height: 30),
+            _buildMediaButtons(),
+            SizedBox(height: 30),
+            _buildSubmitButton(),
+            SizedBox(height: 30),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildTextFormField({
@@ -190,12 +327,17 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+        labelStyle: const TextStyle(
+          fontSize: 14,
         ),
-        contentPadding:
-            EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+        border: OutlineInputBorder(
+          borderRadius: widget.isSendOffer
+              ? BorderRadius.circular(5)
+              : BorderRadius.circular(5),
+        ),
+        contentPadding: widget.isSendOffer
+            ? EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12)
+            : EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
       ),
       validator: validator,
     );
@@ -215,10 +357,16 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           isExpanded: true,
           decoration: InputDecoration(
             labelText: label,
-            contentPadding:
-                EdgeInsets.only(left: 30, right: 12, top: 16, bottom: 16),
+            labelStyle: const TextStyle(
+              fontSize: 14,
+            ),
+            contentPadding: widget.isSendOffer
+                ? EdgeInsets.only(left: 30, right: 12, top: 12, bottom: 12)
+                : EdgeInsets.only(left: 30, right: 12, top: 14, bottom: 14),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: widget.isSendOffer
+                  ? BorderRadius.circular(5)
+                  : BorderRadius.circular(5),
               borderSide: BorderSide(color: Colors.grey.shade600),
             ),
           ),
@@ -251,33 +399,156 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
   Widget _buildMediaPreview() {
     if (mediaFiles.isEmpty) return Container();
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: mediaFiles.map((file) {
-        bool isImage = file.path.endsWith('.jpg') || file.path.endsWith('.png');
-        return Stack(
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              child: isImage
-                  ? Image.file(file, fit: BoxFit.cover)
-                  : Icon(Icons.videocam, size: 50),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              child: GestureDetector(
-                onTap: () => setState(() => mediaFiles.remove(file)),
-                child: Icon(Icons.close, color: Colors.red),
+    return SizedBox(
+      height: 120, // กำหนดความสูงสำหรับ ReorderableListView
+      child: ReorderableListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: mediaFiles.length,
+        onReorder: (oldIndex, newIndex) {
+          setState(() {
+            if (newIndex > oldIndex) {
+              newIndex -= 1;
+            }
+            final File item = mediaFiles.removeAt(oldIndex);
+            mediaFiles.insert(newIndex, item);
+
+            // ตรวจสอบให้ไฟล์แรกเป็นรูปภาพเสมอ
+            if (!mediaFiles.first.path.endsWith('.jpg') &&
+                !mediaFiles.first.path.endsWith('.jpeg') &&
+                !mediaFiles.first.path.endsWith('.png')) {
+              final File firstImage = mediaFiles.firstWhere(
+                (file) =>
+                    file.path.endsWith('.jpg') ||
+                    file.path.endsWith('.jpeg') ||
+                    file.path.endsWith('.png'),
+                orElse: () => mediaFiles.first,
+              );
+              mediaFiles.remove(firstImage);
+              mediaFiles.insert(0, firstImage);
+            }
+
+            // ย้ายไฟล์วิดีโอทั้งหมดไปท้ายลิสต์
+            final videos =
+                mediaFiles.where((file) => file.path.endsWith('.mp4')).toList();
+            mediaFiles.removeWhere((file) => file.path.endsWith('.mp4'));
+            mediaFiles.addAll(videos);
+          });
+        },
+        itemBuilder: (context, index) {
+          return Stack(
+            key: ValueKey(mediaFiles[index]),
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                margin: EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(8), // เพิ่มมุมมนให้รูปภาพและวิดีโอ
+                  child: mediaFiles[index].path.endsWith('.jpg') ||
+                          mediaFiles[index].path.endsWith('.jpeg') ||
+                          mediaFiles[index].path.endsWith('.png')
+                      ? Image.file(mediaFiles[index], fit: BoxFit.cover)
+                      : _buildVideoPreview(mediaFiles[index]),
+                ),
               ),
-            ),
-          ],
-        );
-      }).toList(),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      mediaFiles.removeAt(index);
+                    });
+                  },
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.close, color: Colors.white, size: 16),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
+
+  Widget _buildVideoPreview(File videoFile) {
+    return FutureBuilder<Uint8List?>(
+      future: VideoThumbnail.thumbnailData(
+        video: videoFile.path,
+        imageFormat: ImageFormat.JPEG,
+        maxHeight: 1500, // ลดความสูงของ thumbnail
+        quality: 100,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.data != null) {
+          return Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8), // เพิ่มมุมมนให้กับรูป
+                child: Image.memory(
+                  snapshot.data!,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              FutureBuilder<Duration>(
+                future: _getVideoDuration(videoFile),
+                builder: (context, durationSnapshot) {
+                  if (durationSnapshot.connectionState ==
+                          ConnectionState.done &&
+                      durationSnapshot.data != null) {
+                    return Container(
+                      margin: EdgeInsets.all(4),
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _formatDuration(durationSnapshot.data!),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    );
+                  } else {
+                    return SizedBox(); // หากยังโหลดเวลาไม่เสร็จ จะไม่แสดงอะไร
+                  }
+                },
+              ),
+            ],
+          );
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
+  Future<Duration> _getVideoDuration(File videoFile) async {
+    final controller = VideoPlayerController.file(videoFile);
+    await controller.initialize();
+    final duration = controller.value.duration;
+    await controller.dispose(); // ปล่อยหน่วยความจำหลังใช้งาน
+    return duration;
+  }
+
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  bool _isPickingMedia = false;
 
   Widget _buildMediaButtons() {
     return Column(
@@ -295,13 +566,29 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildCustomButton(
-              onPressed: mediaFiles.length < 5 ? _pickImage : null,
+              onPressed: (!_isPickingMedia && mediaFiles.length < 5)
+                  ? _pickImage
+                  : () {
+                      Get.snackbar(
+                        'แจ้งเตือน',
+                        'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว',
+                        backgroundColor: Colors.grey.shade200,
+                      );
+                    },
               icon: Icons.photo_library,
               label: 'เลือกรูปภาพ',
             ),
             SizedBox(width: 16),
             _buildCustomButton(
-              onPressed: mediaFiles.length < 5 ? _pickVideo : null,
+              onPressed: (!_isPickingMedia && mediaFiles.length < 5)
+                  ? _pickVideo
+                  : () {
+                      Get.snackbar(
+                        'แจ้งเตือน',
+                        'ถึงขีดจำกัดจำนวนไฟล์สูงสุดแล้ว',
+                        backgroundColor: Colors.grey.shade200,
+                      );
+                    },
               icon: Icons.video_library,
               label: 'เลือกวีดีโอ',
             ),
@@ -319,7 +606,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     return InkWell(
       onTap: onPressed,
       child: Container(
-        width: 160, // ความกว้างของปุ่ม
+        width: widget.isSendOffer ? 120 : 160, // ความกว้างของปุ่ม
         height: 50, // ความสูงของปุ่ม
         decoration: BoxDecoration(
           color: Colors.white,
@@ -333,7 +620,7 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
             SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(fontSize: 14, color: Colors.black),
+              style: TextStyle(fontSize: 12, color: Colors.black),
             ),
           ],
         ),
@@ -345,9 +632,10 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        width: 150,
+        width: double.infinity,
+        height: 45,
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate() &&
                 mediaFiles.isNotEmpty &&
                 mediaFiles.any((file) {
@@ -369,7 +657,32 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               }
 
               if (subCollectionId == null) {
-                Get.snackbar('แจ้งเตือน', 'กรุณาเลือกคอลเลคชั่นย่อย');
+                Get.snackbar(
+                  'แจ้งเตือน',
+                  'กรุณาเลือกคอลเลคชั่นย่อย',
+                  backgroundColor: Colors.grey.shade200,
+                );
+                return;
+              }
+
+              int? subDistrictId = 0;
+
+              if (selectedSubDistrict != null) {
+                subDistrictId = provinceController.provinces
+                    .firstWhere((b) => b.name == selectedProvince)
+                    .districts
+                    ?.firstWhere((c) => c.name == selectedMainDistrict)
+                    .subDistricts
+                    ?.firstWhere((sc) => sc.name == selectedSubDistrict)
+                    .id;
+              }
+
+              if (subCollectionId == 0) {
+                Get.snackbar(
+                  'แจ้งเตือน',
+                  'กรุณาเลือกคอลเลคชั่นย่อย',
+                  backgroundColor: Colors.grey.shade200,
+                );
                 return;
               }
 
@@ -379,11 +692,41 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
                 description: _descriptionController.text,
                 flaw: _flawController.text,
                 subCollectionId: subCollectionId,
+                subDistrictId: subDistrictId ?? 0,
                 mediaFiles: mediaFiles,
               );
 
               // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
-              Get.find<CreateOfferController>().createOffer(post);
+              if (mounted) {
+                setState(() {
+                  _loadPage = true;
+                });
+              }
+
+              // ส่งไปยัง Controller เพื่อสร้างโพสต์ใหม่
+              var result = await createOfferController.createOffer(post);
+              if (mounted) {
+                if (result != null) {
+                  Get.snackbar(
+                    'สำเร็จ',
+                    'ข้อเสนอใหม่ของคุณถูกสร้างขึ้นแล้ว',
+                    backgroundColor: Colors.grey.shade200,
+                  );
+                  await offerController.fetchOffers();
+                  // send Offer
+                  if (widget.isSendOffer) {
+                    sendOfferController.addOffer(
+                        postId: widget.postId, offerId: result);
+                    Navigator.pop(context, true);
+                  }
+                  Navigator.pop(context, true);
+                }
+              }
+              if (mounted) {
+                setState(() {
+                  _loadPage = false;
+                });
+              }
             } else {
               // แสดงข้อความแจ้งเตือนเมื่อไม่มีรูปภาพใน mediaFiles
               String errorMessage = mediaFiles.any((file) {
@@ -393,12 +736,16 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
               })
                   ? 'กรุณากรอกข้อมูลให้ครบถ้วน'
                   : 'กรุณาเลือกรูปภาพอย่างน้อย 1 รูป';
-              Get.snackbar('แจ้งเตือน', errorMessage);
+              Get.snackbar(
+                'แจ้งเตือน',
+                errorMessage,
+                backgroundColor: Colors.grey.shade200,
+              );
             }
           },
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
+            backgroundColor: Constants.primaryColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -406,7 +753,8 @@ class _CreateOfferFormState extends State<CreateOfferForm> {
           ),
           child: Text(
             'ยืนยัน',
-            style: TextStyle(fontSize: 14),
+            style: TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
       ),

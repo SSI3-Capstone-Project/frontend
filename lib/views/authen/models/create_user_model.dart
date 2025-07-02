@@ -8,6 +8,9 @@ class CreateUserRequest {
   String phone;
   String gender;
   String? imageUrl;
+  String bankCode;
+  String bankAccountNumber;
+  String bankAccountName;
 
   CreateUserRequest({
     this.id,
@@ -19,6 +22,9 @@ class CreateUserRequest {
     required this.phone,
     required this.gender,
     this.imageUrl,
+    required this.bankCode,
+    required this.bankAccountNumber,
+    required this.bankAccountName,
   });
 
   // Factory constructor for creating a new CreateUserRequest instance from a map
@@ -32,6 +38,9 @@ class CreateUserRequest {
       phone: json['phone'],
       gender: json['gender'],
       imageUrl: json['image_url'],
+      bankCode: json['bank_code'],
+      bankAccountNumber: json['bank_account_number'],
+      bankAccountName: json['bank_account_name'],
     );
   }
 
@@ -46,6 +55,9 @@ class CreateUserRequest {
       'phone': phone,
       'gender': gender,
       'image_url': imageUrl,
+      'bank_code': bankCode,
+      'bank_account_number': bankAccountNumber,
+      'bank_account_name': bankAccountName,
     };
   }
 }

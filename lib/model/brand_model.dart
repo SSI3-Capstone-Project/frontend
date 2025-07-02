@@ -32,18 +32,6 @@ class Collection {
   }
 }
 
-// class SubCollection {
-//   final String name;
-
-//   SubCollection({required this.name});
-
-//   factory SubCollection.fromJson(Map<String, dynamic> json) {
-//     return SubCollection(
-//       name: json['name'],
-//     );
-//   }
-// }
-
 class SubCollection {
   final String id;
   final String name;

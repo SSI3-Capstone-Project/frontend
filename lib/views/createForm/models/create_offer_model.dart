@@ -5,6 +5,7 @@ class Offer {
   String description;
   String flaw;
   String subCollectionId;
+  int subDistrictId;
   // String? brand;
   // String? mainCategory;
   // String? subCategory;
@@ -15,6 +16,7 @@ class Offer {
     required this.description,
     required this.flaw,
     required this.subCollectionId,
+    required this.subDistrictId,
     // this.brand,
     // this.mainCategory,
     // this.subCategory,
@@ -27,6 +29,7 @@ class Offer {
       'description': description,
       'flaw': flaw,
       'sub_collection_id': subCollectionId,
+      'sub_district_id': subDistrictId,
       // 'brand': brand,
       // 'main_category': mainCategory,
       // 'sub_category': subCategory,
